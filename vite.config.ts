@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
-export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/webcomponents/' : '/',
+export default defineConfig(({ command, mode }) => ({
+  base: command === 'build' ? '/webcomponents/' : '/',
   server: {
     open: true
   },
@@ -15,4 +15,4 @@ export default defineConfig({
       }
     }
   }
-});
+}));

@@ -50,11 +50,49 @@ const routes: Route[] = [
   }
 ];
 
+// Get base path from import.meta.env or default to '/'
+const BASE_PATH = import.meta.env.BASE_URL || '/';
+
+// Helper to normalize paths by removing base path
+function getRoutePath(fullPath: string): string {
+  if (BASE_PATH === '/') return fullPath;
+  
+  // Normalize base path (remove trailing slash if present)
+  const normalizedBase = BASE_PATH.endsWith('/') ? BASE_PATH.slice(0, -1) : BASE_PATH;
+  
+  // Remove base path from the beginning
+  if (fullPath === normalizedBase || fullPath === normalizedBase + '/') {
+    return '/';
+  }
+  
+  if (fullPath.startsWith(normalizedBase + '/')) {
+    return fullPath.slice(normalizedBase.length);
+  }
+  
+  return fullPath;
+}
+
+// Helper to build full path with base
+function buildPath(routePath: string): string {
+  if (BASE_PATH === '/') return routePath;
+  const base = BASE_PATH.endsWith('/') ? BASE_PATH.slice(0, -1) : BASE_PATH;
+  return `${base}${routePath}`;
+}
+
 async function router(): Promise<void> {
-  const path = location.pathname;
+  const fullPath = location.pathname;
+  const path = getRoutePath(fullPath);
   const match = routes.find(route => route.path === path);
 
-  if (!match) return;
+  // If no match, redirect to home
+  if (!match) {
+    if (path !== '/') {
+      const fullHomePath = buildPath('/');
+      history.replaceState(null, '', fullHomePath);
+      await router();
+    }
+    return;
+  }
 
   await match.load();
 
@@ -78,7 +116,9 @@ document.addEventListener('click', event => {
 
   if (event.target.matches('[data-link]')) {
     event.preventDefault();
-    history.pushState(null, '', event.target.getAttribute('href') ?? '/');
+    const href = event.target.getAttribute('href') ?? '/';
+    const fullPath = buildPath(href);
+    history.pushState(null, '', fullPath);
     router();
   }
 });
