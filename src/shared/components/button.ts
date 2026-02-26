@@ -39,7 +39,7 @@ class UIButton extends BaseComponent {
 		const icon = this.getAttribute('icon');
 		if (!icon) return null;
 		const iconName = icon.trim();
-		const svg = feather.icons[iconName]?.toSvg() || '';
+		const svg = feather.icons[iconName as keyof typeof feather.icons]?.toSvg() || '';
 		return { html: `<span class="btn-icon">${svg}</span>`, name: iconName };
 	}
 

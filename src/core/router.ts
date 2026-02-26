@@ -29,6 +29,24 @@ const routes: Route[] = [
     layout: 'app-layout',
     load: () => import('../features/input-demo/input-demo'),
     component: 'input-demo'
+  },
+  {
+    path: '/modal',
+    layout: 'app-layout',
+    load: () => import('../features/modal-demo/modal-demo-page'),
+    component: 'modal-demo-page'
+  },
+  {
+    path: '/select',
+    layout: 'app-layout',
+    load: () => import('../features/select-demo/select-demo-page'),
+    component: 'select-demo-page'
+  },
+  {
+    path: '/checkbox',
+    layout: 'app-layout',
+    load: () => import('../features/checkbox-demo/checkbox-demo-page'),
+    component: 'checkbox-demo-page'
   }
 ];
 

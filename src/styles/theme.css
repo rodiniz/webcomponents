@@ -362,3 +362,559 @@ tr:last-child td {
 .input-error.hidden {
   display: none;
 }
+/* ============================================
+   CHECKBOX COMPONENT STYLES
+   ============================================ */
+
+:host([data-ui="checkbox"]) {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+:host([data-ui="checkbox"][disabled]) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.checkbox-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.checkbox-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-border, #cbd5e1);
+  border-radius: var(--radius-sm, 4px);
+  background: white;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.checkbox-box.size-sm {
+  min-width: 16px;
+  max-width: 16px;
+  min-height: 16px;
+  max-height: 16px;
+}
+
+.checkbox-box.size-md {
+  min-width: 18px;
+  max-width: 18px;
+  min-height: 18px;
+  max-height: 18px;
+}
+
+.checkbox-box.size-lg {
+  min-width: 20px;
+  max-width: 20px;
+  min-height: 20px;
+  max-height: 20px;
+}
+
+.checkbox-box:hover:not(.disabled) {
+  border-color: var(--color-primary, #24ec71);
+}
+
+.checkbox-box.checked,
+.checkbox-box.indeterminate {
+  background: var(--color-primary, #24ec71);
+  border-color: var(--color-primary, #24ec71);
+}
+
+.checkbox-box.disabled {
+  background: var(--color-muted, #f1f5f9);
+  cursor: not-allowed;
+}
+
+.checkbox-icon {
+  display: none;
+  color: white;
+  position: absolute;
+}
+
+.checkbox-box.checked .checkbox-icon.check,
+.checkbox-box.indeterminate .checkbox-icon.minus {
+  display: block;
+}
+
+.checkbox-icon.check {
+  width: 12px;
+  height: 12px;
+}
+
+.checkbox-icon.minus {
+  width: 10px;
+  height: 10px;
+}
+
+.checkbox-label {
+  font-size: 0.95rem;
+  color: var(--color-ink, #0f172a);
+  line-height: 1.5;
+}
+
+.checkbox-container.size-sm .checkbox-label {
+  font-size: 0.875rem;
+}
+
+.checkbox-container.size-lg .checkbox-label {
+  font-size: 1rem;
+}
+
+input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============================================
+   MODAL COMPONENT STYLES
+   ============================================ */
+
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-backdrop.open {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: var(--color-surface, white);
+  border-radius: var(--radius-lg, 16px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  animation: slideUp 0.2s ease-out;
+}
+
+.modal-content.sm { max-width: 400px; }
+.modal-content.md { max-width: 600px; }
+.modal-content.lg { max-width: 800px; }
+.modal-content.xl { max-width: 1200px; }
+.modal-content.full { max-width: 95vw; }
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-ink, #0f172a);
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md, 8px);
+  color: var(--color-text-muted, #64748b);
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: var(--color-muted, #f1f5f9);
+  color: var(--color-ink, #0f172a);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--color-border, #e2e8f0);
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   SELECT COMPONENT STYLES
+   ============================================ */
+
+:host([data-ui="select"]) {
+  display: block;
+  width: 90%;
+}
+
+.select-container {
+  position: relative;
+  width: 100%;
+}
+
+.select-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-ink, #0f172a);
+}
+
+.select-trigger {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background: white;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  color: var(--color-ink, #0f172a);
+}
+
+.select-trigger:hover:not(:disabled) {
+  border-color: var(--color-primary, #24ec71);
+}
+
+.select-trigger:focus {
+  outline: none;
+  border-color: var(--color-primary, #24ec71);
+  box-shadow: 0 0 0 3px rgba(36, 236, 113, 0.1);
+}
+
+.select-trigger:disabled {
+  background: var(--color-muted, #f1f5f9);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.select-trigger.open {
+  border-color: var(--color-primary, #24ec71);
+}
+
+.select-placeholder {
+  color: var(--color-text-muted, #94a3b8);
+  flex: 1;
+  text-align: left;
+}
+
+.select-placeholder.has-selection {
+  color: var(--color-ink, #0f172a);
+}
+
+.select-arrow {
+  display: flex;
+  transition: transform 0.2s;
+  color: var(--color-text-muted, #64748b);
+}
+
+.select-arrow.open {
+  transform: rotate(180deg);
+}
+
+.select-dropdown {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+  animation: slideDown 0.15s ease-out;
+}
+
+.select-dropdown.open {
+  display: block;
+}
+
+.select-search {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: none;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.select-search:focus {
+  background: var(--color-muted, #f1f5f9);
+}
+
+.select-option {
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  color: var(--color-ink, #0f172a);
+  font-size: 0.95rem;
+}
+
+.select-option:hover:not(.disabled) {
+  background: var(--color-muted, #f1f5f9);
+}
+
+.select-option.selected {
+  background: rgba(36, 236, 113, 0.1);
+  color: var(--color-primary, #24ec71);
+  font-weight: 500;
+}
+
+.select-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.select-empty {
+  padding: 1rem;
+  text-align: center;
+  color: var(--color-text-muted, #94a3b8);
+  font-size: 0.875rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   PAGINATION COMPONENT STYLES
+   ============================================ */
+
+:host([data-ui="pagination"]) {
+  display: block;
+}
+
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  opacity: 0.7;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.page-btn {
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  background: white;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-btn:hover:not(:disabled):not(.active) {
+  background: var(--color-muted);
+  border-color: var(--color-border-strong);
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-btn.active {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.page-btn.ellipsis {
+  border: none;
+  background: transparent;
+  cursor: default;
+  pointer-events: none;
+}
+
+.nav-btn {
+  padding: 0.5rem 0.75rem;
+}
+
+.nav-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============================================
+   DATE PICKER COMPONENT STYLES
+   ============================================ */
+
+:host([data-ui="date-picker"]) {
+  display: inline-block;
+  width: 100%;
+  max-width: 300px;
+}
+
+.date-picker-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.date-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.date-input-wrapper:hover:not(.disabled) {
+  border-color: var(--color-border-strong);
+}
+
+.date-input-wrapper:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(36, 236, 113, 0.1);
+  outline: none;
+}
+
+.date-input-wrapper.disabled {
+  background: var(--color-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.formatted-input {
+  flex: 1;
+  border: none;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: transparent;
+  color: var(--color-ink);
+  outline: none;
+}
+
+.formatted-input:disabled {
+  cursor: not-allowed;
+  color: var(--color-ink);
+  opacity: 0.7;
+}
+
+.formatted-input::placeholder {
+  color: #94a3b8;
+  opacity: 0.7;
+}
+
+.formatted-input.invalid {
+  color: #dc2626;
+}
+
+.hidden-date-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.calendar-btn {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink);
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+}
+
+.calendar-btn:hover:not(:disabled) {
+  background: var(--color-muted);
+  opacity: 1;
+}
+
+.calendar-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.calendar-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.format-label {
+  font-size: 0.75rem;
+  color: var(--color-ink);
+  opacity: 0.6;
+  padding: 0 0.25rem;
+  font-weight: 500;
+}

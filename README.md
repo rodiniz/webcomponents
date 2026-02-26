@@ -12,10 +12,168 @@ A lightweight, framework-agnostic web components library built with vanilla Type
 🎯 **Tree-shakeable** - Import only what you need  
 ♿ **Accessible** - ARIA attributes and keyboard navigation
 
+## 🚀 Live Demo
+
+Check out the interactive demo and component examples:
+
+**[View Live Demo →](https://rodiniz.github.io/webcomponents/)**
+
 ## Installation
 
 ```bash
 npm install @diniz/webcomponents
+```
+
+## Using with Vite (No Framework)
+
+This library works seamlessly with Vite without requiring any framework. Here's how to set up a vanilla JavaScript/TypeScript project:
+
+### 1. Create a New Vite Project
+
+```bash
+# Create a new Vite project with vanilla TypeScript template
+npm create vite@latest my-app -- --template vanilla-ts
+cd my-app
+npm install
+```
+
+### 2. Install the Library
+
+```bash
+npm install @diniz/webcomponents
+```
+
+### 3. Import Components in Your Main File
+
+In your `src/main.ts` file:
+
+```typescript
+import '@diniz/webcomponents';
+import '@diniz/webcomponents/dist/style.css'; // Import styles
+
+// Now you can use the components in your HTML
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <div>
+    <h1>My Web Components App</h1>
+    <ui-button variant="primary" size="md">Click Me</ui-button>
+    <ui-date-picker format="DD/MM/YYYY"></ui-date-picker>
+  </div>
+`;
+```
+
+### 4. Use Components in HTML
+
+In your `index.html`:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My App</title>
+  </head>
+  <body>
+    <div id="app">
+      <ui-button variant="primary">Click Me</ui-button>
+      <ui-date-picker format="DD/MM/YYYY"></ui-date-picker>
+      <ui-table></ui-table>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
+```
+
+### 5. Add Event Listeners (Optional)
+
+```typescript
+// Wait for components to be defined
+customElements.whenDefined('ui-button').then(() => {
+  const button = document.querySelector('ui-button');
+  button?.addEventListener('click', () => {
+    console.log('Button clicked!');
+  });
+});
+
+// Listen to custom events
+const picker = document.querySelector('ui-date-picker');
+picker?.addEventListener('date-change', ((e: CustomEvent) => {
+  console.log('Date selected:', e.detail.value);
+}) as EventListener);
+```
+
+### 6. TypeScript Support
+
+For full TypeScript support, create a `src/types.d.ts` file:
+
+```typescript
+declare module '@diniz/webcomponents' {
+  export interface UIButton extends HTMLElement {
+    variant: 'primary' | 'secondary' | 'ghost';
+    size: 'sm' | 'md' | 'lg';
+    icon?: string;
+    disabled?: boolean;
+  }
+  
+  export interface UIDatePicker extends HTMLElement {
+    format: string;
+    value: string;
+    min?: string;
+    max?: string;
+  }
+  
+  // Add other component interfaces as needed
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ui-button': import('@diniz/webcomponents').UIButton;
+    'ui-date-picker': import('@diniz/webcomponents').UIDatePicker;
+    // Add other components as needed
+  }
+}
+```
+
+### 7. Build for Production
+
+```bash
+npm run build
+```
+
+The build output will be in the `dist` folder, ready to deploy to any static hosting service.
+
+### Tree-shaking (Import Only What You Need)
+
+You can import individual components to reduce bundle size:
+
+```typescript
+// Import only specific components
+import { UIButton } from '@diniz/webcomponents';
+import '@diniz/webcomponents/dist/style.css';
+
+// The component is automatically registered
+// Now you can use <ui-button> in your HTML
+```
+
+### Configuration Tips
+
+**Vite Config** - No special configuration needed! Web Components work out of the box with Vite.
+
+**CSS Customization** - Override CSS custom properties to match your theme:
+
+```css
+:root {
+  --color-primary: #3b82f6;
+  --color-secondary: #8b5cf6;
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #06b6d4;
+  
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+}
 ```
 
 ## Quick Start
@@ -34,11 +192,14 @@ npm install @diniz/webcomponents
 
 ### 🔘 Button (`ui-button`)
 
-A versatile button component with multiple variants and sizes.
+A versatile button component with multiple variants, sizes, and icon support.
 
 **Features:**
 - 3 variants: `primary`, `secondary`, `ghost`
 - 3 sizes: `sm`, `md`, `lg`
+- Icon support with [Feather Icons](https://feathericons.com/)
+- Icon positioning (left/right)
+- Icon-only buttons
 - Disabled state support
 - Button type support
 - Smooth transitions and hover effects
@@ -48,11 +209,18 @@ A versatile button component with multiple variants and sizes.
 <ui-button variant="primary" size="md">Primary Button</ui-button>
 <ui-button variant="secondary" size="sm">Secondary</ui-button>
 <ui-button variant="ghost" disabled>Disabled</ui-button>
+
+<!-- With icons -->
+<ui-button variant="primary" icon="check">Save</ui-button>
+<ui-button variant="secondary" icon="trash-2" icon-position="right">Delete</ui-button>
+<ui-button variant="ghost" icon="settings"></ui-button>
 ```
 
 **Attributes:**
 - `variant` - Button style (`primary` | `secondary` | `ghost`)
 - `size` - Button size (`sm` | `md` | `lg`)
+- `icon` - Icon name from Feather Icons
+- `icon-position` - Icon position (`left` | `right`, default: `left`)
 - `disabled` - Disable the button
 - `type` - Button type (`button` | `submit` | `reset`)
 
@@ -250,6 +418,198 @@ Advanced form input with built-in validation and error handling.
 
 ---
 
+### 🪟 Modal (`ui-modal`)
+
+Responsive modal dialog with customizable sizes and behaviors.
+
+**Features:**
+- 5 size options: `sm`, `md`, `lg`, `xl`, `full`
+- Auto-close on Escape key (configurable)
+- Auto-close on backdrop click (configurable)
+- Smooth animations (fade in, slide up)
+- Header, body, and footer slots
+- Programmatic open/close API
+- Custom events
+- Body scroll lock when open
+
+**Usage:**
+```html
+<ui-button id="openModal">Open Modal</ui-button>
+
+<ui-modal id="myModal" title="Welcome!" size="md">
+  <p>This is the modal content.</p>
+  <p>You can include any HTML here.</p>
+  
+  <div slot="footer">
+    <ui-button id="closeBtn" variant="secondary">Cancel</ui-button>
+    <ui-button id="confirmBtn" variant="primary">Confirm</ui-button>
+  </div>
+</ui-modal>
+
+<script>
+  const modal = document.getElementById('myModal');
+  const openBtn = document.getElementById('openModal');
+  const closeBtn = document.getElementById('closeBtn');
+  
+  openBtn.addEventListener('click', () => modal.open());
+  closeBtn.addEventListener('click', () => modal.close());
+  
+  modal.addEventListener('modal-close', () => {
+    console.log('Modal closed');
+  });
+</script>
+```
+
+**Attributes:**
+- `title` - Modal title text
+- `size` - Modal size (`sm` | `md` | `lg` | `xl` | `full`)
+- `open` - Open state attribute
+- `no-close-on-escape` - Disable closing on Escape key
+- `no-close-on-backdrop` - Disable closing on backdrop click
+
+**Methods:**
+- `open()` - Open the modal
+- `close()` - Close the modal
+
+**Events:**
+- `modal-open` - Fired when modal opens
+- `modal-close` - Fired when modal closes
+
+---
+
+### 📋 Select (`ui-select`)
+
+Customizable dropdown select with search capability.
+
+**Features:**
+- JSON-based options configuration
+- Searchable dropdown (optional)
+- Keyboard navigation
+- Disabled options support
+- Custom placeholder text
+- Change events with full option details
+- Click-outside to close
+- Smooth animations
+- Theme-aware styling
+
+**Usage:**
+```html
+<ui-select 
+  id="mySelect"
+  label="Choose a Country"
+  placeholder="Select country..."
+  searchable
+></ui-select>
+
+<script>
+  const select = document.getElementById('mySelect');
+  
+  // Set options
+  const options = [
+    { value: 'us', label: 'United States' },
+    { value: 'uk', label: 'United Kingdom' },
+    { value: 'ca', label: 'Canada' },
+    { value: 'au', label: 'Australia', disabled: true }
+  ];
+  
+  select.setAttribute('options', JSON.stringify(options));
+  
+  // Set initial value
+  select.setAttribute('value', 'us');
+  
+  // Listen for changes
+  select.addEventListener('select-change', (e) => {
+    console.log('Value:', e.detail.value);
+    console.log('Option:', e.detail.option);
+  });
+</script>
+```
+
+**Attributes:**
+- `label` - Label text above select
+- `placeholder` - Placeholder when no selection
+- `options` - JSON string of options array
+- `value` - Currently selected value
+- `disabled` - Disable the select
+- `searchable` - Enable search functionality
+
+**Option Format:**
+```typescript
+{
+  value: string;      // The option value
+  label: string;      // Display text
+  disabled?: boolean; // Optional: disable option
+}
+```
+
+**Events:**
+- `select-change` - Fired when selection changes
+  - `detail.value` - Selected value
+  - `detail.option` - Full option object
+
+---
+
+### ☑️ Checkbox (`ui-checkbox`)
+
+Flexible checkbox with indeterminate state support.
+
+**Features:**
+- 3 sizes: `sm`, `md`, `lg`
+- Checked/unchecked states
+- Indeterminate state (useful for "select all")
+- Disabled state
+- Label support (attribute or slot)
+- Programmatic API
+- Custom events
+- Smooth animations and transitions
+- Theme-aware styling
+
+**Usage:**
+```html
+<!-- Basic usage -->
+<ui-checkbox label="Accept terms"></ui-checkbox>
+<ui-checkbox label="Subscribe" checked></ui-checkbox>
+<ui-checkbox label="Disabled" disabled></ui-checkbox>
+
+<!-- With sizes -->
+<ui-checkbox label="Small" size="sm"></ui-checkbox>
+<ui-checkbox label="Medium" size="md"></ui-checkbox>
+<ui-checkbox label="Large" size="lg"></ui-checkbox>
+
+<!-- Programmatic usage -->
+<ui-checkbox id="myCheckbox" label="Select All"></ui-checkbox>
+
+<script>
+  const checkbox = document.getElementById('myCheckbox');
+  
+  // Listen for changes
+  checkbox.addEventListener('checkbox-change', (e) => {
+    console.log('Checked:', e.detail.checked);
+  });
+  
+  // Set states programmatically
+  checkbox.setChecked(true);
+  checkbox.setIndeterminate(true);
+</script>
+```
+
+**Attributes:**
+- `label` - Label text
+- `checked` - Checked state
+- `indeterminate` - Indeterminate state
+- `disabled` - Disable checkbox
+- `size` - Checkbox size (`sm` | `md` | `lg`)
+
+**Methods:**
+- `setChecked(checked: boolean)` - Set checked state
+- `setIndeterminate(indeterminate: boolean)` - Set indeterminate state
+
+**Events:**
+- `checkbox-change` - Fired when state changes
+  - `detail.checked` - New checked state
+
+---
+
 ### 🎯 Sidebar (`app-sidebar`)
 
 Navigation sidebar component with links.
@@ -406,9 +766,12 @@ src/
 ├── shared/
 │   └── components/        # Reusable UI components
 │       ├── button.ts
+│       ├── checkbox.ts
 │       ├── date-picker.ts
 │       ├── input.ts
+│       ├── modal.ts
 │       ├── pagination.ts
+│       ├── select.ts
 │       └── table.ts
 ├── layouts/
 │   └── app-layout.ts      # Application shell
@@ -498,6 +861,131 @@ src/
 </script>
 ```
 
+### Confirmation Modal
+
+```html
+<ui-button id="deleteBtn" variant="primary" icon="trash-2">
+  Delete Item
+</ui-button>
+
+<ui-modal id="confirmModal" title="Confirm Delete" size="sm">
+  <p>Are you sure you want to delete this item?</p>
+  <p style="color: #ef4444;">This action cannot be undone.</p>
+  
+  <div slot="footer">
+    <ui-button id="cancelBtn" variant="ghost">Cancel</ui-button>
+    <ui-button id="confirmBtn" variant="primary">Delete</ui-button>
+  </div>
+</ui-modal>
+
+<script>
+  const deleteBtn = document.getElementById('deleteBtn');
+  const modal = document.getElementById('confirmModal');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const confirmBtn = document.getElementById('confirmBtn');
+  
+  deleteBtn.addEventListener('click', () => modal.open());
+  cancelBtn.addEventListener('click', () => modal.close());
+  confirmBtn.addEventListener('click', () => {
+    // Perform delete action
+    console.log('Item deleted');
+    modal.close();
+  });
+</script>
+```
+
+### Dynamic Form with Select
+
+```html
+<form id="userForm">
+  <ui-select 
+    id="roleSelect"
+    label="User Role"
+    placeholder="Select role..."
+  ></ui-select>
+  
+  <ui-select 
+    id="countrySelect"
+    label="Country"
+    placeholder="Select country..."
+    searchable
+  ></ui-select>
+  
+  <ui-button type="submit" variant="primary" icon="check">
+    Create User
+  </ui-button>
+</form>
+
+<script>
+  const roleSelect = document.getElementById('roleSelect');
+  const countrySelect = document.getElementById('countrySelect');
+  
+  // Set options
+  roleSelect.setAttribute('options', JSON.stringify([
+    { value: 'admin', label: 'Administrator' },
+    { value: 'user', label: 'User' },
+    { value: 'guest', label: 'Guest' }
+  ]));
+  
+  countrySelect.setAttribute('options', JSON.stringify([
+    { value: 'us', label: 'United States' },
+    { value: 'uk', label: 'United Kingdom' },
+    { value: 'ca', label: 'Canada' }
+  ]));
+  
+  document.getElementById('userForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const role = roleSelect.getAttribute('value');
+    const country = countrySelect.getAttribute('value');
+    console.log({ role, country });
+  });
+</script>
+```
+
+### Select All with Checkboxes
+
+```html
+<ui-checkbox id="selectAll" label="Select All"></ui-checkbox>
+
+<div style="margin-left: 2rem;">
+  <ui-checkbox class="item" label="Item 1" size="sm"></ui-checkbox>
+  <ui-checkbox class="item" label="Item 2" size="sm"></ui-checkbox>
+  <ui-checkbox class="item" label="Item 3" size="sm"></ui-checkbox>
+</div>
+
+<script>
+  const selectAll = document.getElementById('selectAll');
+  const items = document.querySelectorAll('.item');
+  
+  // Update select all based on items
+  function updateSelectAll() {
+    const checkedCount = Array.from(items).filter(
+      item => item.hasAttribute('checked')
+    ).length;
+    
+    if (checkedCount === 0) {
+      selectAll.setChecked(false);
+    } else if (checkedCount === items.length) {
+      selectAll.setChecked(true);
+    } else {
+      selectAll.setIndeterminate(true);
+    }
+  }
+  
+  // Handle select all click
+  selectAll.addEventListener('checkbox-change', (e) => {
+    items.forEach(item => item.setChecked(e.detail.checked));
+  });
+  
+  // Handle individual item clicks
+  items.forEach(item => {
+    item.addEventListener('checkbox-change', updateSelectAll);
+  });
+  
+  updateSelectAll();
+</script>
+```
+
 ---
 
 ## Contributing
@@ -508,13 +996,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT © [Your Name]
+MIT © Rodrigo Diniz
 
----
 
-## Links
-
-- [Demo](https://your-demo-url.com)
-- [Documentation](https://your-docs-url.com)
-- [GitHub](https://github.com/yourusername/webcomponents)
-- [npm](https://www.npmjs.com/package/@diniz/webcomponents)

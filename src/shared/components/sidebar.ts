@@ -17,6 +17,9 @@ class AppSidebar extends BaseComponent {
           <a class="sidebar-link" href="/input-demo" data-link>Input Demo</a>
           <a class="sidebar-link" href="/date-picker" data-link>Date Picker Demo</a>
           <a class="sidebar-link" href="/table-demo" data-link>Table Demo</a>
+          <a class="sidebar-link" href="/modal" data-link>Modal Demo</a>
+          <a class="sidebar-link" href="/select" data-link>Select Demo</a>
+          <a class="sidebar-link" href="/checkbox" data-link>Checkbox Demo</a>
         </nav>
       </aside>
     `;
