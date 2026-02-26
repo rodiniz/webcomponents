@@ -114,7 +114,7 @@ class TableDemo extends BaseComponent {
 
 		const status = this.shadowRoot!.querySelector('#data-status');
 
-		const jsonOutput = this.shadowRoot!.querySelector('#json-output');
+	
 
 		if (status) {
 			status.textContent = this.loading
@@ -125,14 +125,6 @@ class TableDemo extends BaseComponent {
 			status.className = `status ${
 				this.loading ? 'loading' : this.error ? 'error' : 'success'
 			}`;
-		}
-
-		if (jsonOutput) {
-			jsonOutput.textContent = this.data
-				? JSON.stringify(this.data, null, 2)
-				: this.error
-					? this.error
-					: 'Loading...';
 		}		
 
 		const table = this.shadowRoot!.querySelector('#demo-table') as
@@ -161,6 +153,27 @@ class TableDemo extends BaseComponent {
 			newPagination.addEventListener('page-change', ((e: CustomEvent) => {
 				this.currentPage = e.detail.page;
 				this.loadData();
+			}) as EventListener);
+		}
+
+		// Listen to table row actions
+		const tableElement = this.shadowRoot!.querySelector('#demo-table');
+		if (tableElement) {
+			tableElement.addEventListener('row-action', ((e: CustomEvent) => {
+				const { action, row } = e.detail;
+				const actionMessage = this.shadowRoot!.querySelector('#action-message') as HTMLElement;
+				if (actionMessage) {
+					const message = `${action.toUpperCase()} clicked for "${row.title}"`;
+					actionMessage.textContent = message;
+					actionMessage.style.display = 'block';
+					// Auto hide after 5 seconds
+					setTimeout(() => {
+						const currentMessage = this.shadowRoot!.querySelector('#action-message') as HTMLElement;
+						if (currentMessage) {
+							currentMessage.style.display = 'none';
+						}
+					}, 5000);
+				}
 			}) as EventListener);
 		}
 	}
