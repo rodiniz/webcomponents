@@ -1,0 +1,74 @@
+:host {
+	display: block;
+	padding: 2rem;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+h1 {
+	font-size: 2rem;
+	margin-bottom: 2rem;
+	color: var(--color-ink, #0f172a);
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 2rem;
+	margin-bottom: 1rem;
+	color: var(--color-ink, #0f172a);
+}
+
+.demo-section {
+	margin-bottom: 3rem;
+	padding: 1.5rem;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	background: white;
+}
+
+.picker-row {
+	margin-bottom: 2rem;
+}
+
+.picker-label {
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	color: var(--color-ink, #0f172a);
+}
+
+.picker-controls {
+	display: flex;
+	gap: 1rem;
+	align-items: flex-start;
+	flex-wrap: wrap;
+}
+
+ui-date-picker {
+	flex: 1;
+	min-width: 250px;
+}
+
+.output {
+	margin-top: 1rem;
+	padding: 1rem;
+	background: #f8fafc;
+	border-radius: 8px;
+	font-family: 'Courier New', monospace;
+	font-size: 0.85rem;
+	white-space: pre-wrap;
+	color: #334155;
+}
+
+.code-block {
+	background: #f1f5f9;
+	padding: 1rem;
+	border-radius: 8px;
+	overflow-x: auto;
+	margin: 1rem 0;
+}
+
+code {
+	font-family: 'Courier New', monospace;
+	font-size: 0.9rem;
+	color: #334155;
+}

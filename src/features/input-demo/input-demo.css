@@ -1,0 +1,82 @@
+.demo-container {
+	padding: 2rem;
+	max-width: 800px;
+}
+
+.demo-container h1 {
+	margin: 0 0 0.5rem;
+	color: var(--color-ink);
+}
+
+.demo-description {
+	color: #64748b;
+	margin-bottom: 2rem;
+}
+
+.demo-description code {
+	background: var(--color-muted);
+	padding: 0.15rem 0.4rem;
+	border-radius: 4px;
+	font-size: 0.9em;
+}
+
+.demo-section {
+	margin-bottom: 2.5rem;
+	padding: 1.5rem;
+	background: var(--color-page-bg);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+}
+
+.demo-section h2 {
+	margin: 0 0 1rem;
+	font-size: 1.25rem;
+	color: var(--color-ink);
+}
+
+.demo-section > p {
+	margin: 0 0 1rem;
+	color: #64748b;
+}
+
+.form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 1.25rem;
+}
+
+.form-actions {
+	margin-top: 1.5rem;
+	display: flex;
+	gap: 0.75rem;
+}
+
+.demo-form {
+	margin-bottom: 1rem;
+}
+
+.form-result {
+	margin-top: 1rem;
+	padding: 0.75rem 1rem;
+	background: var(--color-muted);
+	border-radius: 6px;
+	display: flex;
+	gap: 0.5rem;
+}
+
+.result-label {
+	font-weight: 600;
+	color: var(--color-ink);
+}
+
+.result-value {
+	color: #64748b;
+}
+
+.result-value.valid {
+	color: #24ec71;
+}
+
+.result-value.invalid {
+	color: #ef4444;
+}

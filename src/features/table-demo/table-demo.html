@@ -1,0 +1,24 @@
+<h1>Table Demo</h1>
+<p class="intro">Example of loading JSON data and rendering a table.</p>
+
+<div class="demo-section">
+	<div class="section-header">
+		<h2>Data Source</h2>
+		<span class="status" id="data-status">Loading...</span>
+	</div>
+	<div class="code-block">
+		<code>fetch('https://dummyjson.com/products')</code>
+	</div>
+</div>
+
+<div class="demo-section">
+	<h2>Table</h2>
+	<ui-table id="demo-table"></ui-table>
+	<div class="meta" id="data-meta"></div>
+	<ui-pagination></ui-pagination>
+</div>
+
+<div class="demo-section">
+	<h2>Raw JSON</h2>
+	<pre class="json-output" id="json-output">Loading...</pre>
+</div>

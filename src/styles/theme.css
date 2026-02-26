@@ -1,0 +1,364 @@
+:root {
+  --color-primary: #24ec71;
+  --color-primary-contrast: #ffffff;
+  --color-ink: #0f172a;
+  --color-muted: #f1f5f9;
+  --color-header: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5f5;
+  --color-nav-bg: #222222;
+  --color-nav-text: #ffffff;
+  --shadow-primary: 0 8px 18px rgba(31, 111, 235, 0.25);
+  --focus-ring: #9ec5ff;
+  --radius-pill: 999px;
+  --radius-md: 12px;
+  --color-page-bg: #ffffff;
+  --color-page-text: #0f172a;
+}
+
+body {
+  background: var(--color-page-bg);
+  color: var(--color-page-text);
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+:host([data-ui="button"]) {
+  display: inline-block;
+}
+
+:host([data-ui="table"]) {
+  display: block;
+}
+
+:host([data-ui="layout"]) {
+  display: block;
+}
+
+:host([data-ui="sidebar"]) {
+  display: block;
+}
+
+.btn {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  gap: 0.5rem;
+  line-height: 1;
+  padding: 0.65rem 1.2rem;
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn.primary {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  box-shadow: var(--shadow-primary);
+}
+
+.btn.secondary {
+  background: var(--color-muted);
+  color: var(--color-ink);
+  border-color: var(--color-border-strong);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-border-strong);
+}
+
+.btn.has-icon {
+  line-height: 1.2;
+}
+
+.btn .btn-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.btn .btn-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.btn.icon-only {
+  padding: 0.65rem;
+  aspect-ratio: 1;
+}
+
+.btn.icon-only.sm {
+  padding: 0.45rem;
+}
+
+.btn.icon-only.lg {
+  padding: 0.8rem;
+}
+
+.btn.sm .btn-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.btn.lg .btn-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.btn.sm {
+  font-size: 0.85rem;
+  padding: 0.45rem 0.9rem;
+  box-shadow: 0 4px 12px rgba(167, 18, 68, 0.15);
+}
+
+.btn.md {
+  font-size: 0.95rem;
+  padding: 0.65rem 1.2rem;
+}
+
+.btn.lg {
+  font-size: 1.05rem;
+  padding: 0.8rem 1.5rem;
+}
+
+.table-wrap {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+thead {
+  background: var(--color-header);
+}
+
+th,
+td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.95rem;
+  border-right: 1px solid var(--color-border);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.align-left {
+  text-align: left;
+}
+
+.align-center {
+  text-align: center;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.action-btn {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-muted);
+  color: var(--color-ink);
+  transition: background-color 120ms ease;
+}
+
+.action-btn:hover {
+  background: var(--color-border);
+}
+
+.action-btn.edit-btn {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
+}
+
+.action-btn.edit-btn:hover {
+  opacity: 0.85;
+}
+
+.action-btn.delete-btn {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+
+.action-btn.delete-btn:hover {
+  opacity: 0.85;
+}
+
+.app-nav {
+  padding: 1rem;
+  background: var(--color-nav-bg);
+  color: var(--color-nav-text);
+}
+
+.app-link {
+  color: var(--color-nav-text);
+  margin-right: 1rem;
+  text-decoration: none;
+}
+
+.signal-demo {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-toggle {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.data-table {
+  margin-top: 15px;
+}
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 24px;
+  padding: 24px;
+}
+
+.dashboard-sidebar {
+  background: var(--color-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+}
+
+.sidebar-title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-link {
+  color: var(--color-ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+:host([data-ui="input"]) {
+  display: block;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.input-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.input-field {
+  padding: 0.6rem 0.85rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  border: 1.5px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-page-bg);
+  color: var(--color-page-text);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  outline: none;
+}
+
+.input-field::placeholder {
+  color: #94a3b8;
+}
+
+.input-field:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(36, 236, 113, 0.15);
+}
+
+.input-field:disabled {
+  background: var(--color-muted);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.input-wrapper.invalid .input-field {
+  border-color: #ef4444;
+}
+
+.input-wrapper.invalid .input-field:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.input-error {
+  font-size: 0.8rem;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.input-error.hidden {
+  display: none;
+}

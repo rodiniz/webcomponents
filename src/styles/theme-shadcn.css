@@ -1,0 +1,15 @@
+:root[data-theme="shadcn"] {
+  --color-primary: #0f172a;
+  --color-primary-contrast: #f8fafc;
+  --color-ink: #0f172a;
+  --color-muted: #f4f4f5;
+  --color-header: #fafafa;
+  --color-border: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+  --color-nav-bg: #ffffff;
+  --color-nav-text: #0f172a;
+  --shadow-primary: 0 8px 18px rgba(15, 23, 42, 0.18);
+  --focus-ring: #a1a1aa;
+  --color-page-bg: #f8fafc;
+  --color-page-text: #0f172a;
+}

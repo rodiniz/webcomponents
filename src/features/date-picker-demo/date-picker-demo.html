@@ -1,0 +1,109 @@
+<h1>📅 Date Picker Component Demo</h1>
+
+<div class="demo-section">
+	<h2>Different Date Formats</h2>
+	
+	<div class="picker-row">
+		<div class="picker-label">Format: YYYY-MM-DD (ISO)</div>
+		<div class="picker-controls">
+			<ui-date-picker id="picker1" format="YYYY-MM-DD"></ui-date-picker>
+			<ui-button class="clear-btn" data-picker="picker1" variant="secondary">Clear</ui-button>
+		</div>
+		<div class="output" id="output-picker1">Select a date to see the output</div>
+	</div>
+
+	<div class="picker-row">
+		<div class="picker-label">Format: DD/MM/YYYY (European)</div>
+		<div class="picker-controls">
+			<ui-date-picker id="picker2" format="DD/MM/YYYY"></ui-date-picker>
+			<ui-button class="clear-btn" data-picker="picker2" variant="secondary">Clear</ui-button>
+		</div>
+		<div class="output" id="output-picker2">Select a date to see the output</div>
+	</div>
+
+	<div class="picker-row">
+		<div class="picker-label">Format: MM/DD/YYYY (US)</div>
+		<div class="picker-controls">
+			<ui-date-picker id="picker3" format="MM/DD/YYYY"></ui-date-picker>
+			<ui-button class="clear-btn" data-picker="picker3" variant="secondary">Clear</ui-button>
+		</div>
+		<div class="output" id="output-picker3">Select a date to see the output</div>
+	</div>
+
+	<div class="picker-row">
+		<div class="picker-label">Format: DD-MM-YYYY</div>
+		<div class="picker-controls">
+			<ui-date-picker id="picker4" format="DD-MM-YYYY"></ui-date-picker>
+			<ui-button class="clear-btn" data-picker="picker4" variant="secondary">Clear</ui-button>
+		</div>
+		<div class="output" id="output-picker4">Select a date to see the output</div>
+	</div>
+
+	<div class="picker-row">
+		<div class="picker-label">Format: MM-DD-YYYY</div>
+		<div class="picker-controls">
+			<ui-date-picker id="picker5" format="MM-DD-YYYY"></ui-date-picker>
+			<ui-button class="clear-btn" data-picker="picker5" variant="secondary">Clear</ui-button>
+		</div>
+		<div class="output" id="output-picker5">Select a date to see the output</div>
+	</div>
+</div>
+
+<div class="demo-section">
+	<h2>With Constraints</h2>
+	
+	<div class="picker-row">
+		<div class="picker-label">With Min and Max Dates</div>
+		<div class="picker-controls">
+			<ui-date-picker id="picker6" format="DD/MM/YYYY" min="2026-01-01" max="2026-12-31"></ui-date-picker>
+			<ui-button class="clear-btn" data-picker="picker6" variant="secondary">Clear</ui-button>
+		</div>
+		<div class="output" id="output-picker6">Only dates in 2026 are allowed</div>
+	</div>
+
+	<div class="picker-row">
+		<div class="picker-label">Disabled State</div>
+		<div class="picker-controls">
+			<ui-date-picker id="picker7" format="DD/MM/YYYY" disabled></ui-date-picker>
+		</div>
+		<div class="output" id="output-picker7">This picker is disabled</div>
+	</div>
+
+	<div class="picker-row">
+		<div class="picker-label">With Initial Value</div>
+		<div class="picker-controls">
+			<ui-date-picker id="picker8" format="DD/MM/YYYY" value="2026-02-26"></ui-date-picker>
+			<ui-button class="clear-btn" data-picker="picker8" variant="secondary">Clear</ui-button>
+		</div>
+		<div class="output" id="output-picker8">Initial value: 2026-02-26</div>
+	</div>
+</div>
+
+<div class="demo-section">
+	<h2>Usage Example</h2>
+	<div class="code-block">
+		<code>&lt;ui-date-picker 
+  format="DD/MM/YYYY"
+  value="2026-02-26"
+  min="2026-01-01"
+  max="2026-12-31"
+&gt;&lt;/ui-date-picker&gt;
+
+&lt;script&gt;
+  const picker = document.querySelector('ui-date-picker');
+  
+  // Listen to date changes
+  picker.addEventListener('date-change', (e) => {
+    console.log('ISO Value:', e.detail.value);
+    console.log('Formatted Value:', e.detail.formattedValue);
+    console.log('Format:', e.detail.format);
+  });
+
+  // Programmatic API
+  picker.setValue('2026-03-15');
+  console.log(picker.getISOValue());        // "2026-03-15"
+  console.log(picker.getFormattedValue());  // "15/03/2026"
+  picker.clear();
+&lt;/script&gt;</code>
+	</div>
+</div>
