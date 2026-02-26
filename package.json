@@ -1,6 +1,6 @@
 {
   "name": "@diniz/webcomponents",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lightweight web components library",
   "type": "module",
   "main": "./dist/webcomponents.umd.js",
@@ -43,5 +43,4 @@
     "type": "git",
     "url": "https://github.com/rodiniz/webcomponents"
   }
-  
 }
