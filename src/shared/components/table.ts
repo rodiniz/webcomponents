@@ -6,6 +6,7 @@ export type TableColumn = {
 	key: string;
 	label: string;
 	align?: 'left' | 'center' | 'right';
+	visible?: boolean;
 	actions?: {
 		edit?: boolean;
 		delete?: boolean;
@@ -38,7 +39,9 @@ class UITable extends BaseComponent {
 	}
 
 	render(): void {
-		const header = this.columns
+		const visibleColumns = this.columns.filter(col => col.visible !== false);
+
+		const header = visibleColumns
 			.map(
 				column =>
 					`<th class="align-${column.align ?? 'left'}">${column.label}</th>`
@@ -48,7 +51,7 @@ class UITable extends BaseComponent {
 		const body = this.rows
 			.map(
 				(row, rowIndex) =>
-					`<tr data-row-index="${rowIndex}">${this.columns
+					`<tr data-row-index="${rowIndex}">${visibleColumns
 						.map(
 							column => {
 								if (column.actions) {

@@ -63,6 +63,7 @@ class TableDemo extends BaseComponent {
 			const payload = (await response.json()) as ProductsResponse;
 
 			const columns: TableColumn[] = [
+				{ key: 'id', label: 'ID', align: 'right', visible: false },
 				{ key: 'title', label: 'Title' },
 				{ key: 'brand', label: 'Brand' },
 				{ key: 'category', label: 'Category' },
@@ -81,6 +82,7 @@ class TableDemo extends BaseComponent {
 			];
 
 			const rows: TableRow[] = payload.products.map(product => ({
+				id: product.id,
 				title: product.title,
 				brand: product.brand,
 				category: product.category,
@@ -137,7 +139,7 @@ class TableDemo extends BaseComponent {
 		confirmCancel?.addEventListener('click', () => {
 			confirmModal?.close();
 		});
-		
+
 
 		if (status) {
 			status.textContent = this.loading
@@ -184,18 +186,19 @@ class TableDemo extends BaseComponent {
 		if (tableElement) {
 			// Listen to edit action
 			tableElement.addEventListener('edit-action', ((e: CustomEvent) => {
-				const { row } = e.detail;
-				this.showActionMessage(`EDIT clicked for "${row.title}"`);
+				const { row } = e.detail;				
+				this.showActionMessage(`EDIT clicked for "${row.id}: ${row.title}"`);
 			}) as EventListener);
 			
 			// Listen to delete action
 			tableElement.addEventListener('delete-action', ((e: CustomEvent) => {
 				
-				const { row } = e.detail;					
+				const { row } = e.detail;		
+				console.log(`DELETE clicked for "${row.id}: ${row.title}"`);			
 				confirmModal?.open();				
 				confirmDelete?.addEventListener('click', () => {
 					confirmModal?.close();
-					this.showActionMessage(`DELETE confirmed for "${row.title}"`);
+					this.showActionMessage(`DELETE confirmed for "${row.id}: ${row.title}"`);
 				});
 				
 			}) as EventListener);
