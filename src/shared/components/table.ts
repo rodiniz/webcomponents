@@ -91,4 +91,7 @@ class UITable extends BaseComponent {
 	}
 }
 
+export { UITable };
+export type { ActionEventDetail };
+
 customElements.define('ui-table', UITable);

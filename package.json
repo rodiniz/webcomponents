@@ -1,19 +1,41 @@
 {
-  "name": "webcomponents",
-  "private": true,
+  "name": "@your-org/webcomponents",
+  "version": "1.0.0",
+  "description": "Lightweight web components library",
   "type": "module",
-"scripts": {
+  "main": "./dist/webcomponents.umd.js",
+  "module": "./dist/webcomponents.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/webcomponents.es.js",
+      "require": "./dist/webcomponents.umd.js"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
     "dev": "vite",
     "build": "vite build",
     "build:prod": "vite build --mode production",
+    "build:lib": "vite build --config vite.lib.config.ts && node scripts/copy-lib-assets.mjs",
     "preview": "vite preview",
     "preview:prod": "vite preview --port 4173"
   },
   "devDependencies": {
+    "@types/node": "^25.3.1",
     "typescript": "^5.4.0",
     "vite": "^5.2.0"
   },
   "dependencies": {
     "feather-icons": "^4.29.2"
-  }
+  },
+  "keywords": [
+    "web-components",
+    "ui-components",
+    "custom-elements"
+  ],
+  "license": "MIT"
 }

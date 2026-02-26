@@ -311,4 +311,7 @@ class UIInput extends BaseComponent<{
 	}
 }
 
+export { UIInput };
+export type { InputType, ValidationResult, CustomValidator, ValidationRule };
+
 customElements.define('ui-input', UIInput);

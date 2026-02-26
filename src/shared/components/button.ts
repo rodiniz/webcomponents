@@ -1,6 +1,6 @@
 import { BaseComponent } from '../../core/base-component';
 import styles from '../../styles/theme.css?inline';
-
+import feather from 'feather-icons';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -86,5 +86,8 @@ class UIButton extends BaseComponent {
 	`;
 	}
 }
+
+export { UIButton };
+export type { ButtonVariant, ButtonSize };
 
 customElements.define('ui-button', UIButton);
