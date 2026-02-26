@@ -11,3 +11,7 @@ export type { ButtonVariant, ButtonSize } from '../shared/components/button';
 export type { InputType, ValidationResult, CustomValidator, ValidationRule } from '../shared/components/input';
 export type { TableColumn, TableRow } from '../shared/components/table';
 export type { SelectOption } from '../shared/components/select';
+
+// HTTP Client
+export { http, HTTPClient } from '../core/http';
+export type { RequestConfig, ResponseConfig, RequestInterceptor, ResponseInterceptor, ErrorInterceptor } from '../core/http';

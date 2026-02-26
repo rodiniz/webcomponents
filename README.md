@@ -735,6 +735,105 @@ store.subscribe(state => {
 });
 ```
 
+### HTTP Client
+
+Lightweight HTTP client with interceptor support for API requests:
+
+```typescript
+import { http } from '@diniz/webcomponents';
+
+// Set base URL for all requests
+http.setBaseURL('https://api.example.com');
+
+// Set default headers
+http.setDefaultHeaders({ 'Authorization': 'Bearer token' });
+
+// Make requests
+const users = await http.get<User[]>('/users');
+const newUser = await http.post<User>('/users', { name: 'Alice' });
+await http.put(`/users/${id}`, updatedData);
+await http.delete(`/users/${id}`);
+```
+
+**Request Interceptors:**
+
+```typescript
+// Add auth token to every request
+http.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Handle request errors
+http.interceptors.request.use(
+  (config) => config,
+  (error) => {
+    console.error('Request failed:', error);
+    throw error;
+  }
+);
+```
+
+**Response Interceptors:**
+
+```typescript
+// Transform response data
+http.interceptors.response.use((response) => {
+  // Unwrap API response if it's nested
+  if (response.data?.result) {
+    response.data = response.data.result;
+  }
+  return response;
+});
+
+// Handle errors globally
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Handle unauthorized
+      localStorage.removeItem('auth_token');
+      window.location.href = '/login';
+    }
+    throw error;
+  }
+);
+```
+
+**Methods:**
+
+- `get<T>(url, config?)` - GET request
+- `post<T>(url, data?, config?)` - POST request
+- `put<T>(url, data?, config?)` - PUT request
+- `patch<T>(url, data?, config?)` - PATCH request
+- `delete<T>(url, config?)` - DELETE request
+- `head<T>(url, config?)` - HEAD request
+
+**Configuration:**
+
+```typescript
+interface RequestConfig {
+  method?: string;
+  headers?: Record<string, string>;
+  body?: string | FormData | null;
+  timeout?: number;      // Default: 30000ms
+}
+```
+
+**Features:**
+
+- ✅ Request/response interceptors with error handling
+- ✅ Automatic JSON serialization/deserialization
+- ✅ Timeout support (default 30s)
+- ✅ Global headers and base URL configuration
+- ✅ FormData support for file uploads
+- ✅ TypeScript generics for type-safe responses
+- ✅ Automatic error messages with status codes
+
 ---
 
 ## Theming
