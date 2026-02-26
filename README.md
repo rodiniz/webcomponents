@@ -178,6 +178,51 @@ import '@diniz/webcomponents/dist/style.css';
 
 ## Quick Start
 
+### Using with Vite (No Framework)
+
+```bash
+# Create a new vanilla TypeScript project
+npm create vite@latest my-app -- --template vanilla-ts
+cd my-app
+
+# Install the library
+npm install @diniz/webcomponents
+
+# Install dependencies and start dev server
+npm install
+npm run dev
+```
+
+**Update `src/main.ts`:**
+```typescript
+import '@diniz/webcomponents';
+import '@diniz/webcomponents/dist/style.css';
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <div>
+    <h1>My Web Components App</h1>
+    <ui-button variant="primary">Click Me</ui-button>
+    <ui-date-picker format="DD/MM/YYYY"></ui-date-picker>
+    <ui-table id="myTable"></ui-table>
+  </div>
+`;
+
+// Add some data to the table
+const table = document.getElementById('myTable') as any;
+table.data = {
+  columns: [
+    { key: 'name', label: 'Name' },
+    { key: 'role', label: 'Role' }
+  ],
+  rows: [
+    { name: 'Alice', role: 'Admin' },
+    { name: 'Bob', role: 'User' }
+  ]
+};
+```
+
+### Using via CDN or Direct Import
+
 ```html
 <script type="module">
   import '@diniz/webcomponents';
@@ -779,215 +824,6 @@ src/
 └── styles/
     └── theme.css          # Global theme variables
 ```
-
----
-
-## Examples
-
-### Form with Validation
-
-```html
-<form id="myForm">
-  <ui-input 
-    type="email"
-    name="email"
-    label="Email"
-    required
-  ></ui-input>
-  
-  <ui-input 
-    type="password"
-    name="password"
-    label="Password"
-    minlength="8"
-    required
-  ></ui-input>
-  
-  <ui-button type="submit">Submit</ui-button>
-</form>
-```
-
-### Data Table with Pagination
-
-```html
-<ui-table id="dataTable"></ui-table>
-<ui-pagination id="pagination" page-size="10"></ui-pagination>
-
-<script type="module">
-  const table = document.getElementById('dataTable');
-  const pagination = document.getElementById('pagination');
-  
-  async function loadData(page = 1) {
-    const response = await fetch(`/api/data?page=${page}`);
-    const data = await response.json();
-    
-    table.data = {
-      columns: [
-        { key: 'name', label: 'Name' },
-        { key: 'email', label: 'Email' }
-      ],
-      rows: data.items
-    };
-    
-    pagination.total = data.total;
-    pagination.currentPage = page;
-  }
-  
-  pagination.addEventListener('page-change', (e) => {
-    loadData(e.detail.page);
-  });
-  
-  loadData(1);
-</script>
-```
-
-### Date Range Picker
-
-```html
-<ui-date-picker id="startDate" format="DD/MM/YYYY"></ui-date-picker>
-<ui-date-picker id="endDate" format="DD/MM/YYYY"></ui-date-picker>
-
-<script>
-  const start = document.getElementById('startDate');
-  const end = document.getElementById('endDate');
-  
-  start.addEventListener('date-change', (e) => {
-    end.setAttribute('min', e.detail.value);
-  });
-  
-  end.addEventListener('date-change', (e) => {
-    start.setAttribute('max', e.detail.value);
-  });
-</script>
-```
-
-### Confirmation Modal
-
-```html
-<ui-button id="deleteBtn" variant="primary" icon="trash-2">
-  Delete Item
-</ui-button>
-
-<ui-modal id="confirmModal" title="Confirm Delete" size="sm">
-  <p>Are you sure you want to delete this item?</p>
-  <p style="color: #ef4444;">This action cannot be undone.</p>
-  
-  <div slot="footer">
-    <ui-button id="cancelBtn" variant="ghost">Cancel</ui-button>
-    <ui-button id="confirmBtn" variant="primary">Delete</ui-button>
-  </div>
-</ui-modal>
-
-<script>
-  const deleteBtn = document.getElementById('deleteBtn');
-  const modal = document.getElementById('confirmModal');
-  const cancelBtn = document.getElementById('cancelBtn');
-  const confirmBtn = document.getElementById('confirmBtn');
-  
-  deleteBtn.addEventListener('click', () => modal.open());
-  cancelBtn.addEventListener('click', () => modal.close());
-  confirmBtn.addEventListener('click', () => {
-    // Perform delete action
-    console.log('Item deleted');
-    modal.close();
-  });
-</script>
-```
-
-### Dynamic Form with Select
-
-```html
-<form id="userForm">
-  <ui-select 
-    id="roleSelect"
-    label="User Role"
-    placeholder="Select role..."
-  ></ui-select>
-  
-  <ui-select 
-    id="countrySelect"
-    label="Country"
-    placeholder="Select country..."
-    searchable
-  ></ui-select>
-  
-  <ui-button type="submit" variant="primary" icon="check">
-    Create User
-  </ui-button>
-</form>
-
-<script>
-  const roleSelect = document.getElementById('roleSelect');
-  const countrySelect = document.getElementById('countrySelect');
-  
-  // Set options
-  roleSelect.setAttribute('options', JSON.stringify([
-    { value: 'admin', label: 'Administrator' },
-    { value: 'user', label: 'User' },
-    { value: 'guest', label: 'Guest' }
-  ]));
-  
-  countrySelect.setAttribute('options', JSON.stringify([
-    { value: 'us', label: 'United States' },
-    { value: 'uk', label: 'United Kingdom' },
-    { value: 'ca', label: 'Canada' }
-  ]));
-  
-  document.getElementById('userForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const role = roleSelect.getAttribute('value');
-    const country = countrySelect.getAttribute('value');
-    console.log({ role, country });
-  });
-</script>
-```
-
-### Select All with Checkboxes
-
-```html
-<ui-checkbox id="selectAll" label="Select All"></ui-checkbox>
-
-<div style="margin-left: 2rem;">
-  <ui-checkbox class="item" label="Item 1" size="sm"></ui-checkbox>
-  <ui-checkbox class="item" label="Item 2" size="sm"></ui-checkbox>
-  <ui-checkbox class="item" label="Item 3" size="sm"></ui-checkbox>
-</div>
-
-<script>
-  const selectAll = document.getElementById('selectAll');
-  const items = document.querySelectorAll('.item');
-  
-  // Update select all based on items
-  function updateSelectAll() {
-    const checkedCount = Array.from(items).filter(
-      item => item.hasAttribute('checked')
-    ).length;
-    
-    if (checkedCount === 0) {
-      selectAll.setChecked(false);
-    } else if (checkedCount === items.length) {
-      selectAll.setChecked(true);
-    } else {
-      selectAll.setIndeterminate(true);
-    }
-  }
-  
-  // Handle select all click
-  selectAll.addEventListener('checkbox-change', (e) => {
-    items.forEach(item => item.setChecked(e.detail.checked));
-  });
-  
-  // Handle individual item clicks
-  items.forEach(item => {
-    item.addEventListener('checkbox-change', updateSelectAll);
-  });
-  
-  updateSelectAll();
-</script>
-```
-
----
-
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
