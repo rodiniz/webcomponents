@@ -1,5 +1,5 @@
 {
-  "name": "@your-org/webcomponents",
+  "name": "@diniz/webcomponents",
   "version": "1.0.0",
   "description": "Lightweight web components library",
   "type": "module",
@@ -37,5 +37,11 @@
     "ui-components",
     "custom-elements"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "author": "Rodrigo Diniz",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rodiniz/webcomponents"
+  }
+  
 }
