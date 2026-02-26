@@ -14,7 +14,6 @@ export type TableColumn = {
 export type TableRow = Record<string, unknown>;
 
 type ActionEventDetail = {
-	action: 'edit' | 'delete';
 	row: TableRow;
 	rowIndex: number;
 };
@@ -81,10 +80,13 @@ class UITable extends BaseComponent {
 				const target = e.currentTarget as HTMLElement;
 				const action = target.dataset.action as 'edit' | 'delete';
 				const rowIndex = parseInt(target.dataset.rowIndex || '0', 10);
-				this.dispatchEvent(new CustomEvent('row-action', {
+				
+				// Fire separate event based on action type
+				const eventName = action === 'edit' ? 'edit-action' : 'delete-action';
+				this.dispatchEvent(new CustomEvent(eventName, {
 					bubbles: true,
 					composed: true,
-					detail: { action, row: this.rows[rowIndex], rowIndex }
+					detail: { row: this.rows[rowIndex], rowIndex }
 				}));
 			});
 		});

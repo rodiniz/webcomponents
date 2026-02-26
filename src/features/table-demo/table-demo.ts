@@ -106,6 +106,21 @@ class TableDemo extends BaseComponent {
 		}
 	}
 
+	private showActionMessage(message: string): void {
+		const actionMessage = this.shadowRoot!.querySelector('#action-message') as HTMLElement;
+		if (actionMessage) {
+			actionMessage.textContent = message;
+			actionMessage.style.display = 'block';
+			// Auto hide after 5 seconds
+			setTimeout(() => {
+				const currentMessage = this.shadowRoot!.querySelector('#action-message') as HTMLElement;
+				if (currentMessage) {
+					currentMessage.style.display = 'none';
+				}
+			}, 5000);
+		}
+	}
+
 	render(): void {
 		this.shadowRoot!.innerHTML = `
 			<style>${styles}</style>
@@ -156,24 +171,19 @@ class TableDemo extends BaseComponent {
 			}) as EventListener);
 		}
 
-		// Listen to table row actions
+		// Listen to table edit and delete actions
 		const tableElement = this.shadowRoot!.querySelector('#demo-table');
 		if (tableElement) {
-			tableElement.addEventListener('row-action', ((e: CustomEvent) => {
-				const { action, row } = e.detail;
-				const actionMessage = this.shadowRoot!.querySelector('#action-message') as HTMLElement;
-				if (actionMessage) {
-					const message = `${action.toUpperCase()} clicked for "${row.title}"`;
-					actionMessage.textContent = message;
-					actionMessage.style.display = 'block';
-					// Auto hide after 5 seconds
-					setTimeout(() => {
-						const currentMessage = this.shadowRoot!.querySelector('#action-message') as HTMLElement;
-						if (currentMessage) {
-							currentMessage.style.display = 'none';
-						}
-					}, 5000);
-				}
+			// Listen to edit action
+			tableElement.addEventListener('edit-action', ((e: CustomEvent) => {
+				const { row } = e.detail;
+				this.showActionMessage(`EDIT clicked for "${row.title}"`);
+			}) as EventListener);
+			
+			// Listen to delete action
+			tableElement.addEventListener('delete-action', ((e: CustomEvent) => {
+				const { row } = e.detail;
+				this.showActionMessage(`DELETE clicked for "${row.title}"`);
 			}) as EventListener);
 		}
 	}
