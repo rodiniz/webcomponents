@@ -175,24 +175,6 @@ import '@diniz/webcomponents/dist/style.css';
   --radius-lg: 0.5rem;
 }
 ```
-
-## Quick Start
-
-### Using with Vite (No Framework)
-
-```bash
-# Create a new vanilla TypeScript project
-npm create vite@latest my-app -- --template vanilla-ts
-cd my-app
-
-# Install the library
-npm install @diniz/webcomponents
-
-# Install dependencies and start dev server
-npm install
-npm run dev
-```
-
 **Update `src/main.ts`:**
 ```typescript
 import '@diniz/webcomponents';

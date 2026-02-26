@@ -112,11 +112,15 @@ window.addEventListener('popstate', router);
 window.addEventListener('DOMContentLoaded', router);
 
 document.addEventListener('click', event => {
-  if (!(event.target instanceof Element)) return;
+  // Use composedPath to handle clicks from shadow DOM (like sidebar links)
+  const path = event.composedPath();
+  const linkElement = path.find(el => 
+    el instanceof Element && el.matches('[data-link]')
+  ) as Element | undefined;
 
-  if (event.target.matches('[data-link]')) {
+  if (linkElement) {
     event.preventDefault();
-    const href = event.target.getAttribute('href') ?? '/';
+    const href = linkElement.getAttribute('href') ?? '/';
     const fullPath = buildPath(href);
     history.pushState(null, '', fullPath);
     router();
