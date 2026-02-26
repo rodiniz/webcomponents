@@ -85,7 +85,15 @@ body {
   color: var(--color-primary);
   border-color: var(--color-border-strong);
 }
-
+.btn.danger {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+}
+.btn-danger:hover {
+  background: #6626dc;
+  border-color: #dc2626;
+}
 .btn.has-icon {
   line-height: 1.2;
 }
@@ -184,41 +192,6 @@ tr:last-child td {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
-}
-
-.action-btn {
-  padding: 0.35rem 0.7rem;
-  font-size: 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 1px solid var(--color-border-strong);
-  background: var(--color-muted);
-  color: var(--color-ink);
-  transition: background-color 120ms ease;
-}
-
-.action-btn:hover {
-  background: var(--color-border);
-}
-
-.action-btn.edit-btn {
-  background: var(--color-primary);
-  color: var(--color-primary-contrast);
-  border-color: var(--color-primary);
-}
-
-.action-btn.edit-btn:hover {
-  opacity: 0.85;
-}
-
-.action-btn.delete-btn {
-  background: #ef4444;
-  color: white;
-  border-color: #ef4444;
-}
-
-.action-btn.delete-btn:hover {
-  opacity: 0.85;
 }
 
 .app-nav {

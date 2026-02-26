@@ -2,7 +2,7 @@ import { BaseComponent } from '../../core/base-component';
 import styles from '../../styles/theme.css?inline';
 import feather from 'feather-icons';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 class UIButton extends BaseComponent {
@@ -21,7 +21,7 @@ class UIButton extends BaseComponent {
 
 	private getVariant(): ButtonVariant {
 		const value = this.getAttribute('variant');
-		if (value === 'secondary' || value === 'ghost') return value;
+		if (value === 'secondary' || value === 'ghost' || value === 'danger') return value;
 		return 'primary';
 	}
 

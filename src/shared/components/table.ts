@@ -1,5 +1,6 @@
 import { BaseComponent } from '../../core/base-component';
 import styles from '../../styles/theme.css?inline';
+import './button';
 
 export type TableColumn = {
 	key: string;
@@ -52,8 +53,8 @@ class UITable extends BaseComponent {
 							column => {
 								if (column.actions) {
 									return `<td class="align-center actions-cell">
-										${column.actions.edit ? `<button class="action-btn edit-btn" data-action="edit" data-row-index="${rowIndex}">Edit</button>` : ''}
-										${column.actions.delete ? `<button class="action-btn delete-btn" data-action="delete" data-row-index="${rowIndex}">Delete</button>` : ''}
+										${column.actions.edit ? `<ui-button variant="primary" class='action-btn' icon='edit' size="sm" data-action="edit" data-row-index="${rowIndex}">Edit</ui-button>` : ''}
+										${column.actions.delete ? `<ui-button variant="danger" class='action-btn' icon='trash' size="sm" data-action="delete" data-row-index="${rowIndex}">Delete</ui-button>` : ''}
 									</td>`;
 								}
 								return `<td class="align-${column.align ?? 'left'}">${String(

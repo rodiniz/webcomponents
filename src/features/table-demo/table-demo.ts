@@ -5,6 +5,7 @@ import template from './table-demo.html?raw';
 import styles from './table-demo.css?inline';
 import type { TableColumn, TableRow } from '../../shared/components/table';
 import '../../layouts/app-layout';
+import '../../shared/components/modal';
 type TableDemoData = {
 	columns: TableColumn[];
 	rows: TableRow[];
@@ -129,7 +130,14 @@ class TableDemo extends BaseComponent {
 
 		const status = this.shadowRoot!.querySelector('#data-status');
 
-	
+		const confirmModal = this.shadowRoot!.getElementById('confirmModal') as any;
+		const confirmDelete = this.shadowRoot!.getElementById('confirmDelete');
+		const confirmCancel = this.shadowRoot!.getElementById('confirmCancel');
+
+		confirmCancel?.addEventListener('click', () => {
+			confirmModal?.close();
+		});
+		
 
 		if (status) {
 			status.textContent = this.loading
@@ -182,8 +190,14 @@ class TableDemo extends BaseComponent {
 			
 			// Listen to delete action
 			tableElement.addEventListener('delete-action', ((e: CustomEvent) => {
-				const { row } = e.detail;
-				this.showActionMessage(`DELETE clicked for "${row.title}"`);
+				
+				const { row } = e.detail;					
+				confirmModal?.open();				
+				confirmDelete?.addEventListener('click', () => {
+					confirmModal?.close();
+					this.showActionMessage(`DELETE confirmed for "${row.title}"`);
+				});
+				
 			}) as EventListener);
 		}
 	}
