@@ -153,6 +153,155 @@ toaster.addEventListener('toast-dismiss', (e) => {
 });
 ```
 
+## Styling Components
+
+For detailed styling guidance including beautiful UI patterns, color palettes, and design best practices, see [STYLING_GUIDE.md](../docs/STYLING_GUIDE.md).
+
+### Quick Styling Tips
+
+**Use component properties first** - they're designed for visual customization:
+
+```html
+<!-- Shadow color examples -->
+<ui-card shadow shadow-color="99, 102, 241" elevation="lg">Blue shadow</ui-card>
+<ui-card shadow shadow-color="168, 85, 247" elevation="lg">Purple shadow</ui-card>
+<ui-card shadow shadow-color="34, 211, 238" elevation="lg">Cyan shadow</ui-card>
+
+<!-- Variant combinations -->
+<ui-card variant="elevated" shadow elevation="md">Premium look</ui-card>
+<ui-card variant="ghost">Minimalist look</ui-card>
+<ui-card variant="bordered" rounded="false">Geometric look</ui-card>
+```
+
+**Container styling** - wrap components for layout and spacing:
+
+```html
+<style>
+  .card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .card-content {
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+</style>
+
+<div class="card-container">
+  <ui-card variant="elevated" shadow elevation="xl">
+    <div class="card-content">
+      <!-- content -->
+    </div>
+  </ui-card>
+</div>
+```
+
+**Shadow DOM styling** - component styles are encapsulated:
+
+```html
+<style>
+  /* ❌ These won't work -->
+  ui-card { color: red; }  /* Shadow DOM blocks global styles -->
+
+  /* ✅ Style the slot content instead -->
+  .card-content { color: #1f2937; }
+</style>
+
+<ui-card>
+  <div class="card-content">
+    <!-- This gets styled -->
+  </div>
+</ui-card>
+```
+
+**Typography hierarchy** - use semantic HTML:
+
+```html
+<ui-card variant="elevated">
+  <div class="card-content">
+    <h2>Main Title</h2>      <!-- Largest -->
+    <h3>Section Title</h3>   <!-- Medium -->
+    <p>Body text content</p> <!-- Regular -->
+    <small>Helper text</small> <!-- Small -->
+  </div>
+</ui-card>
+```
+
+### Design Patterns
+
+**Login Form**:
+```html
+<style>
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(to right, #667eea, #764ba2);
+  }
+  .login-form { max-width: 400px; width: 100%; margin: 0 20px; }
+  .login-form ui-card { width: 100%; }
+  .form-content { padding: 40px; display: flex; flex-direction: column; gap: 24px; }
+  .form-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+</style>
+
+<div class="login-container">
+  <ui-card variant="elevated" shadow elevation="xl" class="login-form">
+    <div class="form-content">
+      <h2>Login</h2>
+      <ui-input label="Email" type="email" required></ui-input>
+      <ui-input label="Password" type="password" required></ui-input>
+      <div class="form-actions">
+        <ui-button variant="secondary">Cancel</ui-button>
+        <ui-button variant="primary">Login</ui-button>
+      </div>
+    </div>
+  </ui-card>
+</div>
+```
+
+**Feature Cards Grid**:
+```html
+<style>
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    padding: 60px 20px;
+  }
+  .feature-card { text-align: center; }
+  .feature-icon { font-size: 36px; margin-bottom: 16px; }
+</style>
+
+<div class="features-grid">
+  <ui-card variant="ghost">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Fast</h3>
+      <p>Lightning quick performance</p>
+    </div>
+  </ui-card>
+  <!-- More cards -->
+</div>
+```
+
+### Common Styling Mistakes to Avoid
+
+- ❌ Using all variants on one page (use 1-2 max)
+- ❌ Inconsistent spacing (use a consistent scale: 4px, 8px, 16px, etc.)
+- ❌ Too many colors (3-4 color maximum)
+- ❌ Forgetting mobile responsiveness
+- ❌ Over-animating elements
+- ❌ Mixing bold and timid design choices (commit to a direction)
+
 ## Validation
 
 Use the native HTML5 validation attributes or custom validation:
