@@ -6,14 +6,14 @@ type DateFormat = 'YYYY-MM-DD' | 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'DD-MM-YYYY' | 'M
 class UIDatePicker extends BaseComponent {
 	private inputElement: HTMLInputElement | null = null;
 
-	private isConnected = false;
+	private isComponentConnected = false;
 	private isInternalUpdate = false;
 	private hasRendered = false;
 
 	connectedCallback(): void {
 		this.setAttribute('data-ui', 'date-picker');
 		super.connectedCallback();
-		this.isConnected = true;
+		this.isComponentConnected = true;
 	}
 
 	static get observedAttributes(): string[] {
@@ -21,7 +21,7 @@ class UIDatePicker extends BaseComponent {
 	}
 
 	attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
-		if (!this.isConnected || oldValue === newValue) return;
+		if (!this.isComponentConnected || oldValue === newValue) return;
 		
 		// Skip re-render if this is an internal update of the value
 		if (this.isInternalUpdate && name === 'value') {

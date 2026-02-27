@@ -412,6 +412,71 @@ That's it! Your app now has client-side routing with:
 
 For detailed documentation on each component, see the demo implementations in `src/features/`.
 
+## TypeScript Types
+
+The library ships first-class TypeScript types. Import them with `type` to keep builds tree-shakeable:
+
+```typescript
+import type {
+  ButtonVariant,
+  ButtonSize,
+  InputType,
+  ValidationResult,
+  TableColumn,
+  SelectOption,
+  ToastConfig,
+  StepperStep,
+  Route,
+  Signal
+} from '@diniz/webcomponents';
+```
+
+### Example: Table column typing
+
+```typescript
+import type { TableColumn } from '@diniz/webcomponents';
+
+type User = { id: number; name: string; email: string };
+
+const columns: TableColumn<User>[] = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Name' },
+  { key: 'email', label: 'Email' }
+];
+```
+
+### Example: Button variants and sizes
+
+```typescript
+import type { ButtonVariant, ButtonSize } from '@diniz/webcomponents';
+
+const variant: ButtonVariant = 'primary';
+const size: ButtonSize = 'md';
+```
+
+### Example: Form validation results
+
+```typescript
+import type { ValidationResult } from '@diniz/webcomponents';
+
+const result: ValidationResult = {
+  valid: false,
+  message: 'Email is required'
+};
+```
+
+### Example: Router types
+
+```typescript
+import { createRouter, type Route } from '@diniz/webcomponents';
+
+const routes: Route[] = [
+  { path: '/', load: () => import('./pages/home'), component: 'home-page' }
+];
+
+createRouter(routes);
+```
+
 ## Core Features
 
 ### Signals & Reactivity

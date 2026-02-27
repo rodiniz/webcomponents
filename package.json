@@ -8,6 +8,7 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/webcomponents.es.js",
       "require": "./dist/webcomponents.umd.js"
     },
@@ -20,7 +21,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:prod": "vite build --mode production",
-    "build:lib": "vite build --config vite.lib.config.ts && node scripts/copy-lib-assets.mjs",
+    "build:lib": "tsc -p tsconfig.build.json && vite build --config vite.lib.config.ts && node scripts/copy-lib-assets.mjs",
     "preview": "vite preview",
     "preview:prod": "vite preview --port 4173"
   },

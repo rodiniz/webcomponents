@@ -1,4 +1,4 @@
-import { cpSync } from 'fs';
+import { cpSync, writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -17,4 +17,14 @@ try {
   console.log('Copied README.md to dist/');
 } catch {
   console.log('No README.md found, skipping');
+}
+
+const distTypes = resolve(rootDir, 'dist/index.d.ts');
+const typesStub = "export * from './lib/index';\n";
+
+try {
+  writeFileSync(distTypes, typesStub, 'utf8');
+  console.log('Wrote index.d.ts to dist/');
+} catch {
+  console.log('Failed to write index.d.ts');
 }
