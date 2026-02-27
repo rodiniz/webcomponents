@@ -854,6 +854,47 @@ All components use CSS custom properties for easy theming:
 
 ---
 
+## Dependencies
+
+### Icons
+
+This library uses **[Feather Icons](https://feathericons.com/)** for beautiful, minimal SVG icons. Feather provides a consistent set of 286 icons perfect for UI components.
+
+```typescript
+import feather from 'feather-icons';
+
+// Use icons in components
+<ui-button icon="plus">Add Item</ui-button>
+<ui-button icon="trash-2" variant="danger">Delete</ui-button>
+```
+
+[Browse all available Feather icons →](https://feathericons.com/)
+
+---
+
+## Bundle Size
+
+@diniz/webcomponents is extremely lightweight with zero runtime dependencies:
+
+| Package | Size (minified) | Size (gzipped) |
+|---------|-----------------|----------------|
+| **@diniz/webcomponents** | ~45KB | ~12KB |
+| Vue 3 + Router | ~185KB | ~65KB |
+| React 18 + Router | ~245KB | ~85KB |
+| Angular 15 | ~500KB+ | ~150KB+ |
+| Svelte | ~60KB | ~15KB |
+
+*Sizes are approximate and vary based on included components and tree-shaking effectiveness*
+
+**Why Web Components?**
+- ✅ No framework overhead - use with any framework or vanilla JS
+- ✅ Smaller initial bundle size than traditional frameworks
+- ✅ Progressive enhancement - works without JavaScript
+- ✅ Share components across different projects/frameworks
+- ✅ Built-in browser APIs - no external polyfills needed for modern browsers
+
+---
+
 ## Browser Support
 
 - ✅ Chrome/Edge (latest)

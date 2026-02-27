@@ -1,6 +1,6 @@
 ---
 name: webcomponents
-description: Use this skill when working with @your-org/webcomponents library. This library provides lightweight web components including ui-button, ui-input, ui-table, ui-date-picker, and ui-pagination.
+description: Use this skill when working with @your-org/webcomponents library. This library provides lightweight web components including ui-button, ui-input, ui-table, ui-date-picker, ui-pagination, and ui-card.
 ---
 
 # Web Components Library
@@ -19,6 +19,27 @@ This skill provides guidance on using the @your-org/webcomponents library.
 <ui-button variant="primary" size="md" icon="plus">Add Item</ui-button>
 <ui-button variant="secondary" icon="edit" icon-position="right">Edit</ui-button>
 <ui-button variant="ghost" icon="trash-2" icon-position="left"></ui-button>
+```
+
+### ui-card
+- Variants: `default`, `elevated`, `bordered`, `ghost`
+- Elevation levels: `none`, `sm`, `md`, `lg`, `xl`
+- Customizable shadow color via `shadow-color` (RGB format)
+- Rounded corners via `rounded` attribute (default: true)
+
+```html
+<ui-card shadow elevation="md">
+  <h3>Card Title</h3>
+  <p>Card content goes here.</p>
+</ui-card>
+
+<ui-card variant="elevated" shadow shadow-color="99, 102, 241" elevation="lg">
+  <p>Card with blue-tinted shadow</p>
+</ui-card>
+
+<ui-card variant="bordered" rounded="false">
+  <p>Square card with border</p>
+</ui-card>
 ```
 
 ### ui-input

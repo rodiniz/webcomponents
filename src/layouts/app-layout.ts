@@ -56,12 +56,33 @@ export const routes: Route[] = [
     layout: 'app-layout',
     load: () => import('../features/tabs-demo/tabs-demo'),
     component: 'tabs-demo'
+  },
+  {
+    path: '/card',
+    layout: 'app-layout',
+    load: () => import('../features/card-demo/card-demo'),
+    component: 'card-demo-page'
   }
 ];
 
 class AppLayout extends BaseComponent {
   private pageTitle = 'Dashboard';
   private pageSubtitle = 'Explore our component library';
+  private navItems = [
+    { icon: 'box', label: 'Components', href: '/' },
+    { icon: 'edit-3', label: 'Input', href: '/input-demo' },
+    { icon: 'calendar', label: 'Date Picker', href: '/date-picker' },
+    { icon: 'table', label: 'Table', href: '/table-demo' },
+    { icon: 'square', label: 'Modal', href: '/modal' },
+    { icon: 'list', label: 'Select', href: '/select' },
+    { icon: 'check-square', label: 'Checkbox', href: '/checkbox' },
+    { icon: 'folder', label: 'Tabs', href: '/tabs' },
+    { icon: 'credit-card', label: 'Card', href: '/card' },
+  ];
+
+  private footerItems = [
+    { icon: 'github', label: 'GitHub', href: 'https://github.com/rodiniz/webcomponents' },
+  ];
 
   connectedCallback(): void {
     this.setAttribute('data-ui', 'layout');
@@ -82,6 +103,7 @@ class AppLayout extends BaseComponent {
       '/select': { title: 'Select', subtitle: 'Dropdown selection component' },
       '/checkbox': { title: 'Checkbox', subtitle: 'Checkbox input component' },
       '/tabs': { title: 'Tabs', subtitle: 'Tabbed navigation component' },
+      '/card': { title: 'Card', subtitle: 'Flexible container component' },
     };
     
     const info = titles[path] || { title: 'Dashboard', subtitle: 'Explore our component library' };
@@ -107,6 +129,13 @@ class AppLayout extends BaseComponent {
         </div>
       </div>
     `;
+    
+    // Configure sidebar with navigation items and footer
+    const sidebar = this.shadowRoot!.querySelector('app-sidebar') as any;
+    if (sidebar) {
+      sidebar.items = this.navItems;
+      sidebar.footer = this.footerItems;
+    }
   }
 }
 

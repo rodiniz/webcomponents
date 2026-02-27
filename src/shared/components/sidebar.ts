@@ -183,16 +183,8 @@ const sidebarStyles = `
 `;
 
 class AppSidebar extends BaseComponent {
-  private navItems = [
-    { icon: 'box', label: 'Components', href: '/', active: false },
-    { icon: 'edit-3', label: 'Input', href: '/input-demo', active: false },
-    { icon: 'calendar', label: 'Date Picker', href: '/date-picker', active: false },
-    { icon: 'table', label: 'Table', href: '/table-demo', active: false },
-    { icon: 'square', label: 'Modal', href: '/modal', active: false },
-    { icon: 'list', label: 'Select', href: '/select', active: false },
-    { icon: 'check-square', label: 'Checkbox', href: '/checkbox', active: false },
-    { icon: 'folder', label: 'Tabs', href: '/tabs', active: false },
-  ];
+  private navItems: Array<{ icon: string; label: string; href: string; active: boolean }> = [];
+  private footerItems: Array<{ icon: string; label: string; href: string }> = [];
 
   connectedCallback(): void {
     this.setAttribute('data-ui', 'sidebar');
@@ -202,7 +194,27 @@ class AppSidebar extends BaseComponent {
     document.addEventListener('click', () => this.updateActiveState());
   }
 
+  set items(items: Array<{ icon: string; label: string; href: string }>) {
+    this.navItems = items.map(item => ({ ...item, active: false }));
+    this.updateActiveState();
+  }
+
+  get items() {
+    return this.navItems;
+  }
+
+  set footer(items: Array<{ icon: string; label: string; href: string }>) {
+    this.footerItems = items;
+    this.render();
+  }
+
+  get footer() {
+    return this.footerItems;
+  }
+
   private updateActiveState(): void {
+    if (this.navItems.length === 0) return;
+    
     const path = window.location.pathname;
     this.navItems = this.navItems.map(item => ({
       ...item,
@@ -212,7 +224,7 @@ class AppSidebar extends BaseComponent {
   }
 
   private renderIcon(iconName: string): string {
-    const svg = feather.icons[iconName]?.toSvg({ class: '' }) || '';
+    const svg = (feather.icons as Record<string, any>)[iconName]?.toSvg({ class: '' }) || '';
     return svg;
   }
 
@@ -227,6 +239,24 @@ class AppSidebar extends BaseComponent {
         ${item.label}
       </a>
     `).join('');
+
+    const footerLinks = this.footerItems.map(item => `
+      <a 
+        class="sidebar-link" 
+        href="${item.href}" 
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="link-icon">${this.renderIcon(item.icon)}</span>
+        ${item.label}
+      </a>
+    `).join('');
+
+    const footerSection = this.footerItems.length > 0 ? `
+      <div class="sidebar-footer">
+        ${footerLinks}
+      </div>
+    ` : '';
 
     this.shadowRoot!.innerHTML = `
       <style>${styles}${sidebarStyles}</style>
@@ -246,12 +276,7 @@ class AppSidebar extends BaseComponent {
           ${navLinks}
         </nav>
         
-        <div class="sidebar-footer">
-          <a class="sidebar-link" href="https://github.com" target="_blank" rel="noopener">
-            <span class="link-icon">${this.renderIcon('github')}</span>
-            GitHub
-          </a>
-        </div>
+        ${footerSection}
       </aside>
     `;
   }
