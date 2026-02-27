@@ -7,6 +7,7 @@ import type { TableColumn, TableRow } from '../../shared/components/table';
 import '../../layouts/app-layout';
 import '../../shared/components/modal';
 import { queryTable, queryPagination, queryModal } from '../../core/dom-helpers';
+import { http } from '../../core/http';
 type TableDemoData = {
 	columns: TableColumn[];
 	rows: TableRow[];
@@ -55,13 +56,9 @@ class TableDemo extends BaseComponent {
 
 		try {
 			const skip = (this.currentPage - 1) * this.pageSize;
-			const response = await fetch(`https://dummyjson.com/products?limit=${this.pageSize}&skip=${skip}`);
-
-			if (!response.ok) {
-				throw new Error(`Request failed: ${response.status}`);
-			}
-
-			const payload = (await response.json()) as ProductsResponse;
+			const payload = await http.get<ProductsResponse>(
+				`https://dummyjson.com/products?limit=${this.pageSize}&skip=${skip}`
+			);
 
 			const columns: TableColumn[] = [
 				{ key: 'id', label: 'ID', align: 'right', visible: false },

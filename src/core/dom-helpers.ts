@@ -147,6 +147,11 @@ export function queryModal(
 
 export type FormValue = string | string[] | boolean | File[];
 
+export type ValidationResult = {
+  isValid: boolean;
+  errors: Record<string, string>;
+};
+
 export type GetFormValuesOptions = {
   includeDisabled?: boolean;
   includeEmpty?: boolean;
@@ -264,4 +269,69 @@ export function getFormValues(
   }
 
   return values;
+}
+/**
+ * Validate a form and return validation errors
+ * Supports native inputs plus ui-input, ui-select, and ui-checkbox
+ */
+export function validateForm(form: HTMLFormElement): ValidationResult {
+  const errors: Record<string, string> = {};
+
+  // Validate text inputs
+  const inputs = form.querySelectorAll('ui-input');
+  inputs.forEach((input: Element) => {
+    const value = (input as any).value?.trim();
+    const name = input.getAttribute('name');
+    const label = input.getAttribute('label') || name;
+    const required = input.getAttribute('required') !== null;
+
+    if (required && !value) {
+      errors[name || ''] = `${label} is required`;
+    }
+
+    // Email validation
+    if (value && name === 'email') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        errors[name] = 'Please enter a valid email address';
+      }
+    }
+
+    // Phone validation
+    if (value && name === 'phone') {
+      const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+      if (!phoneRegex.test(value)) {
+        errors[name] = 'Please enter a valid phone number';
+      }
+    }
+  });
+
+  // Validate selects
+  const selects = form.querySelectorAll('ui-select');
+  selects.forEach((select: Element) => {
+    const value = select.getAttribute('value');
+    const name = select.getAttribute('name');
+    const label = select.getAttribute('label') || name;
+    const required = select.getAttribute('required') !== null;
+
+    if (required && !value) {
+      errors[name || ''] = `${label} is required`;
+    }
+  });
+
+  // Validate at least one checkbox if present
+  const checkboxes = form.querySelectorAll('ui-checkbox');
+  if (checkboxes.length > 0) {
+    const anyChecked = Array.from(checkboxes).some((checkbox: Element) => {
+      return (checkbox as any).checked || checkbox.getAttribute('checked') !== null;
+    });
+    if (!anyChecked) {
+      errors['checkboxes'] = 'Please select at least one option';
+    }
+  }
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors
+  };
 }

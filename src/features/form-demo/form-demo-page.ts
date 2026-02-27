@@ -1,7 +1,7 @@
 import { BaseComponent } from '../../core/base-component';
 import formDemoHTML from './form-demo-page.html?raw';
 import { formDemoCSS } from './form-demo-page.css';
-import { getFormValues, queryElement } from '../../core/dom-helpers';
+import { getFormValues, queryElement, validateForm } from '../../core/dom-helpers';
 import '../../shared/components/button';
 import '../../shared/components/input';
 import '../../shared/components/select';
@@ -9,6 +9,13 @@ import '../../shared/components/checkbox';
 import '../../shared/components/date-picker';
 import '../../shared/components/upload';
 import '../../layouts/app-layout';
+import { http } from '../../lib';
+
+type Category = {
+	slug: string;
+	name: string;
+	url: string;
+};
 
 const roles = [
 	{ value: 'admin', label: 'Administrator' },
@@ -42,12 +49,22 @@ class FormDemoPage extends BaseComponent {
 		this.setupForm();
 	}
 
-	private setupSelects(): void {
+	private async setupSelects(): Promise<void> {
 		const roleSelect = queryElement<HTMLElement>(this.shadowRoot, '#roleSelect') ;
 		const regionSelect = queryElement<HTMLElement>(this.shadowRoot, '#regionSelect') ;
+		const categorySelect = queryElement<HTMLElement>(this.shadowRoot, '#categorySelect') ;
+
+		const categories = await http.get<Category[]>('https://dummyjson.com/products/categories');
 
 		if (roleSelect) roleSelect.setAttribute('options', JSON.stringify(roles));
 		if (regionSelect) regionSelect.setAttribute('options', JSON.stringify(regions));
+		if (categorySelect && Array.isArray(categories)) {
+			const categoryOptions = categories.map(cat => ({
+				value: cat.slug,
+				label: cat.name
+			}));
+			categorySelect.setAttribute('options', JSON.stringify(categoryOptions));
+		}
 	}
 
 	private setupForm(): void {
@@ -63,6 +80,16 @@ class FormDemoPage extends BaseComponent {
 		form.addEventListener('submit', (event) => {
 			event.preventDefault();
 			if (!output) return;
+
+			const validation = validateForm(form);
+
+			if (!validation.isValid) {
+				const errorMessages = Object.entries(validation.errors)
+					.map(([field, message]) => `${field}: ${message}`)
+					.join('\n');
+				output.textContent = `Validation Errors:\n${errorMessages}`;
+				return;
+			}
 
 			const values = getFormValues(form, { includeEmpty: false });
 			const serialized = JSON.stringify(values, (_key: string, value: any) => {

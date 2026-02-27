@@ -39,29 +39,7 @@ class DashboardPage extends BaseComponent {
         this.count.set(this.count.get() + 1);
       });
     }
-
-    const columns: TableColumn[] = [
-      { key: 'name', label: 'Name' },
-      { key: 'role', label: 'Role' },
-      { key: 'status', label: 'Status' },
-      { key: 'score', label: 'Score', align: 'right' }
-    ];
-
-    const rows: TableRow[] = [
-      { name: 'Ava Martins', role: 'Admin', status: 'Active', score: 298 },
-      { name: 'Diego Silva', role: 'Editor', status: 'Active', score: 87 },
-      { name: 'Lia Costa', role: 'Viewer', status: 'Inactive', score: 72 }
-    ];
-
-    const table = this.shadowRoot!.querySelector('ui-table') as
-      | (HTMLElement & { data: { columns: TableColumn[]; rows: TableRow[] } })
-      | null;
-    if (table) {
-      table.data = {
-        columns,
-        rows
-      };
-    }
+    
   }
 }
 
