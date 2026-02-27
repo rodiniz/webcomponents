@@ -13,6 +13,10 @@ export { UIStepper } from '../shared/components/stepper';
 export { UIUpload } from '../shared/components/upload';
 export { UILayout, UILayoutHeader, UILayoutFooter, UILayoutContent, UILayoutSidebar } from '../shared/components/layout';
 
+// Base Component
+export { BaseComponent } from '../core/base-component';
+export type { Signal } from '../core/base-component';
+
 export type { ButtonVariant, ButtonSize } from '../shared/components/button';
 export type { InputType, ValidationResult, CustomValidator, ValidationRule } from '../shared/components/input';
 export type { TableColumn, TableRow } from '../shared/components/table';
@@ -28,3 +32,7 @@ export type { RequestConfig, ResponseConfig, RequestInterceptor, ResponseInterce
 // DOM Helpers
 export { queryElement, queryElements, queryTable, queryPagination, queryModal, addEventListenerById, getElementById, getFormValues } from '../core/dom-helpers';
 export type { UITableElement, UIPaginationElement, UIModalElement, FormValue, GetFormValuesOptions } from '../core/dom-helpers';
+
+// Router
+export { createRouter } from '../core/router';
+export type { Route } from '../core/router';
