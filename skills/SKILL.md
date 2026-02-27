@@ -1,6 +1,6 @@
 ---
 name: webcomponents
-description: Use this skill when working with @your-org/webcomponents library. This library provides lightweight web components including ui-button, ui-input, ui-table, ui-date-picker, ui-pagination, and ui-card.
+description: Use this skill when working with @your-org/webcomponents library. This library provides lightweight web components including ui-button, ui-input, ui-table, ui-date-picker, ui-pagination, ui-card, and ui-toast.
 ---
 
 # Web Components Library
@@ -99,6 +99,57 @@ pagination.pageSize = 10;
 
 pagination.addEventListener('page-change', (e) => {
   console.log('Page changed to:', e.detail.page);
+});
+```
+
+### ui-toast
+- Types: `success`, `error`, `warning`, `info`
+- Position: `top-right`, `top-left`, `bottom-right`, `bottom-left`, `top-center`, `bottom-center`
+- Auto-dismiss with customizable duration
+- Progress bar indicator
+- Stack multiple toasts
+- Programmatic API
+
+```html
+<!-- Add toast container to your page -->
+<ui-toast id="toaster" position="top-right"></ui-toast>
+```
+
+```javascript
+const toaster = document.querySelector('ui-toast');
+
+// Convenience methods
+toaster.success('Success!', 'Operation completed successfully.');
+toaster.error('Error!', 'Something went wrong.');
+toaster.warning('Warning', 'Please be careful.');
+toaster.info('Info', 'New updates available.');
+
+// Full API
+const toastId = toaster.show({
+  title: 'Upload complete',
+  description: 'Your file has been uploaded.',
+  type: 'success',
+  duration: 5000,  // milliseconds, 0 = no auto-dismiss
+  closable: true   // show close button
+});
+
+// Dismiss specific toast
+toaster.dismiss(toastId);
+
+// Dismiss all toasts
+toaster.dismissAll();
+
+// Custom duration
+toaster.success('Quick message', null, 2000);  // 2 seconds
+toaster.info('Persistent', 'Stays until closed', 0);  // no auto-dismiss
+
+// Events
+toaster.addEventListener('toast-show', (e) => {
+  console.log('Toast shown:', e.detail);
+});
+
+toaster.addEventListener('toast-dismiss', (e) => {
+  console.log('Toast dismissed:', e.detail);
 });
 ```
 

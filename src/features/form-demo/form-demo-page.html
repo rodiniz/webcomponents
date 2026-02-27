@@ -1,0 +1,74 @@
+<section class="form-hero">
+	<div>			
+		<h1>Form Elements</h1>
+		<p class="hero-subtitle">
+			Bring inputs, selects, checkboxes, uploads, and native fields together in one cohesive flow.
+		</p>
+	</div>	
+</section>
+
+<section class="form-shell">
+	<form id="formLab" class="form-grid">
+		<div class="form-panel">
+			<h2>Project setup</h2>
+			<p>Collect the essentials to launch a workspace.</p>
+
+			<ui-input label="Workspace name" placeholder="Studio Atlas" name="workspace" required></ui-input>
+			<ui-input label="Owner email" type="email" placeholder="owner@company.com" name="ownerEmail" required></ui-input>
+
+			<div class="split">
+				<ui-select id="roleSelect" label="Default role" name="role"></ui-select>
+				<ui-select id="regionSelect" label="Region" name="region"></ui-select>
+			</div>
+
+			<ui-date-picker label="Launch date" name="launchDate" placeholder="Select date" format="MM/DD/YYYY"></ui-date-picker>
+
+			<ui-upload
+				label="Brand assets"
+				helper="Upload logos or product shots. PNG, JPG, or SVG."
+				name="brandAssets"
+				accept=".png,.jpg,.jpeg,.svg"
+				multiple
+			></ui-upload>
+		</div>
+
+		<div class="form-panel">
+			<h2>Preferences</h2>
+			<p>Tailor the launch experience and notifications.</p>
+
+			<ui-input label="Campaign tag" placeholder="#spring-release" name="campaign"></ui-input>
+			<textarea name="notes" placeholder="Add internal notes..."></textarea>
+
+			<div class="native-group">
+				<label for="priority">Priority level</label>
+				<select id="priority" name="priority">
+					<option value="">Select priority</option>
+					<option value="high">High</option>
+					<option value="medium">Medium</option>
+					<option value="low">Low</option>
+				</select>
+			</div>
+
+			<div class="checkbox-stack">
+				<ui-checkbox name="notifyTeam" label="Notify core team" checked></ui-checkbox>
+				<ui-checkbox name="notifySales" label="Notify sales" ></ui-checkbox>
+				<ui-checkbox name="notifyOps" label="Notify operations" ></ui-checkbox>
+			</div>
+
+		
+		</div>
+
+		<div class="form-actions">
+			<ui-button type="submit" variant="primary" icon="check">Save form</ui-button>
+			<ui-button type="button" id="resetForm" variant="ghost">Reset</ui-button>
+		</div>
+	</form>
+
+	<div class="form-output">
+		<div class="output-head">
+			<h3>Helper output</h3>
+			<span>getFormValues()</span>
+		</div>
+		<pre id="formResult">Submit the form to see values.</pre>
+	</div>
+</section>

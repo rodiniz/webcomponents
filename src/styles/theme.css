@@ -3,8 +3,8 @@
   --color-primary-contrast: #ffffff;
   --color-ink: #0f172a;
   --color-muted: #f1f5f9;
-  --color-header: #f8fafc;
-  --color-border: #e2e8f0;
+  --color-header: #34a8eb;
+  --color-border: #f3f5f7;
   --color-border-strong: #cbd5f5;
   --color-nav-bg: #222222;
   --color-nav-text: #ffffff;
@@ -700,6 +700,156 @@ input[type="checkbox"] {
 }
 
 /* ============================================
+   UPLOAD COMPONENT STYLES
+   ============================================ */
+
+:host([data-ui="upload"]) {
+  display: block;
+  width: 100%;
+}
+
+.upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.upload-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.upload-drop {
+  border: 1.5px dashed rgba(36, 236, 113, 0.55);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(36, 236, 113, 0.08), rgba(52, 168, 235, 0.08));
+  padding: 1.25rem 1.5rem;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.upload-drop.dragging {
+  border-color: var(--color-primary);
+  box-shadow: 0 16px 30px rgba(36, 236, 113, 0.18);
+  transform: translateY(-2px);
+}
+
+.upload-drop.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.upload-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.upload-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 12px 20px rgba(15, 23, 42, 0.18);
+}
+
+.upload-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.upload-title {
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.upload-sub {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #64748b);
+  margin-top: 0.2rem;
+}
+
+.upload-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: #0f172a;
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.upload-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 16px rgba(15, 23, 42, 0.18);
+}
+
+.upload-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.upload-helper {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #64748b);
+}
+
+.upload-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.upload-list li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  font-size: 0.9rem;
+  color: var(--color-ink);
+}
+
+.upload-meta {
+  font-size: 0.78rem;
+  color: var(--color-text-muted, #64748b);
+}
+
+.upload-remove {
+  border: none;
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.upload-remove:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* ============================================
    PAGINATION COMPONENT STYLES
    ============================================ */
 
@@ -778,13 +928,217 @@ input[type="checkbox"] {
 }
 
 /* ============================================
+   STEPPER COMPONENT STYLES
+   ============================================ */
+
+:host([data-ui="stepper"]) {
+  display: block;
+}
+
+.stepper-wrap {
+  width: 100%;
+}
+
+.stepper-empty {
+  padding: 1rem;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted, #64748b);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.stepper {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.stepper.vertical {
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.stepper.vertical .step {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.step-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--color-ink);
+}
+
+.step-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.step-node {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 12px;
+  background: var(--color-muted);
+  border: 1px solid var(--color-border-strong);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.step-title {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  font-size: 0.98rem;
+}
+
+.step-desc {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #64748b);
+}
+
+.step-connector {
+  width: 48px;
+  height: 2px;
+  margin: 0 0.65rem;
+  background: linear-gradient(90deg, var(--color-border), rgba(255, 255, 255, 0));
+  flex-shrink: 0;
+}
+
+.stepper.vertical .step-connector {
+  width: 2px;
+  height: 28px;
+  margin: 0.65rem 0 0.25rem 1.05rem;
+  background: linear-gradient(180deg, var(--color-border), rgba(255, 255, 255, 0));
+}
+
+.step.complete .step-node {
+  background: linear-gradient(135deg, #24ec71 0%, #34a8eb 100%);
+  color: #0f172a;
+  border-color: transparent;
+  box-shadow: 0 8px 18px rgba(36, 236, 113, 0.25);
+}
+
+.step.complete .step-connector {
+  background: linear-gradient(90deg, #24ec71, #34a8eb);
+}
+
+.stepper.vertical .step.complete .step-connector {
+  background: linear-gradient(180deg, #24ec71, #34a8eb);
+}
+
+.step.active .step-node {
+  background: #ffffff;
+  color: var(--color-ink);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(36, 236, 113, 0.18), 0 12px 20px rgba(36, 236, 113, 0.22);
+  animation: stepGlow 1.6s ease-in-out infinite;
+}
+
+.step.active .step-title {
+  color: var(--color-ink);
+}
+
+.step.upcoming .step-title {
+  color: var(--color-ink);
+  opacity: 0.7;
+}
+
+.step.error .step-node {
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #991b1b;
+  box-shadow: 0 8px 16px rgba(239, 68, 68, 0.2);
+}
+
+.step.warning .step-node {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  color: #92400e;
+  box-shadow: 0 8px 16px rgba(245, 158, 11, 0.2);
+}
+
+.stepper.sm .step-node {
+  width: 1.65rem;
+  height: 1.65rem;
+  font-size: 0.75rem;
+  border-radius: 10px;
+}
+
+.stepper.sm .step-title {
+  font-size: 0.9rem;
+}
+
+.stepper.sm .step-desc {
+  font-size: 0.78rem;
+}
+
+.stepper.lg .step-node {
+  width: 2.6rem;
+  height: 2.6rem;
+  font-size: 1.05rem;
+  border-radius: 14px;
+}
+
+.stepper.lg .step-title {
+  font-size: 1.1rem;
+}
+
+.stepper.lg .step-desc {
+  font-size: 0.92rem;
+}
+
+@keyframes stepGlow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* ============================================
    DATE PICKER COMPONENT STYLES
    ============================================ */
 
 :host([data-ui="date-picker"]) {
-  display: inline-block;
+  display: block;
   width: 100%;
-  max-width: 300px;
+}
+
+.date-picker-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-ink);
+  margin-bottom: 0.5rem;
 }
 
 .date-picker-container {
@@ -849,9 +1203,12 @@ input[type="checkbox"] {
 .hidden-date-input {
   position: absolute;
   opacity: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
   pointer-events: none;
-  width: 0;
-  height: 0;
+  cursor: pointer;
 }
 
 .calendar-btn {
@@ -890,4 +1247,10 @@ input[type="checkbox"] {
   opacity: 0.6;
   padding: 0 0.25rem;
   font-weight: 500;
+}
+
+#ui-datepicker-div,
+.datepicker,
+.react-datepicker-popper {
+  z-index: 99999 !important;
 }

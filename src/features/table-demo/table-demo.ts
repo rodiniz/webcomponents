@@ -6,6 +6,7 @@ import styles from './table-demo.css?inline';
 import type { TableColumn, TableRow } from '../../shared/components/table';
 import '../../layouts/app-layout';
 import '../../shared/components/modal';
+import { queryTable, queryPagination, queryModal } from '../../core/dom-helpers';
 type TableDemoData = {
 	columns: TableColumn[];
 	rows: TableRow[];
@@ -75,8 +76,8 @@ class TableDemo extends BaseComponent {
                     label: 'Actions', 
                     align: 'center',
                     actions: { 
-                    edit: true, 
-                    delete: true 
+						edit: true, 
+						delete: true 
                     } 
                 }
 			];
@@ -132,7 +133,7 @@ class TableDemo extends BaseComponent {
 
 		const status = this.shadowRoot!.querySelector('#data-status');
 
-		const confirmModal = this.shadowRoot!.getElementById('confirmModal') as any;
+		const confirmModal = queryModal(this.shadowRoot, '#confirmModal');
 		const confirmDelete = this.shadowRoot!.getElementById('confirmDelete');
 		const confirmCancel = this.shadowRoot!.getElementById('confirmCancel');
 
@@ -152,9 +153,7 @@ class TableDemo extends BaseComponent {
 			}`;
 		}		
 
-		const table = this.shadowRoot!.querySelector('#demo-table') as
-			| (HTMLElement & { data: { columns: TableColumn[]; rows: TableRow[] } })
-			| null;
+		const table = queryTable(this.shadowRoot, '#demo-table');
 
 		if (table && this.data) {
 			table.data = {
@@ -163,12 +162,12 @@ class TableDemo extends BaseComponent {
 			};
 		}
 
-		const pagination = this.shadowRoot!.querySelector('ui-pagination');
+		const pagination = queryPagination(this.shadowRoot, 'ui-pagination');
 
 		if (pagination && this.data?.meta) {
-			(pagination as any).total = this.data.meta.total;
-			(pagination as any).currentPage = this.currentPage;
-			(pagination as any).pageSize = this.pageSize;
+			pagination.total = this.data.meta.total;
+			pagination.currentPage = this.currentPage;
+			pagination.pageSize = this.pageSize;
 
 			// Remove previous listener if exists
 			const newPagination = pagination.cloneNode(true);

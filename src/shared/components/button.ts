@@ -9,6 +9,7 @@ class UIButton extends BaseComponent {
 	connectedCallback(): void {
 		this.setAttribute('data-ui', 'button');
 		super.connectedCallback();
+		this.attachClickHandler();
 	}
 
 	static get observedAttributes(): string[] {
@@ -17,6 +18,66 @@ class UIButton extends BaseComponent {
 
 	attributeChangedCallback(): void {
 		this.render();
+		this.attachClickHandler();
+	}
+
+	private attachClickHandler(): void {
+		if (!this.shadowRoot) return;
+
+		const button = this.shadowRoot.querySelector('button');
+		if (!button) return;
+
+		// Remove old listener if exists
+		const oldHandler = (button as any)._clickHandler;
+		if (oldHandler) {
+			button.removeEventListener('click', oldHandler);
+		}
+
+		// Add new click handler
+		const clickHandler = (e: Event) => {
+			const type = this.getType();
+			const disabled = this.hasAttribute('disabled');
+
+			if (disabled) {
+				e.preventDefault();
+				e.stopPropagation();
+				return;
+			}
+
+			// If type is submit, find parent form and submit it
+			if (type === 'submit') {
+				e.preventDefault();
+				e.stopPropagation();
+				
+				// Find the form that contains this ui-button element
+				let form = this.closest('form');
+				
+				// If not found, check if we're inside a shadow root
+				if (!form) {
+					let parent = this.parentElement;
+					while (parent) {
+						if (parent.tagName === 'FORM') {
+							form = parent as HTMLFormElement;
+							break;
+						}
+						parent = parent.parentElement;
+					}
+				}
+				
+				if (form) {
+					// Trigger form submit event
+					const submitEvent = new Event('submit', {
+						bubbles: true,
+						cancelable: true
+					});
+					form.dispatchEvent(submitEvent);
+				}
+			}
+		};
+
+		// Store handler reference for cleanup
+		(button as any)._clickHandler = clickHandler;
+		button.addEventListener('click', clickHandler);
 	}
 
 	private getVariant(): ButtonVariant {

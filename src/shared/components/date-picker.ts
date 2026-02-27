@@ -6,19 +6,52 @@ type DateFormat = 'YYYY-MM-DD' | 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'DD-MM-YYYY' | 'M
 class UIDatePicker extends BaseComponent {
 	private inputElement: HTMLInputElement | null = null;
 
+	private isConnected = false;
+	private isInternalUpdate = false;
+	private hasRendered = false;
+
 	connectedCallback(): void {
 		this.setAttribute('data-ui', 'date-picker');
 		super.connectedCallback();
-		this.attachEventListeners();
+		this.isConnected = true;
 	}
 
 	static get observedAttributes(): string[] {
-		return ['value', 'format', 'min', 'max', 'disabled', 'placeholder'];
+		return ['value', 'format', 'min', 'max', 'disabled', 'placeholder', 'label'];
 	}
 
-	attributeChangedCallback(): void {
-		this.render();
-		this.attachEventListeners();
+	attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
+		if (!this.isConnected || oldValue === newValue) return;
+		
+		// Skip re-render if this is an internal update of the value
+		if (this.isInternalUpdate && name === 'value') {
+			this.isInternalUpdate = false;
+			return;
+		}
+		
+		// For value changes from outside, just update the inputs without full re-render
+		if (name === 'value') {
+			this.updateInputValues();
+		} else {
+			// For other attribute changes, do a full re-render
+			this.render();
+		}
+	}
+
+	private updateInputValues(): void {
+		if (!this.shadowRoot) return;
+		
+		const textInput = this.shadowRoot.querySelector('.formatted-input') as HTMLInputElement;
+		const hiddenInput = this.shadowRoot.querySelector('input[type="date"]') as HTMLInputElement;
+		
+		if (textInput && hiddenInput) {
+			const value = this.getValue();
+			const format = this.getFormat();
+			const formattedValue = this.formatDate(value, format);
+			
+			textInput.value = formattedValue;
+			hiddenInput.value = value;
+		}
 	}
 
 	private getFormat(): DateFormat {
@@ -48,6 +81,10 @@ class UIDatePicker extends BaseComponent {
 
 	private getPlaceholder(): string {
 		return this.getAttribute('placeholder') || this.getFormat();
+	}
+
+	private getLabel(): string {
+		return this.getAttribute('label') || '';
 	}
 
 	private isDisabled(): boolean {
@@ -172,8 +209,33 @@ class UIDatePicker extends BaseComponent {
 
 		// Calendar button to trigger native picker
 		if (calendarBtn) {
-			calendarBtn.addEventListener('click', () => {
-				hiddenInput.showPicker?.();
+			calendarBtn.addEventListener('click', async (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				
+				// Temporarily enable pointer events for the click
+				hiddenInput.style.pointerEvents = 'auto';
+				
+				try {
+					// Try modern showPicker API first
+					if (typeof hiddenInput.showPicker === 'function') {
+						hiddenInput.showPicker();
+					} else {
+						// Fallback: focus and click
+						hiddenInput.focus();
+						hiddenInput.click();
+					}
+				} catch (error) {
+					console.log('Date picker error:', error);
+					// Last resort fallback
+					hiddenInput.focus();
+					hiddenInput.click();
+				} finally {
+					// Restore pointer events
+					setTimeout(() => {
+						hiddenInput.style.pointerEvents = 'none';
+					}, 100);
+				}
 			});
 		}
 	}
@@ -200,7 +262,8 @@ class UIDatePicker extends BaseComponent {
 			})
 		);
 
-		// Update attribute
+		// Update attribute without triggering re-render
+		this.isInternalUpdate = true;
 		this.setAttribute('value', isoDate);
 	}
 
@@ -241,11 +304,14 @@ class UIDatePicker extends BaseComponent {
 		const max = this.getMax();
 		const disabled = this.isDisabled();
 		const placeholder = this.getPlaceholder();
+		const label = this.getLabel();
 		const formattedValue = this.formatDate(value, format);
+		const hasLabel = label !== '';
 
 		this.shadowRoot!.innerHTML = `
 			<style>${styles}</style>
 			<div class="date-picker-container">
+				${hasLabel ? `<label class="date-picker-label">${label}</label>` : ''}
 				<div class="date-input-wrapper ${disabled ? 'disabled' : ''}">
 					<input
 						type="text"
@@ -277,6 +343,10 @@ class UIDatePicker extends BaseComponent {
 				<div class="format-label">Format: ${format}</div>
 			</div>
 		`;
+		
+		// Attach event listeners after DOM is created
+		this.attachEventListeners();
+		this.hasRendered = true;
 	}
 }
 

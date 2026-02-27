@@ -9,7 +9,7 @@ class UITopBar extends BaseComponent {
   }
 
   static get observedAttributes(): string[] {
-    return ['title', 'subtitle'];
+    return ['title', 'subtitle', 'bg-color'];
   }
 
   attributeChangedCallback(): void {
@@ -24,11 +24,22 @@ class UITopBar extends BaseComponent {
     return this.getAttribute('subtitle') ?? '';
   }
 
+  private getBgColor(): string {
+    return this.getAttribute('bg-color') ?? 'var(--color-header)';
+  }
+
   render(): void {
     const subtitle = this.getSubtitle();
+    const bgColor = this.getBgColor();
     
     this.shadowRoot!.innerHTML = `
-      <style>${themeStyles}${topBarStyles}</style>
+      <style>
+        ${themeStyles}
+        ${topBarStyles}
+        :host {
+          background: ${bgColor};
+        }
+      </style>
       <div class="top-bar">
         <div class="title-section">
           <h1 class="page-title">${this.getTitle()}</h1>

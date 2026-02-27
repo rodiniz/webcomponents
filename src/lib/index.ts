@@ -8,13 +8,22 @@ export { UISelect } from '../shared/components/select';
 export { UICheckbox } from '../shared/components/checkbox';
 export { UITabs } from '../shared/components/tabs';
 export { UICard } from '../shared/components/card';
+export { UIToast } from '../shared/components/toast';
+export { UIStepper } from '../shared/components/stepper';
+export { UIUpload } from '../shared/components/upload';
 
 export type { ButtonVariant, ButtonSize } from '../shared/components/button';
 export type { InputType, ValidationResult, CustomValidator, ValidationRule } from '../shared/components/input';
 export type { TableColumn, TableRow } from '../shared/components/table';
 export type { SelectOption } from '../shared/components/select';
 export type { TabChangeDetail } from '../shared/components/tabs';
+export type { ToastType, ToastPosition, ToastConfig } from '../shared/components/toast';
+export type { StepperOrientation, StepperSize, StepperStep, StepChangeDetail, StepState } from '../shared/components/stepper';
 
 // HTTP Client
 export { http, HTTPClient } from '../core/http';
 export type { RequestConfig, ResponseConfig, RequestInterceptor, ResponseInterceptor, ErrorInterceptor } from '../core/http';
+
+// DOM Helpers
+export { queryElement, queryElements, queryTable, queryPagination, queryModal, addEventListenerById, getElementById, getFormValues } from '../core/dom-helpers';
+export type { UITableElement, UIPaginationElement, UIModalElement, FormValue, GetFormValuesOptions } from '../core/dom-helpers';

@@ -3,7 +3,6 @@ import styles from '../styles/theme.css?inline';
 import layoutStyles from './app-layout.css?inline';
 import '../shared/components/sidebar';
 import '../shared/components/top-bar';
-import { store } from '../core/store';
 import '../shared/components/button';
 import feather from 'feather-icons';
 import type { Route } from '../core/router';
@@ -28,28 +27,16 @@ export const routes: Route[] = [
     component: 'table-demo'   
   },
   {
-    path: '/input-demo',
+    path: '/forms',
     layout: 'app-layout',
-    load: () => import('../features/input-demo/input-demo'),
-    component: 'input-demo'
+    load: () => import('../features/form-demo/form-demo-page'),
+    component: 'form-demo-page'
   },
   {
     path: '/modal',
     layout: 'app-layout',
     load: () => import('../features/modal-demo/modal-demo-page'),
     component: 'modal-demo-page'
-  },
-  {
-    path: '/select',
-    layout: 'app-layout',
-    load: () => import('../features/select-demo/select-demo-page'),
-    component: 'select-demo-page'
-  },
-  {
-    path: '/checkbox',
-    layout: 'app-layout',
-    load: () => import('../features/checkbox-demo/checkbox-demo-page'),
-    component: 'checkbox-demo-page'
   },
   {
     path: '/tabs',
@@ -62,6 +49,18 @@ export const routes: Route[] = [
     layout: 'app-layout',
     load: () => import('../features/card-demo/card-demo'),
     component: 'card-demo-page'
+  },
+  {
+    path: '/toast',
+    layout: 'app-layout',
+    load: () => import('../features/toast-demo/toast-demo-page'),
+    component: 'toast-demo-page'
+  },
+  {
+    path: '/stepper',
+    layout: 'app-layout',
+    load: () => import('../features/stepper-demo/stepper-demo-page'),
+    component: 'stepper-demo-page'
   }
 ];
 
@@ -69,15 +68,15 @@ class AppLayout extends BaseComponent {
   private pageTitle = 'Dashboard';
   private pageSubtitle = 'Explore our component library';
   private navItems = [
-    { icon: 'box', label: 'Components', href: '/' },
-    { icon: 'edit-3', label: 'Input', href: '/input-demo' },
+    { icon: 'box', label: 'Button ', href: '/' },
+    { icon: 'sliders', label: 'Form Elements', href: '/forms' },
     { icon: 'calendar', label: 'Date Picker', href: '/date-picker' },
     { icon: 'table', label: 'Table', href: '/table-demo' },
     { icon: 'square', label: 'Modal', href: '/modal' },
-    { icon: 'list', label: 'Select', href: '/select' },
-    { icon: 'check-square', label: 'Checkbox', href: '/checkbox' },
     { icon: 'folder', label: 'Tabs', href: '/tabs' },
     { icon: 'credit-card', label: 'Card', href: '/card' },
+    { icon: 'message-circle', label: 'Toast', href: '/toast' },
+    { icon: 'layers', label: 'Stepper', href: '/stepper' },
   ];
 
   private footerItems = [
@@ -96,14 +95,14 @@ class AppLayout extends BaseComponent {
     const path = window.location.pathname;
     const titles: Record<string, { title: string; subtitle: string }> = {
       '/': { title: 'Components', subtitle: 'Explore our web components library' },
-      '/input-demo': { title: 'Input', subtitle: 'Form inputs with validation' },
+      '/forms': { title: 'Form Elements', subtitle: 'Inputs, selects, checkboxes, uploads, and more' },
       '/date-picker': { title: 'Date Picker', subtitle: 'Date selection component' },
       '/table-demo': { title: 'Table', subtitle: 'Data table with actions' },
       '/modal': { title: 'Modal', subtitle: 'Dialog and overlay components' },
-      '/select': { title: 'Select', subtitle: 'Dropdown selection component' },
-      '/checkbox': { title: 'Checkbox', subtitle: 'Checkbox input component' },
       '/tabs': { title: 'Tabs', subtitle: 'Tabbed navigation component' },
       '/card': { title: 'Card', subtitle: 'Flexible container component' },
+      '/toast': { title: 'Toast', subtitle: 'Notification and alert system' },
+      '/stepper': { title: 'Stepper', subtitle: 'Progressive step navigation' },
     };
     
     const info = titles[path] || { title: 'Dashboard', subtitle: 'Explore our component library' };
@@ -112,9 +111,6 @@ class AppLayout extends BaseComponent {
     this.render();
   }
 
-  private renderIcon(name: string): string {
-    return feather.icons[name as keyof typeof feather.icons]?.toSvg({ class: '' }) || '';
-  }
 
   render(): void {
     this.shadowRoot!.innerHTML = `
