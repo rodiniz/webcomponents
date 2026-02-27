@@ -192,6 +192,191 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 `;
 ```
 
+### Adding Routing to Your App
+
+The library includes a built-in router for client-side navigation. Here's how to set it up:
+
+#### 1. Create your route configuration
+
+**src/router.ts**
+```typescript
+import { createRouter, type Route } from '@diniz/webcomponents';
+
+export const routes: Route[] = [
+  {
+    path: '/',
+    load: () => import('./pages/home'),
+    component: 'home-page'
+  },
+  {
+    path: '/about',
+    load: () => import('./pages/about'),
+    component: 'about-page'
+  },
+  {
+    path: '/counter',
+    load: () => import('./components/counter'),
+    component: 'my-counter'
+  }
+];
+
+// Initialize the router with your routes
+// The router automatically sets up navigation and loads the initial route
+createRouter(routes);
+```
+
+> **How it works:** The `createRouter()` function sets up the routing system, registers event listeners for navigation, and automatically loads the initial route when the page loads. Navigation happens via links with the `data-link` attribute, and the browser's back/forward buttons work automatically.
+
+**Optional: Adding Route Guards**
+
+You can protect routes with guard functions:
+
+```typescript
+import { createRouter, type Route } from '@diniz/webcomponents';
+
+// Example: Check if user is authenticated
+const isAuthenticated = () => {
+  return localStorage.getItem('user') !== null;
+};
+
+export const routes: Route[] = [
+  {
+    path: '/',
+    load: () => import('./pages/home'),
+    component: 'home-page'
+  },
+  {
+    path: '/profile',
+    load: () => import('./pages/profile'),
+    component: 'profile-page',
+    guard: isAuthenticated // Redirect to home if guard returns false
+  }
+];
+
+createRouter(routes);
+```
+
+#### 2. Create page components (with optional shared navigation)
+
+You can create a reusable navigation component:
+
+**src/components/nav.ts**
+```typescript
+import { BaseComponent } from '@diniz/webcomponents';
+
+class NavComponent extends BaseComponent {
+  connectedCallback() {
+    super.connectedCallback();
+    this.render();
+  }
+
+  render() {
+    this.shadowRoot!.innerHTML = `
+      <style>
+        nav {
+          background: var(--color-surface, #1e1e1e);
+          padding: 1rem;
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+        nav a {
+          color: var(--color-text, #fff);
+          text-decoration: none;
+          padding: 0.5rem 1rem;
+          border-radius: 0.25rem;
+        }
+        nav a:hover {
+          background: var(--color-surface-hover, #2a2a2a);
+        }
+      </style>
+      
+      <nav>
+        <a href="/" data-link>Home</a>
+        <a href="/about" data-link>About</a>
+        <a href="/counter" data-link>Counter</a>
+      </nav>
+    `;
+  }
+}
+
+customElements.define('app-nav', NavComponent);
+```
+
+**src/pages/home.ts**
+```typescript
+import { BaseComponent } from '@diniz/webcomponents';
+import '../components/nav';
+
+class HomePage extends BaseComponent {
+  connectedCallback() {
+    super.connectedCallback();
+    this.render();
+  }
+
+  render() {
+    this.shadowRoot!.innerHTML = `
+      <app-nav></app-nav>
+      <h1>Home Page</h1>
+      <p>Welcome to my web components app!</p>
+      <ui-button variant="primary">
+        <a href="/counter" data-link style="color: inherit; text-decoration: none;">
+          Try Counter
+        </a>
+      </ui-button>
+    `;
+  }
+}
+
+customElements.define('home-page', HomePage);
+```
+
+**src/pages/about.ts**
+```typescript
+import { BaseComponent } from '@diniz/webcomponents';
+import '../components/nav';
+
+class AboutPage extends BaseComponent {
+  connectedCallback() {
+    super.connectedCallback();
+    this.render();
+  }
+
+  render() {
+    this.shadowRoot!.innerHTML = `
+      <app-nav></app-nav>
+      <h1>About</h1>
+      <p>This is a Vite app using web components with routing.</p>
+    `;
+  }
+}
+
+customElements.define('about-page', AboutPage);
+```
+
+#### 3. Initialize the router in main.ts
+
+**src/main.ts**
+```typescript
+import '@diniz/webcomponents';
+import '@diniz/webcomponents/dist/style.css';
+import './style.css';
+import './router'; // This loads the routes and initializes routing
+```
+
+The moment you import `./router`, the routing system:
+1. ✅ Registers all event listeners for navigation
+2. ✅ Automatically loads the initial route based on the current URL
+3. ✅ Starts handling clicks on `[data-link]` elements
+4. ✅ Enables browser back/forward button support
+
+That's it! Your app now has client-side routing with:
+- ✅ Lazy-loaded pages
+- ✅ Browser back/forward navigation
+- ✅ Declarative routing with `data-link` attribute
+- ✅ Optional route guards for protected pages
+- ✅ Reusable navigation component
+
 ## Components
 
 - **ui-button** - Button with variants, sizes, icons

@@ -5,9 +5,9 @@ import '../shared/components/sidebar';
 import '../shared/components/top-bar';
 import '../shared/components/button';
 import feather from 'feather-icons';
-import type { Route } from '../core/router';
+import type { RouteOld } from '../core/router';
 
-export const routes: Route[] = [
+export const routes: RouteOld[] = [
   {
     path: '/',
     layout: 'app-layout',
