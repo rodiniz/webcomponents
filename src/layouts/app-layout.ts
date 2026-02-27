@@ -1,12 +1,12 @@
 import { BaseComponent } from '../core/base-component';
 import styles from '../styles/theme.css?inline';
+import layoutStyles from './app-layout.css?inline';
 import '../shared/components/sidebar';
+import '../shared/components/top-bar';
 import { store } from '../core/store';
 import '../shared/components/button';
-import { requireUser } from '../core/guards';
+import feather from 'feather-icons';
 import type { Route } from '../core/router';
-
-
 
 export const routes: Route[] = [
   {
@@ -50,38 +50,66 @@ export const routes: Route[] = [
     layout: 'app-layout',
     load: () => import('../features/checkbox-demo/checkbox-demo-page'),
     component: 'checkbox-demo-page'
+  },
+  {
+    path: '/tabs',
+    layout: 'app-layout',
+    load: () => import('../features/tabs-demo/tabs-demo'),
+    component: 'tabs-demo'
   }
 ];
+
 class AppLayout extends BaseComponent {
+  private pageTitle = 'Dashboard';
+  private pageSubtitle = 'Explore our component library';
+
   connectedCallback(): void {
     this.setAttribute('data-ui', 'layout');
     super.connectedCallback();
+    this.updateTitle();
+    window.addEventListener('popstate', () => this.updateTitle());
+    document.addEventListener('click', () => this.updateTitle());
   }
-  
+
+  private updateTitle(): void {
+    const path = window.location.pathname;
+    const titles: Record<string, { title: string; subtitle: string }> = {
+      '/': { title: 'Components', subtitle: 'Explore our web components library' },
+      '/input-demo': { title: 'Input', subtitle: 'Form inputs with validation' },
+      '/date-picker': { title: 'Date Picker', subtitle: 'Date selection component' },
+      '/table-demo': { title: 'Table', subtitle: 'Data table with actions' },
+      '/modal': { title: 'Modal', subtitle: 'Dialog and overlay components' },
+      '/select': { title: 'Select', subtitle: 'Dropdown selection component' },
+      '/checkbox': { title: 'Checkbox', subtitle: 'Checkbox input component' },
+      '/tabs': { title: 'Tabs', subtitle: 'Tabbed navigation component' },
+    };
+    
+    const info = titles[path] || { title: 'Dashboard', subtitle: 'Explore our component library' };
+    this.pageTitle = info.title;
+    this.pageSubtitle = info.subtitle;
+    this.render();
+  }
+
+  private renderIcon(name: string): string {
+    return feather.icons[name as keyof typeof feather.icons]?.toSvg({ class: '' }) || '';
+  }
+
   render(): void {
     this.shadowRoot!.innerHTML = `
-      <style>${styles}</style>
-      <nav class="app-nav">
-        Dashboard
-        <ui-button id="theme-toggle" variant="ghost" size="sm">Toggle Theme</ui-button>
-      </nav>
-      <div class="dashboard-layout">
+      <style>${styles}${layoutStyles}</style>
+      <ui-top-bar title="${this.pageTitle}" subtitle="${this.pageSubtitle}"></ui-top-bar>
+      <div class="layout-container">
         <app-sidebar></app-sidebar>
-        <main class="dashboard-main">
-          <slot></slot>
-        </main>
+        <div class="main-area">
+          <main class="content-area">
+            <slot></slot>
+          </main>
+        </div>
       </div>
     `;
-     const themeToggle = this.shadowRoot!.querySelector('#theme-toggle');
-        if (themeToggle) {
-          themeToggle.addEventListener('click', () => {
-            const nextTheme = store.getState().theme === 'shadcn' ? 'light' : 'shadcn';
-            store.setState({ theme: nextTheme });
-            this.render();
-          });
-        }
   }
-  
 }
 
 customElements.define('app-layout', AppLayout);
+
+export { AppLayout };
