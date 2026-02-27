@@ -11,8 +11,20 @@ export const routes: Route[] = [
   {
     path: '/',
     layout: 'app-layout',
-    load: () => import('../features/dashboard/dashboard-page'),
-    component: 'dashboard-page'
+    load: () => import('../features/home/home-page'),
+    component: 'home-page'
+  },
+  {
+    path: '/button',
+    layout: 'app-layout',
+    load: () => import('../features/button-demo/button-demo'),
+    component: 'button-demo'
+  },
+  {
+    path: '/layout',
+    layout: 'app-layout',
+    load: () => import('../features/layout-demo/layout-demo'),
+    component: 'layout-demo'
   },
   {
     path: '/date-picker',
@@ -68,7 +80,9 @@ class AppLayout extends BaseComponent {
   private pageTitle = 'Dashboard';
   private pageSubtitle = 'Explore our component library';
   private navItems = [
-    { icon: 'box', label: 'Button ', href: '/' },
+    { icon: 'home', label: 'Home', href: '/' },
+    { icon: 'box', label: 'Button', href: '/button' },
+    { icon: 'layout', label: 'Layout', href: '/layout' },
     { icon: 'sliders', label: 'Form Elements', href: '/forms' },
     { icon: 'calendar', label: 'Date Picker', href: '/date-picker' },
     { icon: 'table', label: 'Table', href: '/table-demo' },
@@ -94,7 +108,9 @@ class AppLayout extends BaseComponent {
   private updateTitle(): void {
     const path = window.location.pathname;
     const titles: Record<string, { title: string; subtitle: string }> = {
-      '/': { title: 'Components', subtitle: 'Explore our web components library' },
+      '/': { title: 'Web Components', subtitle: 'A framework-agnostic component library' },
+      '/button': { title: 'Button', subtitle: 'Flexible button with variants and sizes' },
+      '/layout': { title: 'Layout', subtitle: 'Flexible page layouts with header, footer, sidebar, and content' },
       '/forms': { title: 'Form Elements', subtitle: 'Inputs, selects, checkboxes, uploads, and more' },
       '/date-picker': { title: 'Date Picker', subtitle: 'Date selection component' },
       '/table-demo': { title: 'Table', subtitle: 'Data table with actions' },

@@ -11,6 +11,7 @@ export { UICard } from '../shared/components/card';
 export { UIToast } from '../shared/components/toast';
 export { UIStepper } from '../shared/components/stepper';
 export { UIUpload } from '../shared/components/upload';
+export { UILayout, UILayoutHeader, UILayoutFooter, UILayoutContent, UILayoutSidebar } from '../shared/components/layout';
 
 export type { ButtonVariant, ButtonSize } from '../shared/components/button';
 export type { InputType, ValidationResult, CustomValidator, ValidationRule } from '../shared/components/input';

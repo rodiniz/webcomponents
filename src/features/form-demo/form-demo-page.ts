@@ -1,7 +1,7 @@
 import { BaseComponent } from '../../core/base-component';
 import formDemoHTML from './form-demo-page.html?raw';
 import { formDemoCSS } from './form-demo-page.css';
-import { getFormValues } from '../../core/dom-helpers';
+import { getFormValues, queryElement } from '../../core/dom-helpers';
 import '../../shared/components/button';
 import '../../shared/components/input';
 import '../../shared/components/select';
@@ -43,17 +43,17 @@ class FormDemoPage extends BaseComponent {
 	}
 
 	private setupSelects(): void {
-		const roleSelect = this.shadowRoot!.getElementById('roleSelect') as HTMLElement | null;
-		const regionSelect = this.shadowRoot!.getElementById('regionSelect') as HTMLElement | null;
+		const roleSelect = queryElement<HTMLElement>(this.shadowRoot, '#roleSelect') ;
+		const regionSelect = queryElement<HTMLElement>(this.shadowRoot, '#regionSelect') ;
 
 		if (roleSelect) roleSelect.setAttribute('options', JSON.stringify(roles));
 		if (regionSelect) regionSelect.setAttribute('options', JSON.stringify(regions));
 	}
 
 	private setupForm(): void {
-		const form = this.shadowRoot!.getElementById('formLab') as HTMLFormElement | null;
-		const output = this.shadowRoot!.getElementById('formResult') as HTMLPreElement | null;
-		const reset = this.shadowRoot!.getElementById('resetForm') as HTMLButtonElement | null;
+		const form = queryElement<HTMLFormElement>(this.shadowRoot, '#formLab') ;
+		const output = queryElement<HTMLPreElement>(this.shadowRoot, '#formResult') ;
+		const reset = queryElement<HTMLButtonElement>(this.shadowRoot, '#resetForm') ;
 
 		if (!form) {
 			console.error('Form not found');
