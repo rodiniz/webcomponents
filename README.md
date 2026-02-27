@@ -47,6 +47,151 @@ document.body.innerHTML = `
 `;
 ```
 
+## Quick Start with Vite (No Framework)
+
+Create a new Vite project without any framework to use these web components:
+
+### 1. Create a new Vite project
+
+```bash
+npm create vite@latest my-app -- --template vanilla-ts
+cd my-app
+```
+
+### 2. Install the web components library
+
+```bash
+npm install @diniz/webcomponents
+```
+
+### 3. Import components in your `src/main.ts`
+
+```typescript
+import '@diniz/webcomponents';
+import '@diniz/webcomponents/dist/style.css';
+import './style.css';
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <div>
+    <h1>My Web Components App</h1>
+    
+    <ui-button variant="primary">Primary Button</ui-button>
+    <ui-button variant="secondary">Secondary Button</ui-button>
+    
+    <ui-input 
+      label="Email" 
+      type="email" 
+      placeholder="Enter your email"
+      required
+    ></ui-input>
+    
+    <ui-date-picker 
+      label="Select Date" 
+      format="DD/MM/YYYY"
+    ></ui-date-picker>
+  </div>
+`;
+
+// Listen to component events
+document.querySelector('ui-button')?.addEventListener('click', () => {
+  console.log('Button clicked!');
+});
+
+document.querySelector('ui-input')?.addEventListener('input', (e: Event) => {
+  const input = e.target as HTMLInputElement;
+  console.log('Input value:', input.value);
+});
+```
+
+### 4. Run the development server
+
+```bash
+npm run dev
+```
+
+Your app is now running with web components! Open your browser and start building.
+
+### Example: Building a Counter with Signals
+
+Create reactive components using the signals system:
+
+**src/components/counter.ts**
+```typescript
+import { BaseComponent } from '@diniz/webcomponents';
+
+class CounterComponent extends BaseComponent {
+  private count = this.useSignal(0);
+  
+  connectedCallback() {
+    super.connectedCallback();
+    this.render();
+  }
+
+  private increment() {
+    this.count.set(this.count.get() + 1);
+  }
+
+  private decrement() {
+    this.count.set(this.count.get() - 1);
+  }
+
+  render() {
+    this.shadowRoot!.innerHTML = `
+      <style>
+        :host {
+          display: block;
+          padding: 2rem;
+          text-align: center;
+        }
+        .count {
+          font-size: 3rem;
+          margin: 1rem 0;
+          color: var(--color-primary, #24ec71);
+        }
+        .buttons {
+          display: flex;
+          gap: 1rem;
+          justify-content: center;
+        }
+      </style>
+      
+      <div>
+        <h2>Counter</h2>
+        <div class="count">${this.count.get()}</div>
+        <div class="buttons">
+          <ui-button id="decrement" variant="secondary">-</ui-button>
+          <ui-button id="increment" variant="primary">+</ui-button>
+        </div>
+      </div>
+    `;
+
+    this.shadowRoot!.getElementById('increment')?.addEventListener('click', 
+      () => this.increment()
+    );
+    this.shadowRoot!.getElementById('decrement')?.addEventListener('click', 
+      () => this.decrement()
+    );
+  }
+}
+
+customElements.define('my-counter', CounterComponent);
+```
+
+**src/main.ts**
+```typescript
+import '@diniz/webcomponents';
+import '@diniz/webcomponents/dist/style.css';
+import './components/counter';
+import './style.css';
+
+document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+  <div>
+    <h1>My Web Components App</h1>
+    <my-counter></my-counter>
+  </div>
+`;
+```
+
 ## Components
 
 - **ui-button** - Button with variants, sizes, icons
