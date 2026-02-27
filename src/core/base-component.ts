@@ -40,6 +40,47 @@ export class BaseComponent<TState extends Record<string, unknown> = Record<strin
     return signal;
   }
 
+  /**
+   * Create a signal bound to a specific HTML element
+   * Automatically updates the element's textContent when the signal value changes
+   * @param elementId - The ID of the HTML element to bind to
+   * @param initial - The initial value
+   * @returns A signal that auto-updates the element
+   * 
+   * @example
+   * ```typescript
+   * private count = this.useSignalHtml('countValue', 0);
+   * 
+   * private increment() {
+   *   this.count.set(this.count.get() + 1);
+   *   // Element with id="countValue" automatically updates
+   * }
+   * ```
+   */
+  useSignalHtml<T>(elementId: string, initial: T): Signal<T> {
+    const signal = createSignal(initial);
+    
+    // Subscribe to signal changes and update DOM element directly
+    const unsubscribe = signal.subscribe((value) => {
+      const element = this.shadowRoot?.getElementById(elementId);
+      if (element) {
+        element.textContent = String(value);
+      }
+    });
+    
+    this.signalUnsubs.add(unsubscribe);
+    
+    // Set initial display value after render cycle
+    requestAnimationFrame(() => {
+      const element = this.shadowRoot?.getElementById(elementId);
+      if (element) {
+        element.textContent = String(initial);
+      }
+    });
+    
+    return signal;
+  }
+
   setState(partial: Partial<TState>): void {
     this.state = { ...this.state, ...partial };
     this.render();
