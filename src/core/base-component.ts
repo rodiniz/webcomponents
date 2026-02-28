@@ -2,16 +2,19 @@ export type Signal<T> = {
   get: () => T;
   set: (value: T) => void;
   subscribe: (listener: (value: T) => void) => () => void;
+  peek: () => T;
 };
 
-export function createSignal<T>(initial: T): Signal<T> {
+export function createSignal<T>(initial: T, options?: { equals?: (prev: T, next: T) => boolean }): Signal<T> {
   let value = initial;
   const listeners = new Set<(next: T) => void>();
+  const equals = options?.equals ?? Object.is;
 
   return {
     get: () => value,
+    peek: () => value,
     set: next => {
-      if (Object.is(value, next)) return;
+      if (equals(value, next)) return;
       value = next;
       listeners.forEach(listener => listener(value));
     },
@@ -22,9 +25,17 @@ export function createSignal<T>(initial: T): Signal<T> {
   };
 }
 
+type EqualityFn<T> = (prev: T, next: T) => boolean;
+
+export function createSignalWithEquality<T>(initial: T, equals: EqualityFn<T>): Signal<T> {
+  return createSignal(initial, { equals });
+}
+
 export class BaseComponent<TState extends Record<string, unknown> = Record<string, unknown>> extends HTMLElement {
   state: TState;
   private signalUnsubs: Set<() => void>;
+  private renderScheduled: boolean = false;
+  private prevState: TState | null = null;
 
   constructor() {
     super();
@@ -33,34 +44,37 @@ export class BaseComponent<TState extends Record<string, unknown> = Record<strin
     this.signalUnsubs = new Set();
   }
 
+  protected shouldRender(_newState: TState, _prevState: TState | null): boolean {
+    return true;
+  }
+
+  private scheduleRender(): void {
+    if (this.renderScheduled) return;
+    this.renderScheduled = true;
+    
+    queueMicrotask(() => {
+      this.renderScheduled = false;
+      this.render();
+    });
+  }
+
   useSignal<T>(initial: T): Signal<T> {
     const signal = createSignal(initial);
-    const unsubscribe = signal.subscribe(() => this.render());
+    const unsubscribe = signal.subscribe(() => this.scheduleRender());
     this.signalUnsubs.add(unsubscribe);
     return signal;
   }
 
-  /**
-   * Create a signal bound to a specific HTML element
-   * Automatically updates the element's textContent when the signal value changes
-   * @param elementId - The ID of the HTML element to bind to
-   * @param initial - The initial value
-   * @returns A signal that auto-updates the element
-   * 
-   * @example
-   * ```typescript
-   * private count = this.useSignalHtml('countValue', 0);
-   * 
-   * private increment() {
-   *   this.count.set(this.count.get() + 1);
-   *   // Element with id="countValue" automatically updates
-   * }
-   * ```
-   */
+  useSignalWithEquality<T>(initial: T, equals: EqualityFn<T>): Signal<T> {
+    const signal = createSignalWithEquality(initial, equals);
+    const unsubscribe = signal.subscribe(() => this.scheduleRender());
+    this.signalUnsubs.add(unsubscribe);
+    return signal;
+  }
+
   useSignalHtml<T>(elementId: string, initial: T): Signal<T> {
     const signal = createSignal(initial);
     
-    // Subscribe to signal changes and update DOM element directly
     const unsubscribe = signal.subscribe((value) => {
       const element = this.shadowRoot?.getElementById(elementId);
       if (element) {
@@ -70,7 +84,6 @@ export class BaseComponent<TState extends Record<string, unknown> = Record<strin
     
     this.signalUnsubs.add(unsubscribe);
     
-    // Set initial display value after render cycle
     requestAnimationFrame(() => {
       const element = this.shadowRoot?.getElementById(elementId);
       if (element) {
@@ -82,8 +95,15 @@ export class BaseComponent<TState extends Record<string, unknown> = Record<strin
   }
 
   setState(partial: Partial<TState>): void {
-    this.state = { ...this.state, ...partial };
-    this.render();
+    const newState = { ...this.state, ...partial } as TState;
+    
+    if (this.shouldRender(newState, this.prevState)) {
+      this.prevState = this.state;
+      this.state = newState;
+      this.scheduleRender();
+    } else {
+      this.state = newState;
+    }
   }
 
   connectedCallback(): void {
@@ -93,6 +113,11 @@ export class BaseComponent<TState extends Record<string, unknown> = Record<strin
   disconnectedCallback(): void {
     this.signalUnsubs.forEach(unsub => unsub());
     this.signalUnsubs.clear();
+  }
+
+  forceRender(): void {
+    this.prevState = null;
+    this.render();
   }
 
   render(): void {}

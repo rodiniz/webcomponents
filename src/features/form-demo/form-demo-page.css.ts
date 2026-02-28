@@ -54,7 +54,7 @@ export const formDemoCSS = `
 
 	.form-shell {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 320px;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 2rem;
 	}
 

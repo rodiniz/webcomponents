@@ -1,4 +1,5 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render, classMap, unsafeHTML } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 import feather from 'feather-icons';
 
@@ -6,10 +7,11 @@ type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 class UIButton extends BaseComponent {
+	private buttonEl: HTMLButtonElement | null = null;
+
 	connectedCallback(): void {
 		this.setAttribute('data-ui', 'button');
 		super.connectedCallback();
-		this.attachClickHandler();
 	}
 
 	static get observedAttributes(): string[] {
@@ -18,66 +20,6 @@ class UIButton extends BaseComponent {
 
 	attributeChangedCallback(): void {
 		this.render();
-		this.attachClickHandler();
-	}
-
-	private attachClickHandler(): void {
-		if (!this.shadowRoot) return;
-
-		const button = this.shadowRoot.querySelector('button');
-		if (!button) return;
-
-		// Remove old listener if exists
-		const oldHandler = (button as any)._clickHandler;
-		if (oldHandler) {
-			button.removeEventListener('click', oldHandler);
-		}
-
-		// Add new click handler
-		const clickHandler = (e: Event) => {
-			const type = this.getType();
-			const disabled = this.hasAttribute('disabled');
-
-			if (disabled) {
-				e.preventDefault();
-				e.stopPropagation();
-				return;
-			}
-
-			// If type is submit, find parent form and submit it
-			if (type === 'submit') {
-				e.preventDefault();
-				e.stopPropagation();
-				
-				// Find the form that contains this ui-button element
-				let form = this.closest('form');
-				
-				// If not found, check if we're inside a shadow root
-				if (!form) {
-					let parent = this.parentElement;
-					while (parent) {
-						if (parent.tagName === 'FORM') {
-							form = parent as HTMLFormElement;
-							break;
-						}
-						parent = parent.parentElement;
-					}
-				}
-				
-				if (form) {
-					// Trigger form submit event
-					const submitEvent = new Event('submit', {
-						bubbles: true,
-						cancelable: true
-					});
-					form.dispatchEvent(submitEvent);
-				}
-			}
-		};
-
-		// Store handler reference for cleanup
-		(button as any)._clickHandler = clickHandler;
-		button.addEventListener('click', clickHandler);
 	}
 
 	private getVariant(): ButtonVariant {
@@ -96,12 +38,12 @@ class UIButton extends BaseComponent {
 		return this.getAttribute('type') ?? 'button';
 	}
 
-	private getIcon(): { html: string; name: string } | null {
+	private getIcon(): { svg: string; name: string } | null {
 		const icon = this.getAttribute('icon');
 		if (!icon) return null;
 		const iconName = icon.trim();
 		const svg = feather.icons[iconName as keyof typeof feather.icons]?.toSvg() || '';
-		return { html: `<span class="btn-icon">${svg}</span>`, name: iconName };
+		return { svg, name: iconName };
 	}
 
 	private getIconPosition(): 'left' | 'right' {
@@ -109,6 +51,43 @@ class UIButton extends BaseComponent {
 		if (value === 'right') return 'right';
 		return 'left';
 	}
+
+	private handleClick = (e: Event): void => {
+		const type = this.getType();
+		const disabled = this.hasAttribute('disabled');
+
+		if (disabled) {
+			e.preventDefault();
+			e.stopPropagation();
+			return;
+		}
+
+		if (type === 'submit') {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			let form = this.closest('form');
+			
+			if (!form) {
+				let parent = this.parentElement;
+				while (parent) {
+					if (parent.tagName === 'FORM') {
+						form = parent as HTMLFormElement;
+						break;
+					}
+					parent = parent.parentElement;
+				}
+			}
+			
+			if (form) {
+				const submitEvent = new Event('submit', {
+					bubbles: true,
+					cancelable: true
+				});
+				form.dispatchEvent(submitEvent);
+			}
+		}
+	};
 
 	render(): void {
 		const variant = this.getVariant();
@@ -119,32 +98,44 @@ class UIButton extends BaseComponent {
 		const iconPosition = this.getIconPosition();
 
 		const hasIcon = icon !== null;
-		const iconHtml = icon ? icon.html : '';
 		const content = this.innerHTML.trim();
 		const isIconOnly = hasIcon && !content;
 
-		let buttonContent: string;
-		if (hasIcon && content) {
-			buttonContent = iconPosition === 'left' 
-				? `${iconHtml}<span>${content}</span>`
-				: `<span>${content}</span>${iconHtml}`;
-		} else if (hasIcon) {
-			buttonContent = iconHtml;
-		} else {
-			buttonContent = content;
-		}
+		const classes = classMap({
+			'btn': true,
+			[variant]: true,
+			[size]: true,
+			'has-icon': hasIcon,
+			'icon-only': isIconOnly
+		});
 
-		this.shadowRoot!.innerHTML = `
+		const renderContent = () => {
+			if (hasIcon && content) {
+				const iconEl = html`<span class="btn-icon">${unsafeHTML(icon!.svg)}</span>`;
+				return iconPosition === 'left' 
+					? html`${iconEl}<span>${content}</span>`
+					: html`<span>${content}</span>${iconEl}`;
+			} else if (hasIcon) {
+				return html`<span class="btn-icon">${unsafeHTML(icon!.svg)}</span>`;
+			}
+			return content;
+		};
+
+		const template = html`
 			<style>${styles}</style>
 			<button
 				part="button"
-				class="btn ${variant} ${size}${hasIcon ? ' has-icon' : ''}${isIconOnly ? ' icon-only' : ''}"
-				type="${type}"
-				${disabled ? 'disabled' : ''}
+				class=${classes}
+				type=${type}
+				?disabled=${disabled}
+				@click=${this.handleClick}
 			>
-				${buttonContent}
-		</button>
-	`;
+				${renderContent()}
+			</button>
+		`;
+
+		render(template, this.shadowRoot!);
+		this.buttonEl = this.shadowRoot!.querySelector('button');
 	}
 }
 

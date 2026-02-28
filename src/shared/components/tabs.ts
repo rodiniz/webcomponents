@@ -1,4 +1,5 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
 import themeStyles from '../../styles/theme.css?inline';
 import tabsStyles from './tabs.css?inline';
 
@@ -140,9 +141,6 @@ class UITabs extends BaseComponent {
 		const tablist = this.shadowRoot!.querySelector('.tablist');
 		if (!tablist) return;
 
-		const tabRect = activeTab.getBoundingClientRect();
-		const listRect = tablist.getBoundingClientRect();
-
 		const index = tabs.indexOf(activeTab);
 		let offsetLeft = 0;
 		for (let i = 0; i < index; i++) {
@@ -154,7 +152,7 @@ class UITabs extends BaseComponent {
 	}
 
 	render(): void {
-		this.shadowRoot!.innerHTML = `
+		const template = html`
 			<style>${themeStyles}${tabsStyles}</style>
 			<div class="tabs">
 				<div class="tablist" role="tablist">
@@ -166,6 +164,8 @@ class UITabs extends BaseComponent {
 				</div>
 			</div>
 		`;
+
+		render(template, this.shadowRoot!);
 
 		this.indicator = this.shadowRoot!.querySelector('.tab-indicator');
 

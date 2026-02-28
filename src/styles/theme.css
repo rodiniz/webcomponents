@@ -1146,6 +1146,7 @@ input[type="checkbox"] {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  z-index: 100;
 }
 
 .date-input-wrapper {
@@ -1156,6 +1157,7 @@ input[type="checkbox"] {
   border-radius: var(--radius-md);
   background: white;
   transition: all 0.2s ease;
+  z-index: 101;
 }
 
 .date-input-wrapper:hover:not(.disabled) {

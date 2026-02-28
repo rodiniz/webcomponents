@@ -1,4 +1,6 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
+import { classMap } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 
 interface SelectOption {
@@ -48,7 +50,6 @@ class UISelect extends BaseComponent {
 
 	private setupClickOutside(): void {
 		document.addEventListener('click', (e) => {
-			// Check if click is inside this component or its shadow DOM
 			const path = e.composedPath();
 			const clickedInside = path.includes(this);
 			
@@ -110,14 +111,42 @@ class UISelect extends BaseComponent {
 		const selectedLabel = this.getSelectedLabel();
 		const filteredOptions = this.getFilteredOptions();
 		const hasSelection = this.selectedValue.get() !== '';
+		const selectedValue = this.selectedValue.get();
 
-		this.shadowRoot!.innerHTML = `
+		const triggerClasses = classMap({
+			'select-trigger': true,
+			'open': open
+		});
+
+		const dropdownClasses = classMap({
+			'select-dropdown': true,
+			'open': open
+		});
+
+		const renderOption = (option: SelectOption) => {
+			const optionClasses = classMap({
+				'select-option': true,
+				'selected': option.value === selectedValue,
+				'disabled': !!option.disabled
+			});
+			return html`
+				<div 
+					class=${optionClasses}
+					data-value="${option.value}"
+					part="option"
+				>
+					${option.label}
+				</div>
+			`;
+		};
+
+		const template = html`
 			<style>${styles}</style>
 
 			<div class="select-container">
-				${label ? `<label class="select-label">${label}</label>` : ''}
+				${label ? html`<label class="select-label">${label}</label>` : ''}
 				
-				<div class="select-trigger ${open ? 'open' : ''}" part="trigger" tabindex="0" ${disabled ? 'disabled' : ''}>
+				<div class=${triggerClasses} part="trigger" tabindex="0" ?disabled=${disabled}>
 					<span class="select-placeholder ${hasSelection ? 'has-selection' : ''}">${selectedLabel}</span>
 					<span class="select-arrow ${open ? 'open' : ''}">
 						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -126,8 +155,8 @@ class UISelect extends BaseComponent {
 					</span>
 				</div>
 
-				<div class="select-dropdown ${open ? 'open' : ''}" part="dropdown">
-					${searchable ? `
+				<div class=${dropdownClasses} part="dropdown">
+					${searchable ? html`
 						<input 
 							type="text" 
 							class="select-search" 
@@ -136,22 +165,16 @@ class UISelect extends BaseComponent {
 						>
 					` : ''}
 					
-					${filteredOptions.length > 0 ? filteredOptions.map(option => `
-						<div 
-							class="select-option ${option.value === this.selectedValue.get() ? 'selected' : ''} ${option.disabled ? 'disabled' : ''}"
-							data-value="${option.value}"
-							part="option"
-						>
-							${option.label}
-						</div>
-					`).join('') : `
-						<div class="select-empty">No options found</div>
-					`}
+					${filteredOptions.length > 0 
+						? filteredOptions.map(renderOption)
+						: html`<div class="select-empty">No options found</div>`
+					}
 				</div>
 			</div>
 		`;
 
-		// Add event listeners
+		render(template, this.shadowRoot!);
+
 		const trigger = this.shadowRoot!.querySelector('.select-trigger');
 		const searchInput = this.shadowRoot!.querySelector('.select-search') as HTMLInputElement;
 		const options = this.shadowRoot!.querySelectorAll('.select-option:not(.disabled)');

@@ -1,4 +1,6 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
+import { classMap } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 
 class UIPagination extends BaseComponent {
@@ -90,17 +92,13 @@ class UIPagination extends BaseComponent {
 			return Array.from({ length: total }, (_, i) => i + 1);
 		}
 
-		// Always show first page, last page, current page, and pages around current
 		const pages: (number | string)[] = [];
 
 		if (current <= 3) {
-			// Near start: 1 2 3 4 ... last
 			pages.push(1, 2, 3, 4, '...', total);
 		} else if (current >= total - 2) {
-			// Near end: 1 ... last-3 last-2 last-1 last
 			pages.push(1, '...', total - 3, total - 2, total - 1, total);
 		} else {
-			// Middle: 1 ... current-1 current current+1 ... last
 			pages.push(1, '...', current - 1, current, current + 1, '...', total);
 		}
 
@@ -115,17 +113,36 @@ class UIPagination extends BaseComponent {
 		const startItem = (current - 1) * this._pageSize + 1;
 		const endItem = Math.min(current * this._pageSize, this._total);
 
-		this.shadowRoot!.innerHTML = `
+		const infoText = this._total > 0 
+			? `Showing ${startItem} to ${endItem} of ${this._total}` 
+			: 'No results';
+
+		const renderPageButton = (page: number | string) => {
+			if (page === '...') {
+				return html`<button class="page-btn ellipsis" disabled>...</button>`;
+			}
+			const isActive = page === current;
+			return html`
+				<button 
+					class=${classMap({ 'page-btn': true, 'active': isActive })}
+					data-page="${page}"
+					aria-label="Page ${page}"
+					?aria-current=${isActive}
+				>
+					${page}
+				</button>
+			`;
+		};
+
+		const template = html`
 			<style>${styles}</style>
 			<div class="pagination-container">
-				<div class="pagination-info">
-					${this._total > 0 ? `Showing ${startItem} to ${endItem} of ${this._total}` : 'No results'}
-				</div>
-				${total > 1 ? `
+				<div class="pagination-info">${infoText}</div>
+				${total > 1 ? html`
 				<nav class="pagination" role="navigation" aria-label="Pagination">
 					<button 
 						class="page-btn nav-btn" 
-						${current === 1 ? 'disabled' : ''}
+						?disabled=${current === 1}
 						data-page="prev"
 						aria-label="Previous page"
 					>
@@ -133,24 +150,10 @@ class UIPagination extends BaseComponent {
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
 						</svg>
 					</button>
-					${pages.map(page => {
-						if (page === '...') {
-							return `<button class="page-btn ellipsis" disabled>...</button>`;
-						}
-						return `
-							<button 
-								class="page-btn ${page === current ? 'active' : ''}"
-								data-page="${page}"
-								aria-label="Page ${page}"
-								${page === current ? 'aria-current="page"' : ''}
-							>
-								${page}
-							</button>
-						`;
-					}).join('')}
+					${pages.map(renderPageButton)}
 					<button 
 						class="page-btn nav-btn" 
-						${current === total ? 'disabled' : ''}
+						?disabled=${current === total}
 						data-page="next"
 						aria-label="Next page"
 					>
@@ -163,6 +166,7 @@ class UIPagination extends BaseComponent {
 			</div>
 		`;
 
+		render(template, this.shadowRoot!);
 		this.attachEventListeners();
 	}
 

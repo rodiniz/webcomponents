@@ -1,4 +1,6 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
+import { classMap } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 
 class UIModal extends BaseComponent {
@@ -51,9 +53,14 @@ class UIModal extends BaseComponent {
 	render(): void {
 		const open = this.isOpen.get();
 		const title = this.getAttribute('title') || '';
-		const size = this.getAttribute('size') || 'md'; // sm, md, lg, xl, full
+		const size = this.getAttribute('size') || 'md';
 
-		this.shadowRoot!.innerHTML = `
+		const backdropClasses = classMap({
+			'modal-backdrop': true,
+			'open': open
+		});
+
+		const template = html`
 			<style>
 				${styles}
 				
@@ -65,9 +72,9 @@ class UIModal extends BaseComponent {
 				}
 			</style>
 
-			<div class="modal-backdrop ${open ? 'open' : ''}" part="backdrop">
+			<div class=${backdropClasses} part="backdrop">
 				<div class="modal-content ${size}" part="content" @click="${(e: Event) => e.stopPropagation()}">
-					${title ? `
+					${title ? html`
 						<div class="modal-header" part="header">
 							<h2 class="modal-title">${title}</h2>
 							<button class="modal-close" part="close" aria-label="Close modal">
@@ -90,7 +97,8 @@ class UIModal extends BaseComponent {
 			</div>
 		`;
 
-		// Add event listeners after render
+		render(template, this.shadowRoot!);
+
 		const backdrop = this.shadowRoot!.querySelector('.modal-backdrop');
 		const closeBtn = this.shadowRoot!.querySelector('.modal-close');
 

@@ -1,10 +1,8 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
+import { classMap, styleMap } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 
-/**
- * ui-layout: Main layout container that manages flex direction
- * Supports: horizontal (header-footer with content), vertical, auto (detects based on children)
- */
 class UILayout extends BaseComponent {
 	connectedCallback(): void {
 		this.setAttribute('data-ui', 'layout');
@@ -29,14 +27,11 @@ class UILayout extends BaseComponent {
 		const direction = this.getDirection();
 		if (direction !== 'auto') return direction;
 
-		// Auto-detect based on children
 		const hasHeader = this.querySelector('ui-layout-header');
 		const hasFooter = this.querySelector('ui-layout-footer');
 		const hasSidebar = this.querySelector('ui-layout-sidebar');
 
-		// If has sidebar, use horizontal (sidebar on left/right, content flows down)
 		if (hasSidebar) return 'horizontal';
-		// If has header/footer only, use vertical
 		if (hasHeader || hasFooter) return 'vertical';
 
 		return 'vertical';
@@ -45,18 +40,17 @@ class UILayout extends BaseComponent {
 	render(): void {
 		const flexDirection = this.detectDirection() === 'horizontal' ? 'row' : 'column';
 
-		this.shadowRoot!.innerHTML = `
+		const template = html`
 			<style>${styles}</style>
-			<div class="layout-container" style="flex-direction: ${flexDirection}">
+			<div class="layout-container" style=${styleMap({ 'flex-direction': flexDirection })}>
 				<slot></slot>
 			</div>
 		`;
+
+		render(template, this.shadowRoot!);
 	}
 }
 
-/**
- * ui-layout-header: Header section with optional height
- */
 class UILayoutHeader extends BaseComponent {
 	connectedCallback(): void {
 		this.setAttribute('data-ui', 'layout-header');
@@ -79,18 +73,18 @@ class UILayoutHeader extends BaseComponent {
 
 	render(): void {
 		const height = this.getHeight();
-		this.shadowRoot!.innerHTML = `
+
+		const template = html`
 			<style>${styles}</style>
-			<header class="layout-header" style="height: ${height}">
+			<header class="layout-header" style=${styleMap({ 'height': height })}>
 				<slot></slot>
 			</header>
 		`;
+
+		render(template, this.shadowRoot!);
 	}
 }
 
-/**
- * ui-layout-footer: Footer section with optional height
- */
 class UILayoutFooter extends BaseComponent {
 	connectedCallback(): void {
 		this.setAttribute('data-ui', 'layout-footer');
@@ -113,18 +107,18 @@ class UILayoutFooter extends BaseComponent {
 
 	render(): void {
 		const height = this.getHeight();
-		this.shadowRoot!.innerHTML = `
+
+		const template = html`
 			<style>${styles}</style>
-			<footer class="layout-footer" style="height: ${height}">
+			<footer class="layout-footer" style=${styleMap({ 'height': height })}>
 				<slot></slot>
 			</footer>
 		`;
+
+		render(template, this.shadowRoot!);
 	}
 }
 
-/**
- * ui-layout-content: Main content area (grows to fill available space)
- */
 class UILayoutContent extends BaseComponent {
 	connectedCallback(): void {
 		this.setAttribute('data-ui', 'layout-content');
@@ -132,18 +126,17 @@ class UILayoutContent extends BaseComponent {
 	}
 
 	render(): void {
-		this.shadowRoot!.innerHTML = `
+		const template = html`
 			<style>${styles}</style>
 			<div class="layout-content">
 				<slot></slot>
 			</div>
 		`;
+
+		render(template, this.shadowRoot!);
 	}
 }
 
-/**
- * ui-layout-sidebar: Sidebar with collapse functionality
- */
 class UILayoutSidebar extends BaseComponent {
 	private isCollapsed = false;
 	private animating = false;
@@ -204,7 +197,6 @@ class UILayoutSidebar extends BaseComponent {
 			this.removeAttribute('collapsed');
 		}
 
-		// Dispatch custom event
 		this.dispatchEvent(
 			new CustomEvent('collapsed-change', {
 				detail: { collapsed: this.isCollapsed },
@@ -222,16 +214,20 @@ class UILayoutSidebar extends BaseComponent {
 		const width = this.getWidth();
 		const collapsedWidth = this.getCollapsedWidth();
 		const isCollapsible = this.isCollapsible();
-		const showToggle = isCollapsible && !this.isCollapsed;
 
-		this.shadowRoot!.innerHTML = `
+		const sidebarClasses = classMap({
+			'layout-sidebar': true,
+			'collapsed': this.isCollapsed
+		});
+
+		const template = html`
 			<style>${styles}</style>
-			<aside class="layout-sidebar ${this.isCollapsed ? 'collapsed' : ''}" 
-				style="--sidebar-width: ${width}; --sidebar-collapsed-width: ${collapsedWidth}">
+			<aside class=${sidebarClasses} 
+				style=${styleMap({ '--sidebar-width': width, '--sidebar-collapsed-width': collapsedWidth })}>
 				<div class="sidebar-content">
 					<slot></slot>
 				</div>
-				${isCollapsible ? `
+				${isCollapsible ? html`
 					<button class="sidebar-toggle" title="${this.isCollapsed ? 'Expand' : 'Collapse'}">
 						<svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -242,6 +238,7 @@ class UILayoutSidebar extends BaseComponent {
 			</aside>
 		`;
 
+		render(template, this.shadowRoot!);
 		this.attachEventListeners();
 	}
 }

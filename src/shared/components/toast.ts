@@ -1,4 +1,5 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
 import themeStyles from '../../styles/theme.css?inline';
 import toastStyles from './toast.css?inline';
 import feather from 'feather-icons';
@@ -10,7 +11,7 @@ interface ToastConfig {
   title: string;
   description?: string;
   type?: ToastType;
-  duration?: number; // milliseconds, 0 = no auto-dismiss
+  duration?: number;
   closable?: boolean;
 }
 
@@ -57,11 +58,6 @@ class UIToast extends BaseComponent {
     return feather.icons[iconName as keyof typeof feather.icons]?.toSvg() || '';
   }
 
-  /**
-   * Show a toast notification
-   * @param config Toast configuration
-   * @returns Toast ID for manual dismissal
-   */
   public show(config: ToastConfig): string {
     const {
       title,
@@ -105,13 +101,11 @@ class UIToast extends BaseComponent {
       container.appendChild(toastElement);
     }
 
-    // Setup close button
     if (closable) {
       const closeBtn = toastElement.querySelector('.toast-close');
       closeBtn?.addEventListener('click', () => this.dismiss(toastId));
     }
 
-    // Auto-dismiss
     let timer: number | undefined;
     if (duration > 0) {
       timer = window.setTimeout(() => {
@@ -121,7 +115,6 @@ class UIToast extends BaseComponent {
 
     this.toasts.set(toastId, { element: toastElement, timer });
 
-    // Dispatch event
     this.dispatchEvent(
       new CustomEvent('toast-show', {
         bubbles: true,
@@ -133,22 +126,16 @@ class UIToast extends BaseComponent {
     return toastId;
   }
 
-  /**
-   * Dismiss a specific toast
-   */
   public dismiss(toastId: string): void {
     const toast = this.toasts.get(toastId);
     if (!toast) return;
 
-    // Clear timer if exists
     if (toast.timer) {
       clearTimeout(toast.timer);
     }
 
-    // Add closing animation
     toast.element.classList.add('closing');
 
-    // Remove after animation
     setTimeout(() => {
       toast.element.remove();
       this.toasts.delete(toastId);
@@ -163,17 +150,11 @@ class UIToast extends BaseComponent {
     }, 300);
   }
 
-  /**
-   * Dismiss all toasts
-   */
   public dismissAll(): void {
     const toastIds = Array.from(this.toasts.keys());
     toastIds.forEach(id => this.dismiss(id));
   }
 
-  /**
-   * Convenience methods for different toast types
-   */
   public success(title: string, description?: string, duration?: number): string {
     return this.show({ title, description, type: 'success', duration });
   }
@@ -199,13 +180,15 @@ class UIToast extends BaseComponent {
   render(): void {
     const position = this.getPosition();
 
-    this.shadowRoot!.innerHTML = `
+    const template = html`
       <style>
         ${themeStyles}
         ${toastStyles}
       </style>
       <div class="toast-container ${position}"></div>
     `;
+
+    render(template, this.shadowRoot!);
   }
 }
 

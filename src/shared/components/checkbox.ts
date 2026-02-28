@@ -1,9 +1,12 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
+import { classMap } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 
 class UICheckbox extends BaseComponent {
 	private checked = this.useSignal(false);
 	private indeterminate = this.useSignal(false);
+	private checkboxEl: HTMLInputElement | null = null;
 
 	connectedCallback(): void {
 		this.setAttribute('data-ui', 'checkbox');
@@ -11,7 +14,7 @@ class UICheckbox extends BaseComponent {
 	}
 
 	static get observedAttributes(): string[] {
-		return ['checked', 'disabled', 'indeterminate'];
+		return ['checked', 'disabled', 'indeterminate', 'label', 'size'];
 	}
 
 	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
@@ -24,10 +27,9 @@ class UICheckbox extends BaseComponent {
 		this.render();
 	}
 
-	private handleChange(): void {
+	private handleChange = (): void => {
 		if (this.hasAttribute('disabled')) return;
 
-		// Clear indeterminate state on user interaction
 		if (this.indeterminate.get()) {
 			this.indeterminate.set(false);
 			this.removeAttribute('indeterminate');
@@ -47,7 +49,7 @@ class UICheckbox extends BaseComponent {
 			composed: true,
 			detail: { checked: newChecked }
 		}));
-	}
+	};
 
 	public setChecked(checked: boolean): void {
 		this.checked.set(checked);
@@ -74,24 +76,35 @@ class UICheckbox extends BaseComponent {
 		const indeterminate = this.indeterminate.get();
 		const disabled = this.hasAttribute('disabled');
 		const label = this.getAttribute('label') || '';
-		const size = this.getAttribute('size') || 'md'; // sm, md, lg
+		const size = this.getAttribute('size') || 'md';
 
-		const sizeClasses = {
-			sm: 'size-sm',
-			md: 'size-md',
-			lg: 'size-lg'
-		};
+		const containerClasses = classMap({
+			'checkbox-container': true,
+			'size-sm': size === 'sm',
+			'size-md': size === 'md',
+			'size-lg': size === 'lg'
+		});
 
-		this.shadowRoot!.innerHTML = `
+		const boxClasses = classMap({
+			'checkbox-box': true,
+			'size-sm': size === 'sm',
+			'size-md': size === 'md',
+			'size-lg': size === 'lg',
+			'checked': checked,
+			'indeterminate': indeterminate,
+			'disabled': disabled
+		});
+
+		const template = html`
 			<style>${styles}</style>
 
-			<label class="checkbox-container ${sizeClasses[size as keyof typeof sizeClasses]}">
+			<label class=${containerClasses}>
 				<input 
 					type="checkbox" 
-					${checked ? 'checked' : ''}
-					${disabled ? 'disabled' : ''}
+					?checked=${checked}
+					?disabled=${disabled}
 				>
-				<div class="checkbox-box ${sizeClasses[size as keyof typeof sizeClasses]} ${checked ? 'checked' : ''} ${indeterminate ? 'indeterminate' : ''} ${disabled ? 'disabled' : ''}" part="checkbox">
+				<div class=${boxClasses} part="checkbox">
 					<svg class="checkbox-icon check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
 						<polyline points="20 6 9 17 4 12"></polyline>
 					</svg>
@@ -99,11 +112,12 @@ class UICheckbox extends BaseComponent {
 						<line x1="5" y1="12" x2="19" y2="12"></line>
 					</svg>
 				</div>
-				${label ? `<span class="checkbox-label">${label}</span>` : '<slot></slot>'}
+				${label ? html`<span class="checkbox-label">${label}</span>` : html`<slot></slot>`}
 			</label>
 		`;
 
-		// Add event listener
+		render(template, this.shadowRoot!);
+		
 		const container = this.shadowRoot!.querySelector('.checkbox-container');
 		container?.addEventListener('click', (e) => {
 			e.preventDefault();

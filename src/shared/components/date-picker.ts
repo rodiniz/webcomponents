@@ -1,4 +1,6 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
+import { classMap } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 
 type DateFormat = 'YYYY-MM-DD' | 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'DD-MM-YYYY' | 'MM-DD-YYYY';
@@ -23,17 +25,14 @@ class UIDatePicker extends BaseComponent {
 	attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
 		if (!this.isComponentConnected || oldValue === newValue) return;
 		
-		// Skip re-render if this is an internal update of the value
 		if (this.isInternalUpdate && name === 'value') {
 			this.isInternalUpdate = false;
 			return;
 		}
 		
-		// For value changes from outside, just update the inputs without full re-render
 		if (name === 'value') {
 			this.updateInputValues();
 		} else {
-			// For other attribute changes, do a full re-render
 			this.render();
 		}
 	}
@@ -91,9 +90,6 @@ class UIDatePicker extends BaseComponent {
 		return this.hasAttribute('disabled');
 	}
 
-	/**
-	 * Convert date from ISO format (YYYY-MM-DD) to specified format
-	 */
 	private formatDate(isoDate: string, format: DateFormat): string {
 		if (!isoDate) return '';
 
@@ -117,136 +113,104 @@ class UIDatePicker extends BaseComponent {
 		}
 	}
 
-	/**
-	 * Convert date from specified format to ISO format (YYYY-MM-DD)
-	 */
-	private parseDate(formattedDate: string, format: DateFormat): string {
-		if (!formattedDate) return '';
-
-		let parts: string[];
-		let year: string, month: string, day: string;
-
-		switch (format) {
-			case 'DD/MM/YYYY':
-				parts = formattedDate.split('/');
-				if (parts.length !== 3) return '';
-				[day, month, year] = parts;
-				break;
-			case 'MM/DD/YYYY':
-				parts = formattedDate.split('/');
-				if (parts.length !== 3) return '';
-				[month, day, year] = parts;
-				break;
-			case 'DD-MM-YYYY':
-				parts = formattedDate.split('-');
-				if (parts.length !== 3) return '';
-				[day, month, year] = parts;
-				break;
-			case 'MM-DD-YYYY':
-				parts = formattedDate.split('-');
-				if (parts.length !== 3) return '';
-				[month, day, year] = parts;
-				break;
-			case 'YYYY-MM-DD':
-			default:
-				return formattedDate;
-		}
-
-		// Pad with zeros if needed
-		month = month.padStart(2, '0');
-		day = day.padStart(2, '0');
-
-		return `${year}-${month}-${day}`;
-	}
-
 	private attachEventListeners(): void {
-		if (!this.shadowRoot) return;
-
-		const textInput = this.shadowRoot.querySelector('.formatted-input') as HTMLInputElement;
-		const hiddenInput = this.shadowRoot.querySelector('input[type="date"]') as HTMLInputElement;
-		const calendarBtn = this.shadowRoot.querySelector('.calendar-btn') as HTMLElement;
+		const textInput = this.shadowRoot!.querySelector('.formatted-input') as HTMLInputElement;
+		const hiddenInput = this.shadowRoot!.querySelector('input[type="date"]') as HTMLInputElement;
+		const calendarBtn = this.shadowRoot!.querySelector('.calendar-btn') as HTMLElement;
 
 		if (!textInput || !hiddenInput) return;
 
-		// Text input for formatted display
-		const handleTextInput = () => {
-			const formatted = textInput.value;
-			const format = this.getFormat();
-			const isoDate = this.parseDate(formatted, format);
+		if (hiddenInput) {
+			hiddenInput.style.pointerEvents = 'none';
+		}
 
-			if (this.isValidDate(isoDate)) {
-				hiddenInput.value = isoDate;
-				textInput.classList.remove('invalid');
-				this.dispatchDateChange(isoDate);
-			} else if (formatted === '') {
-				hiddenInput.value = '';
-				textInput.classList.remove('invalid');
-				this.dispatchDateChange('');
-			} else {
-				textInput.classList.add('invalid');
-			}
+		const handleTextInput = () => {
+			this.handleInput(textInput.value);
 		};
 
+		textInput.addEventListener('input', handleTextInput);
 		textInput.addEventListener('blur', handleTextInput);
-		textInput.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter') {
-				handleTextInput();
-				textInput.blur();
-			}
-		});
 
-		// Hidden date input for calendar picker
-		hiddenInput.addEventListener('change', (e) => {
-			const target = e.target as HTMLInputElement;
-			const isoDate = target.value;
-			const format = this.getFormat();
-			const formattedDate = this.formatDate(isoDate, format);
-			
-			textInput.value = formattedDate;
-			textInput.classList.remove('invalid');
-			this.dispatchDateChange(isoDate);
-		});
-
-		// Calendar button to trigger native picker
 		if (calendarBtn) {
 			calendarBtn.addEventListener('click', async (e) => {
 				e.preventDefault();
 				e.stopPropagation();
 				
-				// Temporarily enable pointer events for the click
-				hiddenInput.style.pointerEvents = 'auto';
+				if (this.isDisabled()) return;
+
+				if (hiddenInput) {
+					hiddenInput.style.pointerEvents = 'auto';
+				}
 				
 				try {
-					// Try modern showPicker API first
-					if (typeof hiddenInput.showPicker === 'function') {
-						hiddenInput.showPicker();
+					if (typeof hiddenInput?.showPicker === 'function') {
+						hiddenInput?.showPicker();
 					} else {
-						// Fallback: focus and click
-						hiddenInput.focus();
-						hiddenInput.click();
+						hiddenInput?.focus();
+						hiddenInput?.click();
 					}
 				} catch (error) {
-					console.log('Date picker error:', error);
-					// Last resort fallback
-					hiddenInput.focus();
-					hiddenInput.click();
+					hiddenInput?.focus();
+					hiddenInput?.click();
 				} finally {
-					// Restore pointer events
 					setTimeout(() => {
-						hiddenInput.style.pointerEvents = 'none';
+						if (hiddenInput) {
+							hiddenInput.style.pointerEvents = 'none';
+						}
 					}, 100);
 				}
 			});
 		}
+
+		hiddenInput?.addEventListener('change', () => {
+			const isoDate = hiddenInput.value;
+			this.handleDateChange(isoDate);
+		});
 	}
 
-	private isValidDate(isoDate: string): boolean {
-		if (!isoDate) return false;
-		const date = new Date(isoDate);
-		return date instanceof Date && !isNaN(date.getTime());
+	private handleInput(value: string): void {
+		const format = this.getFormat();
+		
+		const isoDate = this.parseDate(value, format);
+		
+		if (isoDate) {
+			this.handleDateChange(isoDate);
+		}
 	}
 
-	private dispatchDateChange(isoDate: string): void {
+	private parseDate(value: string, format: DateFormat): string | null {
+		if (!value) return null;
+		
+		let day: number, month: number, year: number;
+		
+		if (format === 'YYYY-MM-DD') {
+			const parts = value.split('-');
+			if (parts.length !== 3) return null;
+			[year, month, day] = parts.map(Number);
+		} else if (format === 'DD/MM/YYYY' || format === 'DD-MM-YYYY') {
+			const separator = format === 'DD/MM/YYYY' ? '/' : '-';
+			const parts = value.split(separator);
+			if (parts.length !== 3) return null;
+			[day, month, year] = parts.map(Number);
+		} else {
+			const separator = format === 'MM/DD/YYYY' ? '/' : '-';
+			const parts = value.split(separator);
+			if (parts.length !== 3) return null;
+			[month, day, year] = parts.map(Number);
+		}
+		
+		if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+		
+		const date = new Date(year, month - 1, day);
+		if (isNaN(date.getTime())) return null;
+		
+		const fullYear = year < 100 ? 2000 + year : year;
+		return `${fullYear}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+	}
+
+	private handleDateChange(isoDate: string): void {
+		if (!isoDate) return;
+		
 		const format = this.getFormat();
 		const formattedDate = this.formatDate(isoDate, format);
 
@@ -262,37 +226,24 @@ class UIDatePicker extends BaseComponent {
 			})
 		);
 
-		// Update attribute without triggering re-render
 		this.isInternalUpdate = true;
 		this.setAttribute('value', isoDate);
 	}
 
-	/**
-	 * Get the current value in ISO format (YYYY-MM-DD)
-	 */
 	getISOValue(): string {
 		return this.getValue();
 	}
 
-	/**
-	 * Get the current value in the specified format
-	 */
 	getFormattedValue(): string {
 		const isoDate = this.getValue();
 		const format = this.getFormat();
 		return this.formatDate(isoDate, format);
 	}
 
-	/**
-	 * Set the date value (accepts ISO format)
-	 */
 	setValue(isoDate: string): void {
 		this.setAttribute('value', isoDate);
 	}
 
-	/**
-	 * Clear the date value
-	 */
 	clear(): void {
 		this.setAttribute('value', '');
 	}
@@ -308,23 +259,28 @@ class UIDatePicker extends BaseComponent {
 		const formattedValue = this.formatDate(value, format);
 		const hasLabel = label !== '';
 
-		this.shadowRoot!.innerHTML = `
+		const wrapperClasses = classMap({
+			'date-input-wrapper': true,
+			'disabled': disabled
+		});
+
+		const template = html`
 			<style>${styles}</style>
 			<div class="date-picker-container">
-				${hasLabel ? `<label class="date-picker-label">${label}</label>` : ''}
-				<div class="date-input-wrapper ${disabled ? 'disabled' : ''}">
+				${hasLabel ? html`<label class="date-picker-label">${label}</label>` : ''}
+				<div class=${wrapperClasses}>
 					<input
 						type="text"
 						class="formatted-input"
 						part="input"
 						value="${formattedValue}"
 						placeholder="${placeholder}"
-						${disabled ? 'disabled' : ''}
+						?disabled=${disabled}
 					/>
 					<button 
 						class="calendar-btn" 
 						type="button"
-						${disabled ? 'disabled' : ''}
+						?disabled=${disabled}
 						title="Open calendar"
 					>
 						<svg class="calendar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,16 +291,16 @@ class UIDatePicker extends BaseComponent {
 						type="date"
 						class="hidden-date-input"
 						value="${value}"
-						${min ? `min="${min}"` : ''}
-						${max ? `max="${max}"` : ''}
-						${disabled ? 'disabled' : ''}
+						min=${min}
+						max=${max}
+						?disabled=${disabled}
 					/>
 				</div>
 				<div class="format-label">Format: ${format}</div>
 			</div>
 		`;
 		
-		// Attach event listeners after DOM is created
+		render(template, this.shadowRoot!);
 		this.attachEventListeners();
 		this.hasRendered = true;
 	}

@@ -23,13 +23,20 @@
     "build:prod": "vite build --mode production",
     "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json && node scripts/copy-lib-assets.mjs",
     "preview": "vite preview",
-    "preview:prod": "vite preview --port 4173"
+    "preview:prod": "vite preview --port 4173",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
   },
   "devDependencies": {
     "@types/feather-icons": "^4.29.4",
     "@types/node": "^25.3.2",
+    "@vitest/ui": "^4.0.18",
+    "jsdom": "^28.1.0",
+    "lit-html": "^3.3.2",
     "typescript": "^5.9.3",
-    "vite": "^5.4.21"
+    "vite": "^5.4.21",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "feather-icons": "^4.29.2"

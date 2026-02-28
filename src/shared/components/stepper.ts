@@ -1,4 +1,6 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
+import { classMap } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 
 type StepperOrientation = 'horizontal' | 'vertical';
@@ -116,33 +118,50 @@ class UIStepper extends BaseComponent {
 		const total = steps.length;
 		const activeIndex = this.getActiveIndex(total);
 
-		this.shadowRoot!.innerHTML = `
+		const renderStep = (step: StepperStep, index: number) => {
+			const state = this.resolveState(step, index, activeIndex);
+			const isActive = state === 'active';
+			const disabled = !!step.disabled;
+
+			const stepClasses = classMap({
+				'step': true,
+				[state]: true,
+				'disabled': disabled
+			});
+
+			return html`
+				<li class=${stepClasses} data-state="${state}">
+					<button 
+						class="step-trigger" 
+						data-index="${index}" 
+						?disabled=${disabled}
+						aria-current="${isActive ? 'step' : 'false'}"
+					>
+						<span class="step-node">${index + 1}</span>
+						<span class="step-text">
+							<span class="step-title">${this.escapeHtml(step.title || `Step ${index + 1}`)}</span>
+							${step.description ? html`<span class="step-desc">${this.escapeHtml(step.description)}</span>` : ''}
+						</span>
+					</button>
+					${index < total - 1 ? html`<span class="step-connector" aria-hidden="true"></span>` : ''}
+				</li>
+			`;
+		};
+
+		const template = html`
 			<style>${styles}</style>
 			<div class="stepper-wrap">
-				${total === 0 ? '<div class="stepper-empty">No steps configured</div>' : `
-					<ol class="stepper ${orientation} ${size}" role="list">
-						${steps.map((step, index) => {
-							const state = this.resolveState(step, index, activeIndex);
-							const isActive = state === 'active';
-							const disabled = step.disabled ? 'disabled' : '';
-
-							return `
-								<li class="step ${state} ${disabled}" data-state="${state}">
-									<button class="step-trigger" data-index="${index}" ${step.disabled ? 'disabled' : ''} aria-current="${isActive ? 'step' : 'false'}">
-										<span class="step-node">${index + 1}</span>
-										<span class="step-text">
-											<span class="step-title">${this.escapeHtml(step.title || `Step ${index + 1}`)}</span>
-											${step.description ? `<span class="step-desc">${this.escapeHtml(step.description)}</span>` : ''}
-										</span>
-									</button>
-									${index < total - 1 ? '<span class="step-connector" aria-hidden="true"></span>' : ''}
-								</li>
-							`;
-						}).join('')}
-					</ol>
-				`}
+				${total === 0 
+					? html`<div class="stepper-empty">No steps configured</div>` 
+					: html`
+						<ol class="stepper ${orientation} ${size}" role="list">
+							${steps.map(renderStep)}
+						</ol>
+					`}
 			</div>
 		`;
+
+		render(template, this.shadowRoot!);
 
 		this.shadowRoot!.querySelectorAll<HTMLButtonElement>('.step-trigger').forEach(button => {
 			button.addEventListener('click', () => {

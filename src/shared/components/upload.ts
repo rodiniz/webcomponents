@@ -1,4 +1,6 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
+import { classMap } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 
 class UIUpload extends BaseComponent {
@@ -88,17 +90,31 @@ class UIUpload extends BaseComponent {
 		const isDragging = this.isDragging.get();
 		const files = this.files.get();
 
-		this.shadowRoot!.innerHTML = `
+		const dropClasses = classMap({
+			'upload-drop': true,
+			'dragging': isDragging,
+			'disabled': disabled
+		});
+
+		const renderFileItem = (file: File, index: number) => html`
+			<li>
+				<span>${file.name}</span>
+				<span class="upload-meta">${this.formatSize(file.size)}</span>
+				<button class="upload-remove" data-index="${index}" type="button">Remove</button>
+			</li>
+		`;
+
+		const template = html`
 			<style>${styles}</style>
 			<div class="upload">
-				${label ? `<label class="upload-label">${label}</label>` : ''}
-				<div class="upload-drop ${isDragging ? 'dragging' : ''} ${disabled ? 'disabled' : ''}" part="dropzone">
+				${label ? html`<label class="upload-label">${label}</label>` : ''}
+				<div class=${dropClasses} part="dropzone">
 					<input
 						class="upload-input"
 						type="file"
-						${multiple ? 'multiple' : ''}
-						${accept ? `accept="${accept}"` : ''}
-						${disabled ? 'disabled' : ''}
+						?multiple=${multiple}
+						accept=${accept}
+						?disabled=${disabled}
 					>
 					<div class="upload-content">
 						<div class="upload-icon" aria-hidden="true">
@@ -111,30 +127,22 @@ class UIUpload extends BaseComponent {
 						<div class="upload-text">
 							<div class="upload-title">Drop files here or browse</div>
 							<div class="upload-sub">
-								${accept ? `Accepted: ${accept}` : 'Any file type supported'}
+								${accept ? html`Accepted: ${accept}` : 'Any file type supported'}
 							</div>
 						</div>
-						<button class="upload-btn" type="button" ${disabled ? 'disabled' : ''}>Browse</button>
+						<button class="upload-btn" type="button" ?disabled=${disabled}>Browse</button>
 					</div>
 				</div>
-				${helper ? `<div class="upload-helper">${helper}</div>` : ''}
-				${files.length ? `
+				${helper ? html`<div class="upload-helper">${helper}</div>` : ''}
+				${files.length ? html`
 					<ul class="upload-list">
-						${files
-							.map(
-								(file, index) => `
-								<li>
-									<span>${file.name}</span>
-									<span class="upload-meta">${this.formatSize(file.size)}</span>
-									<button class="upload-remove" data-index="${index}" type="button">Remove</button>
-								</li>
-							`
-							)
-							.join('')}
+						${files.map(renderFileItem)}
 					</ul>
 				` : ''}
 			</div>
 		`;
+
+		render(template, this.shadowRoot!);
 
 		const dropzone = this.shadowRoot!.querySelector('.upload-drop') as HTMLElement | null;
 		const input = this.shadowRoot!.querySelector('.upload-input') as HTMLInputElement | null;

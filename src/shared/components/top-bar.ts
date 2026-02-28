@@ -1,4 +1,6 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render } from 'lit-html';
+import { styleMap } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
 import topBarStyles from './top-bar.css?inline';
 
@@ -29,27 +31,27 @@ class UITopBar extends BaseComponent {
   }
 
   render(): void {
+    const title = this.getTitle();
     const subtitle = this.getSubtitle();
     const bgColor = this.getBgColor();
-    
-    this.shadowRoot!.innerHTML = `
+
+    const template = html`
       <style>
         ${themeStyles}
         ${topBarStyles}
-        :host {
-          background: ${bgColor};
-        }
       </style>
-      <div class="top-bar">
+      <div class="top-bar" style=${styleMap({ 'background': bgColor })}>
         <div class="title-section">
-          <h1 class="page-title">${this.getTitle()}</h1>
-          ${subtitle ? `<p class="page-subtitle">${subtitle}</p>` : ''}
+          <h1 class="page-title">${title}</h1>
+          ${subtitle ? html`<p class="page-subtitle">${subtitle}</p>` : ''}
         </div>
         <div class="actions-slot">
           <slot></slot>
         </div>
       </div>
     `;
+
+    render(template, this.shadowRoot!);
   }
 }
 

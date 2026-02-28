@@ -7,10 +7,11 @@ A lightweight, framework-agnostic web components library built with vanilla Type
 ✨ **Native Web Components** - Built on standard Custom Elements API  
 ⚡ **Reactive Signals** - Built-in signal-based reactivity system  
 🎨 **Theme Support** - CSS custom properties for easy theming  
-📦 **Zero Dependencies** - No framework required  
+📦 **Zero Runtime Dependencies** - No framework required  
 🔒 **TypeScript** - Full type safety and IntelliSense support  
 🎯 **Tree-shakeable** - Import only what you need  
-♿ **Accessible** - ARIA attributes and keyboard navigation
+♿ **Accessible** - ARIA attributes and keyboard navigation  
+🚀 **lit-html Templates** - Efficient partial DOM updates
 
 ## 🚀 Live Demo & Component Documentation
 
@@ -191,6 +192,80 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `;
 ```
+
+### Templating with lit-html
+
+The library uses **lit-html** for type-safe, efficient templating. This provides partial DOM updates (only changing what's needed) instead of full re-renders.
+
+#### Basic Usage
+
+```typescript
+import { BaseComponent } from '@diniz/webcomponents';
+import { html, render } from 'lit-html';
+import { classMap, styleMap } from '@diniz/webcomponents';
+
+class MyComponent extends BaseComponent {
+  private name = 'World';
+
+  render() {
+    const classes = classMap({
+      'greeting': true,
+      'highlighted': this.isActive
+    });
+
+    const template = html`
+      <div class=${classes} style=${styleMap({ color: 'blue' })}>
+        Hello, ${this.name}!
+      </div>
+    `;
+
+    render(template, this.shadowRoot!);
+  }
+}
+```
+
+#### Helper Functions
+
+- **`classMap`**: Conditionally apply CSS classes
+- **`styleMap`**: Conditionally apply inline styles
+- **`ifDefined`**: Render value only if defined (not null/undefined)
+- **`repeat`**: Efficiently render lists
+
+```typescript
+import { html, classMap, styleMap, ifDefined, repeat } from '@diniz/webcomponents';
+
+// Dynamic classes
+const classes = classMap({
+  'active': this.isActive,
+  'disabled': this.isDisabled
+});
+
+// Dynamic styles  
+const styles = styleMap({
+  'color': this.textColor,
+  'font-size': this.fontSize || ''
+});
+
+// Conditional rendering
+const label = ifDefined(this.labelText);
+
+// List rendering
+const items = repeat(this.items, 
+  (item) => item.id,
+  (item) => html`<li>${item.name}</li>`
+);
+```
+
+#### Performance Benefits
+
+| Feature | innerHTML (old) | lit-html (new) |
+|---------|----------------|----------------|
+| Partial updates | Full DOM rebuild | Only changed parts |
+| Template caching | None | Parsed once, reused |
+| Event handlers | Destroyed/recreated | Stable references |
+| Bundle size | +0KB | ~3KB minified |
+
+For complex components like tables, forms, and lists, lit-html provides significant performance improvements by avoiding full re-renders on every state change.
 
 ### Adding Routing to Your App
 

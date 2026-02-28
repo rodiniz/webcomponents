@@ -150,7 +150,7 @@ class TableDemo extends BaseComponent {
 			}`;
 		}		
 
-		const table = queryTable(this.shadowRoot, '#demo-table');
+		const table = this.shadowRoot!.querySelector('#demo-table') as any;
 
 		if (table && this.data) {
 			table.data = {

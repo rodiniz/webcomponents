@@ -1,4 +1,5 @@
 import { BaseComponent } from '../../core/base-component';
+import { html, render, nothing, unsafeHTML } from '../../core/template';
 import feather from 'feather-icons';
 import styles from '../../styles/theme.css?inline';
 
@@ -229,41 +230,41 @@ class AppSidebar extends BaseComponent {
   }
 
   render(): void {
-    const navLinks = this.navItems.map(item => `
+    const navLinks = this.navItems.map(item => html`
       <a 
         class="sidebar-link ${item.active ? 'active' : ''}" 
         href="${item.href}" 
         data-link
       >
-        <span class="link-icon">${this.renderIcon(item.icon)}</span>
+        <span class="link-icon">${unsafeHTML(this.renderIcon(item.icon))}</span>
         ${item.label}
       </a>
-    `).join('');
+    `);
 
-    const footerLinks = this.footerItems.map(item => `
+    const footerLinks = this.footerItems.map(item => html`
       <a 
         class="sidebar-link" 
         href="${item.href}" 
         target="_blank"
         rel="noopener"
       >
-        <span class="link-icon">${this.renderIcon(item.icon)}</span>
+        <span class="link-icon">${unsafeHTML(this.renderIcon(item.icon))}</span>
         ${item.label}
       </a>
-    `).join('');
+    `);
 
-    const footerSection = this.footerItems.length > 0 ? `
+    const footerSection = this.footerItems.length > 0 ? html`
       <div class="sidebar-footer">
         ${footerLinks}
       </div>
-    ` : '';
+    ` : nothing;
 
-    this.shadowRoot!.innerHTML = `
+    const template = html`
       <style>${styles}${sidebarStyles}</style>
       <aside class="sidebar">
         <div class="sidebar-brand">
           <div class="brand-icon">
-            ${this.renderIcon('hexagon')}
+            ${unsafeHTML(this.renderIcon('hexagon'))}
           </div>
           <div>
             <div class="brand-text">UI Kit</div>
@@ -279,6 +280,8 @@ class AppSidebar extends BaseComponent {
         ${footerSection}
       </aside>
     `;
+
+    render(template, this.shadowRoot!);
   }
 }
 
