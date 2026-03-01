@@ -1307,7 +1307,10 @@ input[type="checkbox"] {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  z-index: 100;
+}
+
+.date-picker-container.is-open {
+  z-index: 1000;
 }
 
 .date-input-wrapper {
@@ -1364,14 +1367,127 @@ input[type="checkbox"] {
 }
 
 .hidden-date-input {
+  display: none;
+}
+
+.calendar-dropdown {
   position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  top: 0;
+  top: calc(100% + 8px);
   left: 0;
-  pointer-events: none;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
+  padding: 1rem;
+  width: 280px;
+  z-index: 1000;
+  animation: slideUp 0.2s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.calendar-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-ink);
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.calendar-nav-btn {
+  padding: 0.4rem;
+  border: none;
+  background: transparent;
   cursor: pointer;
+  border-radius: 6px;
+  color: var(--color-ink);
+  opacity: 0.6;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-nav-btn:hover {
+  background: var(--color-muted);
+  opacity: 1;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-day-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-align: center;
+  padding-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-ink);
+}
+
+.calendar-day:hover:not(.disabled):not(.selected) {
+  background: var(--color-muted);
+}
+
+.calendar-day.other-month {
+  color: #cbd5e1;
+}
+
+.calendar-day.selected {
+  background: var(--color-primary);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(36, 236, 113, 0.3);
+}
+
+.calendar-day.today {
+  color: var(--color-primary);
+  font-weight: 700;
+  position: relative;
+}
+
+.calendar-day.today::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+.calendar-day.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 .calendar-btn {
@@ -1397,6 +1513,17 @@ input[type="checkbox"] {
 .calendar-btn:disabled {
   cursor: not-allowed;
   opacity: 0.3;
+}
+
+.date-input-wrapper {
+  pointer-events: auto;
+}
+
+/* Restore pointer events for interaction */
+.formatted-input,
+.calendar-btn,
+.calendar-icon {
+  pointer-events: auto;
 }
 
 .calendar-icon {
