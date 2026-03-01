@@ -45,8 +45,8 @@ export class UIRadio extends LitElement {
       justify-content: center;
       flex-shrink: 0;
       border-radius: 50%;
-      background: #ffffff;
-      border: 2px solid #cbd5e1;
+      background: var(--color-page-bg, hsl(var(--background)));
+      border: 2px solid var(--color-border, hsl(var(--border)));
       transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
       box-sizing: border-box;
     }
@@ -102,7 +102,7 @@ export class UIRadio extends LitElement {
     .radio-description {
       display: block;
       font-size: 0.8125rem;
-      color: var(--muted-foreground, #64748b);
+      color: var(--color-text-muted, hsl(var(--muted-foreground)));
       line-height: 1.4;
       margin-top: 2px;
     }

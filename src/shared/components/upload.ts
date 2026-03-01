@@ -11,6 +11,7 @@ export class UIUpload extends LitElement {
       /* ensure container is positioned so input does not float outside */
       .upload {
         position: relative;
+        margin: 2rem 0;
       }
     `
   ];

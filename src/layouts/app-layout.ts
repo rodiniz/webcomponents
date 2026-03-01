@@ -4,7 +4,9 @@ import layoutStyles from './app-layout.css?inline';
 import '../shared/components/sidebar';
 import '../shared/components/top-bar';
 import '../shared/components/button';
+import '../shared/components/select';
 import { html, render } from '../core/template';
+import { THEME_LIST, applyTheme } from '../core/theme-service';
 import type { RouteOld } from '../core/router';
 
 export const routes: RouteOld[] = [
@@ -159,10 +161,28 @@ class AppLayout extends BaseComponent {
     }
   };
 
+  private handleThemeChange = (e: CustomEvent): void => {
+    const theme = e.detail?.value;
+    if (theme) {
+      applyTheme(theme as any);
+      this.render();
+    }
+  };
+
   render(): void {
     const template = html`
       <style>${styles}${layoutStyles}</style>
-      <ui-top-bar .title=${this.pageTitle} .subtitle=${this.pageSubtitle} bg-color="#747499ff"></ui-top-bar>
+      <ui-top-bar .title=${this.pageTitle} .subtitle=${this.pageSubtitle} bg-color="#747499ff">
+        <ui-select 
+          size="small"
+          id="themeSelect"
+          label="Theme"
+          placeholder="Select theme..."
+          value="zinc"
+          .options=${THEME_LIST}
+          @select-change=${this.handleThemeChange}
+        ></ui-select>
+      </ui-top-bar>
       <div class="layout-container">
         <ui-sidebar 
           .brand=${'Web Components'} 

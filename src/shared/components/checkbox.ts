@@ -30,9 +30,9 @@ export class UICheckbox extends LitElement {
       /* default size ensures a visible container even if size class is missing */
       width: 18px;
       height: 18px;
-      border: 2px solid #cbd5e1;
+      border: 2px solid var(--color-border, hsl(var(--border)));
       border-radius: 4px;
-      background: white;
+      background: var(--color-page-bg, hsl(var(--background)));
       transition: all 0.2s;
       flex-shrink: 0;
       box-sizing: border-box;
@@ -50,20 +50,20 @@ export class UICheckbox extends LitElement {
       height: 20px;
     }
     .checkbox-box:hover:not(.disabled) {
-      border-color: #24ec71;
+      border-color: var(--color-primary, hsl(var(--primary)));
     }
     .checkbox-box.checked,
     .checkbox-box.indeterminate {
-      background: #24ec71;
-      border-color: #24ec71;
+      background: var(--color-primary, hsl(var(--primary)));
+      border-color: var(--color-primary, hsl(var(--primary)));
     }
     .checkbox-box.disabled {
-      background: #f1f5f9;
+      background: var(--color-muted, hsl(var(--muted)));
       cursor: not-allowed;
     }
     .checkbox-icon {
       display: none;
-      color: white;
+      color: var(--color-primary-contrast, hsl(var(--primary-foreground)));
       position: absolute;
     }
     .checkbox-box.checked .checkbox-icon.check,
@@ -80,7 +80,7 @@ export class UICheckbox extends LitElement {
     }
     .checkbox-label {
       font-size: 0.95rem;
-      color: #0f172a;
+      color: var(--color-ink, hsl(var(--foreground)));
       line-height: 1.5;
     }
     .checkbox-container.size-sm .checkbox-label {

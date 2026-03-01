@@ -25,15 +25,15 @@ export class UIStepper extends LitElement {
   static styles = [
     unsafeCSS(themeStyles),
     css`
-      :host {
-        display: block;
-        width: 100%;
-        --stepper-primary: var(--color-primary, #24ec71);
-        --stepper-secondary: #f1f5f9;
-        --stepper-border: #e2e8f0;
-        --stepper-text: #0f172a;
-        --stepper-muted: #64748b;
-      }
+       :host {
+         display: block;
+         width: 100%;
+         --stepper-primary: var(--color-primary, hsl(var(--primary)));
+         --stepper-secondary: var(--color-muted, hsl(var(--muted)));
+         --stepper-border: var(--color-border, hsl(var(--border)));
+         --stepper-text: var(--color-ink, hsl(var(--foreground)));
+         --stepper-muted: var(--color-text-muted, hsl(var(--muted-foreground)));
+       }
 
       .stepper {
         display: flex;

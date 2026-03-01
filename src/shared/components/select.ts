@@ -38,8 +38,8 @@ export class UISelect extends LitElement {
         align-items: center;
         justify-content: space-between;
         padding: 0.65rem 1rem;
-        background: white;
-        border: 2px solid var(--color-border);
+        background: var(--color-page-bg, hsl(var(--background)));
+        border: 2px solid var(--color-border, hsl(var(--border)));
         border-radius: 8px;
         cursor: pointer;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -48,19 +48,19 @@ export class UISelect extends LitElement {
       }
 
       .select-container.open .select-display {
-        border-color: var(--color-primary);
+        border-color: var(--color-primary, hsl(var(--primary)));
         box-shadow: 0 0 0 4px rgba(36, 236, 113, 0.1);
       }
 
       .select-container.disabled .select-display {
-        background: var(--color-muted);
+        background: var(--color-muted, hsl(var(--muted)));
         cursor: not-allowed;
         opacity: 0.7;
       }
 
       .select-value {
         font-size: 0.95rem;
-        color: var(--color-ink);
+        color: var(--color-ink, hsl(var(--foreground)));
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -68,13 +68,13 @@ export class UISelect extends LitElement {
       }
 
       .select-container:not(.has-value) .select-value {
-        color: #94a3b8;
+        color: var(--color-text-muted, hsl(var(--muted-foreground)));
       }
 
       .select-arrow {
         width: 18px;
         height: 18px;
-        color: #64748b;
+        color: var(--color-text-muted, hsl(var(--muted-foreground)));
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         margin-left: 0.75rem;
         flex-shrink: 0;
@@ -82,7 +82,7 @@ export class UISelect extends LitElement {
 
       .select-container.open .select-arrow {
         transform: rotate(180deg);
-        color: var(--color-primary);
+        color: var(--color-primary, hsl(var(--primary)));
       }
 
       .select-dropdown {

@@ -162,6 +162,10 @@ export class ButtonDemo extends LitElement {
             <ui-button icon="download">Download</ui-button>
             <span class="label">icon with text</span>
           </div>
+           <div class="button-item">
+            <ui-button icon="download"></ui-button>
+            <span class="label">icon only</span>
+          </div>
         </div>
       </div>
 
@@ -181,43 +185,7 @@ export class ButtonDemo extends LitElement {
             <span class="label">disabled (secondary)</span>
           </div>
         </div>
-      </div>
-
-      <div class="demo-section">
-        <h2>Button Types</h2>
-        <div class="button-group">
-          <div class="button-item">
-            <ui-button type="button">Button</ui-button>
-            <span class="label">type="button"</span>
-          </div>
-          <div class="button-item">
-            <ui-button type="submit" variant="primary">Submit</ui-button>
-            <span class="label">type="submit"</span>
-          </div>
-          <div class="button-item">
-            <ui-button type="reset" variant="secondary">Reset</ui-button>
-            <span class="label">type="reset"</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="demo-section">
-        <h2>Combinations</h2>
-        <div class="button-group">
-          <div class="button-item">
-            <ui-button variant="primary" size="lg" icon="zap">Power</ui-button>
-            <span class="label">Large + Icon</span>
-          </div>
-          <div class="button-item">
-            <ui-button variant="secondary" size="sm" icon="settings">Config</ui-button>
-            <span class="label">Small + Icon</span>
-          </div>
-          <div class="button-item">
-            <ui-button variant="ghost" icon="info">Info</ui-button>
-            <span class="label">Ghost + Icon</span>
-          </div>
-        </div>
-      </div>
+      </div>          
     `;
   }
 }

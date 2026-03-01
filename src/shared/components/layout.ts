@@ -43,7 +43,7 @@ export class UILayoutHeader extends LitElement {
   static styles = css`
     :host {
       display: block;
-      background: var(--color-header, #44cbd7ff);
+      background: var(--color-header, hsl(var(--background)));
       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
       padding: 12px 24px;
     }
@@ -69,8 +69,7 @@ export class UILayoutSidebar extends LitElement {
   static styles = css`
     :host {
       display: block;
-      width: var(--sidebar-width, 220px);
-      background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+      background: linear-gradient(180deg, var(--color-nav-bg, #1f2937) 0%, var(--color-nav-bg, #111827) 100%);
       color: rgba(255, 255, 255, 0.7);
       padding: 16px 12px;
       box-sizing: border-box;
@@ -100,7 +99,7 @@ export class UILayoutSidebar extends LitElement {
     }
     ::slotted(.sidebar-item:hover) {
       background: rgba(255, 255, 255, 0.06);
-      color: #ffffff;
+      color: var(--color-nav-text, #ffffff);
     }
   `;
   render() {
@@ -113,7 +112,7 @@ export class UILayoutFooter extends LitElement {
   static styles = css`
     :host {
       display: block;
-      background: var(--color-footer, #f8fafc);
+      background: var(--color-footer, hsl(var(--background)));
       border-top: 1px solid rgba(0, 0, 0, 0.06);
       padding: 12px 24px;
     }
