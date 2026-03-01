@@ -1,204 +1,154 @@
-import { BaseComponent } from '../../core/base-component';
-import { html, render } from 'lit-html';
+import { LitElement, html, css, unsafeCSS } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
-import styles from '../../styles/theme.css?inline';
+import themeStyles from '../../styles/theme.css?inline';
 
-class UIUpload extends BaseComponent {
-	private files = this.useSignal<File[]>([]);
-	private isDragging = this.useSignal(false);
+@customElement('ui-upload')
+export class UIUpload extends LitElement {
+  static styles = [unsafeCSS(themeStyles)];
 
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'upload');
-		super.connectedCallback();
-	}
+  @property({ type: String }) accept: string = '';
+  @property({ type: Boolean }) multiple: boolean = false;
+  @property({ type: Boolean }) disabled: boolean = false;
+  @property({ type: String }) label: string = 'Drag and drop files here';
+  @property({ type: String }) helper: string = '';
+  @property({ type: String }) name: string = '';
 
-	static get observedAttributes(): string[] {
-		return ['accept', 'multiple', 'disabled', 'label', 'helper', 'name'];
-	}
+  @state() private files: File[] = [];
+  @state() private isDragging: boolean = false;
 
-	attributeChangedCallback(): void {
-		this.render();
-	}
+  connectedCallback(): void {
+    this.setAttribute('data-ui', 'upload');
+    super.connectedCallback();
+  }
 
-	get value(): string {
-		return this.files.get().map(file => file.name).join(', ');
-	}
+  get value(): string {
+    return this.files.map(file => file.name).join(', ');
+  }
 
-	get filesValue(): File[] {
-		return this.files.get();
-	}
+  get filesValue(): File[] {
+    return this.files;
+  }
 
-	set filesValue(files: File[]) {
-		this.setFiles(files);
-	}
+  set filesValue(files: File[]) {
+    this.setFiles(files);
+  }
 
-	public clear(): void {
-		this.setFiles([]);
-	}
+  public clear(): void {
+    this.files = [];
+  }
 
-	private isDisabled(): boolean {
-		return this.hasAttribute('disabled');
-	}
+  private setFiles(newFiles: File[]): void {
+    this.files = newFiles;
+    this.dispatchEvent(new CustomEvent('files-change', {
+      detail: { files: this.files },
+      bubbles: true,
+      composed: true
+    }));
+  }
 
-	private isMultiple(): boolean {
-		return this.hasAttribute('multiple');
-	}
+  private handleDragOver = (e: DragEvent): void => {
+    e.preventDefault();
+    if (!this.disabled) {
+      this.isDragging = true;
+    }
+  };
 
-	private getAccept(): string {
-		return this.getAttribute('accept') || '';
-	}
+  private handleDragLeave = (e: DragEvent): void => {
+    e.preventDefault();
+    this.isDragging = false;
+  };
 
-	private getLabel(): string {
-		return this.getAttribute('label') || 'Upload files';
-	}
+  private handleDrop = (e: DragEvent): void => {
+    e.preventDefault();
+    this.isDragging = false;
+    if (this.disabled) return;
 
-	private getHelper(): string {
-		return this.getAttribute('helper') || '';
-	}
+    const droppedFiles = e.dataTransfer?.files;
+    if (droppedFiles) {
+      this.processFiles(Array.from(droppedFiles));
+    }
+  };
 
-	private setFiles(files: File[]): void {
-		const finalFiles = this.isMultiple() ? files : files.slice(0, 1);
-		this.files.set(finalFiles);
-		this.dispatchEvent(
-			new CustomEvent('upload-change', {
-				bubbles: true,
-				composed: true,
-				detail: { files: finalFiles }
-			})
-		);
-	}
+  private handleInputChange = (e: Event): void => {
+    const input = e.target as HTMLInputElement;
+    if (input.files) {
+      this.processFiles(Array.from(input.files));
+    }
+  };
 
-	private formatSize(bytes: number): string {
-		if (bytes < 1024) return `${bytes} B`;
-		const kb = bytes / 1024;
-		if (kb < 1024) return `${kb.toFixed(1)} KB`;
-		return `${(kb / 1024).toFixed(1)} MB`;
-	}
+  private processFiles(newFiles: File[]): void {
+    let processedFiles: File[];
+    
+    if (this.multiple) {
+      processedFiles = [...this.files, ...newFiles];
+    } else {
+      processedFiles = newFiles;
+    }
+    
+    this.files = processedFiles;
+    
+    this.dispatchEvent(new CustomEvent('files-change', {
+      detail: { files: processedFiles },
+      bubbles: true,
+      composed: true
+    }));
+  }
 
-	private syncInputFiles(input: HTMLInputElement, files: File[]): void {
-		const dataTransfer = new DataTransfer();
-		files.forEach(file => dataTransfer.items.add(file));
-		input.files = dataTransfer.files;
-	}
+  private removeFile(index: number): void {
+    this.files = this.files.filter((_, i) => i !== index);
+    this.dispatchEvent(new CustomEvent('files-change', {
+      detail: { files: this.files },
+      bubbles: true,
+      composed: true
+    }));
+  }
 
-	render(): void {
-		const accept = this.getAccept();
-		const label = this.getLabel();
-		const helper = this.getHelper();
-		const disabled = this.isDisabled();
-		const multiple = this.isMultiple();
-		const isDragging = this.isDragging.get();
-		const files = this.files.get();
+  render() {
+    const containerClass = classMap({
+      'upload-container': true,
+      'dragging': this.isDragging,
+      'disabled': this.disabled,
+      'has-files': this.files.length > 0
+    });
 
-		const dropClasses = classMap({
-			'upload-drop': true,
-			'dragging': isDragging,
-			'disabled': disabled
-		});
-
-		const renderFileItem = (file: File, index: number) => html`
-			<li>
-				<span>${file.name}</span>
-				<span class="upload-meta">${this.formatSize(file.size)}</span>
-				<button class="upload-remove" data-index="${index}" type="button">Remove</button>
-			</li>
-		`;
-
-		const template = html`
-			<style>${styles}</style>
-			<div class="upload">
-				${label ? html`<label class="upload-label">${label}</label>` : ''}
-				<div class=${dropClasses} part="dropzone">
-					<input
-						class="upload-input"
-						type="file"
-						?multiple=${multiple}
-						accept=${accept}
-						?disabled=${disabled}
-					>
-					<div class="upload-content">
-						<div class="upload-icon" aria-hidden="true">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M12 16V4"></path>
-								<path d="M8 8l4-4 4 4"></path>
-								<path d="M4 16v4h16v-4"></path>
-							</svg>
-						</div>
-						<div class="upload-text">
-							<div class="upload-title">Drop files here or browse</div>
-							<div class="upload-sub">
-								${accept ? html`Accepted: ${accept}` : 'Any file type supported'}
-							</div>
-						</div>
-						<button class="upload-btn" type="button" ?disabled=${disabled}>Browse</button>
-					</div>
-				</div>
-				${helper ? html`<div class="upload-helper">${helper}</div>` : ''}
-				${files.length ? html`
-					<ul class="upload-list">
-						${files.map(renderFileItem)}
-					</ul>
-				` : ''}
-			</div>
-		`;
-
-		render(template, this.shadowRoot!);
-
-		const dropzone = this.shadowRoot!.querySelector('.upload-drop') as HTMLElement | null;
-		const input = this.shadowRoot!.querySelector('.upload-input') as HTMLInputElement | null;
-		const browseBtn = this.shadowRoot!.querySelector('.upload-btn') as HTMLButtonElement | null;
-		const removeButtons = this.shadowRoot!.querySelectorAll<HTMLButtonElement>('.upload-remove');
-
-		if (!dropzone || !input) return;
-
-		if (files.length) {
-			this.syncInputFiles(input, files);
-		} else {
-			input.value = '';
-		}
-
-		dropzone.addEventListener('dragover', (event) => {
-			if (disabled) return;
-			event.preventDefault();
-			this.isDragging.set(true);
-		});
-
-		dropzone.addEventListener('dragleave', () => {
-			this.isDragging.set(false);
-		});
-
-		dropzone.addEventListener('drop', (event) => {
-			if (disabled) return;
-			event.preventDefault();
-			this.isDragging.set(false);
-
-			const dropped = Array.from(event.dataTransfer?.files ?? []);
-			if (!dropped.length) return;
-			this.setFiles(dropped);
-			this.syncInputFiles(input, this.files.get());
-		});
-
-		input.addEventListener('change', () => {
-			const nextFiles = Array.from(input.files ?? []);
-			this.setFiles(nextFiles);
-		});
-
-		browseBtn?.addEventListener('click', () => {
-			if (disabled) return;
-			input.click();
-		});
-
-		removeButtons.forEach(button => {
-			button.addEventListener('click', () => {
-				const index = parseInt(button.dataset.index || '0', 10);
-				const nextFiles = this.files.get().filter((_, fileIndex) => fileIndex !== index);
-				this.setFiles(nextFiles);
-				this.syncInputFiles(input, nextFiles);
-			});
-		});
-	}
+    return html`
+      <div class=${containerClass}
+        @dragover=${this.handleDragOver}
+        @dragleave=${this.handleDragLeave}
+        @drop=${this.handleDrop}
+      >
+        <input
+          type="file"
+          class="upload-input"
+          accept=${this.accept}
+          ?multiple=${this.multiple}
+          ?disabled=${this.disabled}
+          @change=${this.handleInputChange}
+        />
+        <div class="upload-content">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div class="upload-label">${this.label}</div>
+          ${this.helper ? html`<div class="upload-helper">${this.helper}</div>` : ''}
+        </div>
+      </div>
+      ${this.files.length > 0 ? html`
+        <div class="file-list">
+          ${this.files.map((file, index) => html`
+            <div class="file-item">
+              <span class="file-name">${file.name}</span>
+              <span class="file-size">${(file.size / 1024).toFixed(1)} KB</span>
+              <button class="file-remove" @click=${() => this.removeFile(index)}>×</button>
+            </div>
+          `)}
+        </div>
+      ` : ''}
+    `;
+  }
 }
-
-export { UIUpload };
-
-customElements.define('ui-upload', UIUpload);

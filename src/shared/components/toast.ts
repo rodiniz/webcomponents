@@ -1,49 +1,21 @@
-import { BaseComponent } from '../../core/base-component';
-import { html, render } from 'lit-html';
+import { LitElement, html, css, unsafeCSS } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import themeStyles from '../../styles/theme.css?inline';
 import toastStyles from './toast.css?inline';
 import feather from 'feather-icons';
 
-type ToastType = 'success' | 'error' | 'warning' | 'info';
-type ToastPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'top-center' | 'bottom-center';
+@customElement('ui-toast')
+export class UIToast extends LitElement {
+  static styles = [unsafeCSS(themeStyles), unsafeCSS(toastStyles)];
 
-interface ToastConfig {
-  title: string;
-  description?: string;
-  type?: ToastType;
-  duration?: number;
-  closable?: boolean;
-}
+  @property({ type: String }) position: ToastPosition = 'top-right';
 
-class UIToast extends BaseComponent {
-  private toasts: Map<string, { element: HTMLElement; timer?: number }> = new Map();
+  @state() private toasts: ToastItem[] = [];
   private toastCounter = 0;
 
   connectedCallback(): void {
     this.setAttribute('data-ui', 'toast');
     super.connectedCallback();
-  }
-
-  static get observedAttributes(): string[] {
-    return ['position'];
-  }
-
-  attributeChangedCallback(): void {
-    this.render();
-  }
-
-  private getPosition(): ToastPosition {
-    const value = this.getAttribute('position');
-    if (
-      value === 'top-left' ||
-      value === 'bottom-right' ||
-      value === 'bottom-left' ||
-      value === 'top-center' ||
-      value === 'bottom-center'
-    ) {
-      return value;
-    }
-    return 'top-right';
   }
 
   private getIcon(type: ToastType): string {
@@ -56,6 +28,12 @@ class UIToast extends BaseComponent {
 
     const iconName = iconMap[type];
     return feather.icons[iconName as keyof typeof feather.icons]?.toSvg() || '';
+  }
+
+  private escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   public show(config: ToastConfig): string {
@@ -96,7 +74,7 @@ class UIToast extends BaseComponent {
       ` : ''}
     `;
 
-    const container = this.shadowRoot!.querySelector('.toast-container');
+    const container = this.shadowRoot?.querySelector('.toast-container');
     if (container) {
       container.appendChild(toastElement);
     }
@@ -113,7 +91,8 @@ class UIToast extends BaseComponent {
       }, duration);
     }
 
-    this.toasts.set(toastId, { element: toastElement, timer });
+    const toastItem: ToastItem = { id: toastId, element: toastElement, timer };
+    this.toasts = [...this.toasts, toastItem];
 
     this.dispatchEvent(
       new CustomEvent('toast-show', {
@@ -127,7 +106,7 @@ class UIToast extends BaseComponent {
   }
 
   public dismiss(toastId: string): void {
-    const toast = this.toasts.get(toastId);
+    const toast = this.toasts.find(t => t.id === toastId);
     if (!toast) return;
 
     if (toast.timer) {
@@ -138,7 +117,7 @@ class UIToast extends BaseComponent {
 
     setTimeout(() => {
       toast.element.remove();
-      this.toasts.delete(toastId);
+      this.toasts = this.toasts.filter(t => t.id !== toastId);
 
       this.dispatchEvent(
         new CustomEvent('toast-dismiss', {
@@ -151,7 +130,7 @@ class UIToast extends BaseComponent {
   }
 
   public dismissAll(): void {
-    const toastIds = Array.from(this.toasts.keys());
+    const toastIds = this.toasts.map(t => t.id);
     toastIds.forEach(id => this.dismiss(id));
   }
 
@@ -171,28 +150,11 @@ class UIToast extends BaseComponent {
     return this.show({ title, description, type: 'info', duration });
   }
 
-  private escapeHtml(text: string): string {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  render(): void {
-    const position = this.getPosition();
-
-    const template = html`
-      <style>
-        ${themeStyles}
-        ${toastStyles}
-      </style>
-      <div class="toast-container ${position}"></div>
+  render() {
+    return html`
+      <div class="toast-container ${this.position}"></div>
     `;
-
-    render(template, this.shadowRoot!);
   }
 }
 
-customElements.define('ui-toast', UIToast);
-
-export { UIToast };
 export type { ToastType, ToastPosition, ToastConfig };

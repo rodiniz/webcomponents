@@ -1,200 +1,147 @@
-import { BaseComponent } from '../../core/base-component';
-import { html, render } from 'lit-html';
+import { LitElement, html, css, unsafeCSS, nothing } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
-import styles from '../../styles/theme.css?inline';
+import themeStyles from '../../styles/theme.css?inline';
 
-class UIPagination extends BaseComponent {
-	private _total = 0;
-	private _currentPage = 1;
-	private _pageSize = 10;
+@customElement('ui-pagination')
+export class UIPagination extends LitElement {
+  static styles = [unsafeCSS(themeStyles)];
 
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'pagination');
-		super.connectedCallback();
-	}
+  @property({ type: Number }) total: number = 0;
+  @property({ type: Number, attribute: 'current-page' }) currentPage: number = 1;
+  @property({ type: Number, attribute: 'page-size' }) pageSize: number = 10;
 
-	static get observedAttributes(): string[] {
-		return ['total', 'current-page', 'page-size'];
-	}
+  connectedCallback(): void {
+    this.setAttribute('data-ui', 'pagination');
+    super.connectedCallback();
+  }
 
-	attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
-		switch (name) {
-			case 'total':
-				this._total = parseInt(newValue, 10) || 0;
-				break;
-			case 'current-page':
-				this._currentPage = parseInt(newValue, 10) || 1;
-				break;
-			case 'page-size':
-				this._pageSize = parseInt(newValue, 10) || 10;
-				break;
-		}
-		this.render();
-	}
+  get totalPages(): number {
+    return Math.ceil(this.total / this.pageSize);
+  }
 
-	get total(): number {
-		return this._total;
-	}
+  private handlePageChange(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+      return;
+    }
 
-	set total(value: number) {
-		this._total = value;
-		this.setAttribute('total', String(value));
-	}
+    this.currentPage = page;
 
-	get currentPage(): number {
-		return this._currentPage;
-	}
+    this.dispatchEvent(
+      new CustomEvent('page-change', {
+        detail: {
+          page,
+          pageSize: this.pageSize,
+          total: this.total,
+          totalPages: this.totalPages
+        },
+        bubbles: true,
+        composed: true
+      })
+    );
+  }
 
-	set currentPage(value: number) {
-		this._currentPage = value;
-		this.setAttribute('current-page', String(value));
-	}
+  private getPageNumbers(): (number | string)[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
 
-	get pageSize(): number {
-		return this._pageSize;
-	}
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
 
-	set pageSize(value: number) {
-		this._pageSize = value;
-		this.setAttribute('page-size', String(value));
-	}
+    const pages: (number | string)[] = [];
 
-	get totalPages(): number {
-		return Math.ceil(this._total / this._pageSize);
-	}
+    if (current <= 3) {
+      pages.push(1, 2, 3, 4, '...', total);
+    } else if (current >= total - 2) {
+      pages.push(1, '...', total - 3, total - 2, total - 1, total);
+    } else {
+      pages.push(1, '...', current - 1, current, current + 1, '...', total);
+    }
 
-	private handlePageChange(page: number): void {
-		if (page < 1 || page > this.totalPages || page === this._currentPage) {
-			return;
-		}
+    return pages;
+  }
 
-		this.currentPage = page;
+  private handleClick = (e: Event): void => {
+    const target = e.target as HTMLElement;
+    const button = target.closest('.page-btn') as HTMLButtonElement;
 
-		this.dispatchEvent(
-			new CustomEvent('page-change', {
-				detail: {
-					page,
-					pageSize: this._pageSize,
-					total: this._total,
-					totalPages: this.totalPages
-				},
-				bubbles: true,
-				composed: true
-			})
-		);
-	}
+    if (!button || button.disabled) return;
 
-	private getPageNumbers(): (number | string)[] {
-		const total = this.totalPages;
-		const current = this._currentPage;
+    const pageData = button.dataset.page;
 
-		if (total <= 7) {
-			return Array.from({ length: total }, (_, i) => i + 1);
-		}
+    if (pageData === 'prev') {
+      this.handlePageChange(this.currentPage - 1);
+    } else if (pageData === 'next') {
+      this.handlePageChange(this.currentPage + 1);
+    } else if (pageData) {
+      const page = parseInt(pageData, 10);
+      if (!isNaN(page)) {
+        this.handlePageChange(page);
+      }
+    }
+  };
 
-		const pages: (number | string)[] = [];
+  render() {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const pages = this.getPageNumbers();
 
-		if (current <= 3) {
-			pages.push(1, 2, 3, 4, '...', total);
-		} else if (current >= total - 2) {
-			pages.push(1, '...', total - 3, total - 2, total - 1, total);
-		} else {
-			pages.push(1, '...', current - 1, current, current + 1, '...', total);
-		}
+    const startItem = (current - 1) * this.pageSize + 1;
+    const endItem = Math.min(current * this.pageSize, this.total);
 
-		return pages;
-	}
+    const infoText = this.total > 0 
+      ? `Showing ${startItem} to ${endItem} of ${this.total}` 
+      : 'No results';
 
-	render(): void {
-		const total = this.totalPages;
-		const current = this._currentPage;
-		const pages = this.getPageNumbers();
+    const renderPageButton = (page: number | string) => {
+      if (page === '...') {
+        return html`<button class="page-btn ellipsis" disabled>...</button>`;
+      }
+      const isActive = page === current;
+      return html`
+        <button 
+          class=${classMap({ 'page-btn': true, 'active': isActive })}
+          data-page="${page}"
+          aria-label="Page ${page}"
+          aria-current=${isActive ? 'page' : nothing}
+        >
+          ${page}
+        </button>
+      `;
+    };
 
-		const startItem = (current - 1) * this._pageSize + 1;
-		const endItem = Math.min(current * this._pageSize, this._total);
-
-		const infoText = this._total > 0 
-			? `Showing ${startItem} to ${endItem} of ${this._total}` 
-			: 'No results';
-
-		const renderPageButton = (page: number | string) => {
-			if (page === '...') {
-				return html`<button class="page-btn ellipsis" disabled>...</button>`;
-			}
-			const isActive = page === current;
-			return html`
-				<button 
-					class=${classMap({ 'page-btn': true, 'active': isActive })}
-					data-page="${page}"
-					aria-label="Page ${page}"
-					?aria-current=${isActive}
-				>
-					${page}
-				</button>
-			`;
-		};
-
-		const template = html`
-			<style>${styles}</style>
-			<div class="pagination-container">
-				<div class="pagination-info">${infoText}</div>
-				${total > 1 ? html`
-				<nav class="pagination" role="navigation" aria-label="Pagination">
-					<button 
-						class="page-btn nav-btn" 
-						?disabled=${current === 1}
-						data-page="prev"
-						aria-label="Previous page"
-					>
-						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-						</svg>
-					</button>
-					${pages.map(renderPageButton)}
-					<button 
-						class="page-btn nav-btn" 
-						?disabled=${current === total}
-						data-page="next"
-						aria-label="Next page"
-					>
-						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-						</svg>
-					</button>
-				</nav>
-				` : ''}
-			</div>
-		`;
-
-		render(template, this.shadowRoot!);
-		this.attachEventListeners();
-	}
-
-	private attachEventListeners(): void {
-		if (!this.shadowRoot) return;
-
-		this.shadowRoot.addEventListener('click', (e) => {
-			const target = e.target as HTMLElement;
-			const button = target.closest('.page-btn') as HTMLButtonElement;
-
-			if (!button || button.disabled) return;
-
-			const pageData = button.dataset.page;
-
-			if (pageData === 'prev') {
-				this.handlePageChange(this._currentPage - 1);
-			} else if (pageData === 'next') {
-				this.handlePageChange(this._currentPage + 1);
-			} else if (pageData) {
-				const page = parseInt(pageData, 10);
-				if (!isNaN(page)) {
-					this.handlePageChange(page);
-				}
-			}
-		});
-	}
+    return html`
+      <div class="pagination-container" @click=${this.handleClick}>
+        <div class="pagination-info">${infoText}</div>
+        ${total > 1 ? html`
+        <nav class="pagination" role="navigation" aria-label="Pagination">
+          <button 
+            class="page-btn nav-btn" 
+            ?disabled=${current === 1}
+            data-page="prev"
+            aria-label="Previous page"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          ${pages.map(renderPageButton)}
+          <button 
+            class="page-btn nav-btn" 
+            ?disabled=${current === total}
+            data-page="next"
+            aria-label="Next page"
+          >
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </nav>
+        ` : ''}
+      </div>
+    `;
+  }
 }
 
-customElements.define('ui-pagination', UIPagination);
-
-export { UIPagination };
+import { nothing } from 'lit';

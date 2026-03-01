@@ -1,178 +1,104 @@
-import { BaseComponent } from '../../core/base-component';
-import { html, render } from 'lit-html';
+import { LitElement, html, css, unsafeCSS } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
-import styles from '../../styles/theme.css?inline';
+import themeStyles from '../../styles/theme.css?inline';
 
-type StepperOrientation = 'horizontal' | 'vertical';
-type StepperSize = 'sm' | 'md' | 'lg';
-type StepState = 'complete' | 'active' | 'upcoming' | 'error' | 'warning';
+@customElement('ui-stepper')
+export class UIStepper extends LitElement {
+  static styles = [unsafeCSS(themeStyles)];
 
-type StepperStep = {
-	title: string;
-	description?: string;
-	disabled?: boolean;
-	state?: StepState;
-};
+  @property({ type: String }) steps: string = '[]';
+  @property({ type: Number }) active: number = 1;
+  @property({ type: String }) orientation: StepperOrientation = 'horizontal';
+  @property({ type: String }) size: StepperSize = 'md';
 
-type StepChangeDetail = {
-	index: number;
-	step: StepperStep;
-	state: StepState;
-};
+  private _steps: StepperStep[] = [];
 
-class UIStepper extends BaseComponent {
-	private steps: StepperStep[] = [];
+  connectedCallback(): void {
+    this.setAttribute('data-ui', 'stepper');
+    super.connectedCallback();
+    this.parseSteps();
+  }
 
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'stepper');
-		super.connectedCallback();
-		this.parseSteps();
-	}
+  willUpdate(changedProperties: Map<string, unknown>): void {
+    if (changedProperties.has('steps')) {
+      this.parseSteps();
+    }
+  }
 
-	static get observedAttributes(): string[] {
-		return ['steps', 'active', 'orientation', 'size'];
-	}
+  private parseSteps(): void {
+    try {
+      const parsed = JSON.parse(this.steps) as StepperStep[];
+      this._steps = Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      this._steps = [];
+    }
+  }
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-		if (name === 'steps' && oldValue !== newValue) {
-			this.parseSteps();
-		}
-		if (name === 'active' && oldValue !== newValue) {
-			this.render();
-			return;
-		}
-		this.render();
-	}
+  private getActiveIndex(total: number): number {
+    if (Number.isNaN(this.active) || total <= 0) return 1;
+    return Math.min(Math.max(this.active, 1), total);
+  }
 
-	private parseSteps(): void {
-		const stepsAttr = this.getAttribute('steps');
-		if (!stepsAttr) {
-			this.steps = [];
-			return;
-		}
+  private getStepState(step: StepperStep, index: number): StepState {
+    const activeIdx = this.getActiveIndex(this._steps.length);
+    if (step.state) return step.state;
+    if (index + 1 < activeIdx) return 'complete';
+    if (index + 1 === activeIdx) return 'active';
+    return 'upcoming';
+  }
 
-		try {
-			const parsed = JSON.parse(stepsAttr) as StepperStep[];
-			this.steps = Array.isArray(parsed) ? parsed : [];
-		} catch (error) {
-			console.error('Invalid steps JSON', error);
-			this.steps = [];
-		}
-	}
+  private handleStepClick(index: number): void {
+    const step = this._steps[index];
+    if (step.disabled) return;
+    
+    this.active = index + 1;
+    const state = this.getStepState(step, index);
+    
+    this.dispatchEvent(new CustomEvent<StepChangeDetail>('step-change', {
+      bubbles: true,
+      composed: true,
+      detail: { index: index + 1, step, state }
+    }));
+  }
 
-	private getOrientation(): StepperOrientation {
-		const value = this.getAttribute('orientation');
-		if (value === 'vertical') return 'vertical';
-		return 'horizontal';
-	}
+  render() {
+    const activeIdx = this.getActiveIndex(this._steps.length);
+    const containerClass = classMap({
+      'stepper': true,
+      [this.orientation]: true,
+      [this.size]: true
+    });
 
-	private getSize(): StepperSize {
-		const value = this.getAttribute('size');
-		if (value === 'sm' || value === 'lg') return value;
-		return 'md';
-	}
-
-	private getActiveIndex(total: number): number {
-		const raw = parseInt(this.getAttribute('active') || '1', 10);
-		if (Number.isNaN(raw) || total <= 0) return 1;
-		return Math.min(Math.max(raw, 1), total);
-	}
-
-	private resolveState(step: StepperStep, index: number, activeIndex: number): StepState {
-		if (step.state) return step.state;
-		if (index + 1 < activeIndex) return 'complete';
-		if (index + 1 === activeIndex) return 'active';
-		return 'upcoming';
-	}
-
-	private setActive(index: number): void {
-		const total = this.steps.length;
-		if (total === 0) return;
-
-		const nextIndex = Math.min(Math.max(index, 1), total);
-		if (nextIndex === this.getActiveIndex(total)) return;
-
-		this.setAttribute('active', String(nextIndex));
-		const step = this.steps[nextIndex - 1];
-		const state = this.resolveState(step, nextIndex - 1, nextIndex);
-
-		this.dispatchEvent(
-			new CustomEvent<StepChangeDetail>('step-change', {
-				bubbles: true,
-				composed: true,
-				detail: { index: nextIndex, step, state }
-			})
-		);
-	}
-
-	private escapeHtml(text: string): string {
-		const div = document.createElement('div');
-		div.textContent = text;
-		return div.innerHTML;
-	}
-
-	render(): void {
-		const orientation = this.getOrientation();
-		const size = this.getSize();
-		const steps = this.steps;
-		const total = steps.length;
-		const activeIndex = this.getActiveIndex(total);
-
-		const renderStep = (step: StepperStep, index: number) => {
-			const state = this.resolveState(step, index, activeIndex);
-			const isActive = state === 'active';
-			const disabled = !!step.disabled;
-
-			const stepClasses = classMap({
-				'step': true,
-				[state]: true,
-				'disabled': disabled
-			});
-
-			return html`
-				<li class=${stepClasses} data-state="${state}">
-					<button 
-						class="step-trigger" 
-						data-index="${index}" 
-						?disabled=${disabled}
-						aria-current="${isActive ? 'step' : 'false'}"
-					>
-						<span class="step-node">${index + 1}</span>
-						<span class="step-text">
-							<span class="step-title">${this.escapeHtml(step.title || `Step ${index + 1}`)}</span>
-							${step.description ? html`<span class="step-desc">${this.escapeHtml(step.description)}</span>` : ''}
-						</span>
-					</button>
-					${index < total - 1 ? html`<span class="step-connector" aria-hidden="true"></span>` : ''}
-				</li>
-			`;
-		};
-
-		const template = html`
-			<style>${styles}</style>
-			<div class="stepper-wrap">
-				${total === 0 
-					? html`<div class="stepper-empty">No steps configured</div>` 
-					: html`
-						<ol class="stepper ${orientation} ${size}" role="list">
-							${steps.map(renderStep)}
-						</ol>
-					`}
-			</div>
-		`;
-
-		render(template, this.shadowRoot!);
-
-		this.shadowRoot!.querySelectorAll<HTMLButtonElement>('.step-trigger').forEach(button => {
-			button.addEventListener('click', () => {
-				const index = parseInt(button.dataset.index || '0', 10);
-				if (!Number.isNaN(index)) this.setActive(index + 1);
-			});
-		});
-	}
+    return html`
+      <div class=${containerClass}>
+        ${this._steps.map((step, index) => {
+          const state = this.getStepState(step, index);
+          const stepClass = classMap({
+            'step': true,
+            [state]: true,
+            'disabled': !!step.disabled
+          });
+          
+          return html`
+            <div class=${stepClass} @click=${() => this.handleStepClick(index)}>
+              <div class="step-marker">
+                ${state === 'complete' ? html`
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                ` : index + 1}
+              </div>
+              <div class="step-content">
+                <div class="step-title">${step.title}</div>
+                ${step.description ? html`<div class="step-description">${step.description}</div>` : ''}
+              </div>
+            </div>
+          `;
+        })}
+      </div>
+    `;
+  }
 }
 
-export { UIStepper };
-export type { StepperOrientation, StepperSize, StepperStep, StepChangeDetail, StepState };
-
-customElements.define('ui-stepper', UIStepper);
+export type { StepperStep, StepChangeDetail };

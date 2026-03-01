@@ -63,6 +63,12 @@ export const routes: RouteOld[] = [
     component: 'card-demo-page'
   },
   {
+    path: '/login',
+    layout: 'app-layout',
+    load: () => import('../features/login-demo/login-demo'),
+    component: 'login-demo'
+  },
+  {
     path: '/toast',
     layout: 'app-layout',
     load: () => import('../features/toast-demo/toast-demo-page'),
@@ -89,6 +95,7 @@ class AppLayout extends BaseComponent {
     { icon: 'square', label: 'Modal', href: '/modal' },
     { icon: 'folder', label: 'Tabs', href: '/tabs' },
     { icon: 'credit-card', label: 'Card', href: '/card' },
+    { icon: 'log-in', label: 'Login', href: '/login' },
     { icon: 'message-circle', label: 'Toast', href: '/toast' },
     { icon: 'layers', label: 'Stepper', href: '/stepper' },
   ];
@@ -117,6 +124,7 @@ class AppLayout extends BaseComponent {
       '/modal': { title: 'Modal', subtitle: 'Dialog and overlay components' },
       '/tabs': { title: 'Tabs', subtitle: 'Tabbed navigation component' },
       '/card': { title: 'Card', subtitle: 'Flexible container component' },
+      '/login': { title: 'Login Card', subtitle: 'Modern login form with validation' },
       '/toast': { title: 'Toast', subtitle: 'Notification and alert system' },
       '/stepper': { title: 'Stepper', subtitle: 'Progressive step navigation' },
     };
@@ -129,11 +137,17 @@ class AppLayout extends BaseComponent {
 
 
   render(): void {
+    // Create sidebar element programmatically to properly set properties
+    const sidebar = document.createElement('ui-sidebar') as any;
+    sidebar.brand = 'Web Components';
+    sidebar.version = 'v1.0';
+    sidebar.items = this.navItems;
+    sidebar.footerItems = this.footerItems;
+
     this.shadowRoot!.innerHTML = `
       <style>${styles}${layoutStyles}</style>
       <ui-top-bar title="${this.pageTitle}" subtitle="${this.pageSubtitle}"></ui-top-bar>
       <div class="layout-container">
-        <app-sidebar></app-sidebar>
         <div class="main-area">
           <main class="content-area">
             <slot></slot>
@@ -142,12 +156,26 @@ class AppLayout extends BaseComponent {
       </div>
     `;
     
-    // Configure sidebar with navigation items and footer
-    const sidebar = this.shadowRoot!.querySelector('app-sidebar') as any;
-    if (sidebar) {
-      sidebar.items = this.navItems;
-      sidebar.footer = this.footerItems;
+    // Insert sidebar into layout-container
+    const layoutContainer = this.shadowRoot!.querySelector('.layout-container');
+    if (layoutContainer) {
+      layoutContainer.insertBefore(sidebar, layoutContainer.firstChild);
     }
+
+    // Add click handlers for navigation after sidebar is rendered
+    requestAnimationFrame(() => {
+      const sidebarLinks = (sidebar as HTMLElement).shadowRoot?.querySelectorAll('.sidebar-link') || [];
+      sidebarLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          const href = (link as HTMLElement).getAttribute('href');
+          if (href && !href.startsWith('http')) {
+            e.preventDefault();
+            window.history.pushState({}, '', href);
+            window.dispatchEvent(new PopStateEvent('popstate'));
+          }
+        });
+      });
+    });
   }
 }
 

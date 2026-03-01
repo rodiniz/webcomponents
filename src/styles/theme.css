@@ -1436,3 +1436,231 @@ input[type="checkbox"] {
 .react-datepicker-popper {
   z-index: 99999 !important;
 }
+/* Card Component */
+:host([data-ui="card"]) {
+  display: block;
+}
+
+.card {
+  background: #ffffff;
+  padding: 32px;
+  box-sizing: border-box;
+  width: 100%;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+}
+
+.card.rounded {
+  border-radius: 16px;
+}
+
+.card.square {
+  border-radius: 0;
+}
+
+.card.default {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  border-radius: 16px;
+}
+
+.card.default::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card.default:hover::before {
+  opacity: 1;
+}
+
+.card.elevated {
+  border: none;
+  background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+  border-radius: 16px;
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    0 12px 24px rgba(0, 0, 0, 0.04);
+}
+
+.card.elevated:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.06),
+    0 24px 48px rgba(99, 102, 241, 0.12);
+}
+
+.card.bordered {
+  border: 2px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border-radius: 16px;
+}
+
+.card.bordered:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  background: #fafbfc;
+}
+
+.card.ghost {
+  border: 1px dashed rgba(0, 0, 0, 0.12);
+  background: transparent;
+  border-radius: 16px;
+}
+
+.card.ghost:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(99, 102, 241, 0.02);
+}
+
+.card.glass {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.card.interactive {
+  cursor: pointer;
+}
+
+.card.interactive:hover {
+  transform: translateY(-2px);
+}
+
+.card:focus-within {
+  outline: 2px solid rgba(99, 102, 241, 0.5);
+  outline-offset: 2px;
+}
+
+.card ::slotted(*:first-child) {
+  margin-top: 0;
+}
+
+.card ::slotted(*:last-child) {
+  margin-bottom: 0;
+}
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card.animated {
+  animation: cardAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card.bg-transparent { background: transparent !important; }
+.card.bg-primary { background: #6366f1 !important; }
+.card.bg-secondary { background: #8b5cf6 !important; }
+.card.bg-success { background: #10b981 !important; }
+.card.bg-warning { background: #f59e0b !important; }
+.card.bg-danger { background: #ef4444 !important; }
+.card.bg-dark { background: #1f2937 !important; }
+.card.bg-light { background: #f3f4f6 !important; }
+.card.bg-slate { background: #64748b !important; }
+.card.bg-zinc { background: #71717a !important; }
+.card.bg-neutral { background: #737373 !important; }
+.card.bg-stone { background: #78716c !important; }
+.card.bg-amber { background: #f59e0b !important; }
+.card.bg-orange { background: #f97316 !important; }
+.card.bg-pink { background: #ec4899 !important; }
+.card.bg-rose { background: #f43f5e !important; }
+.card.bg-fuchsia { background: #d946ef !important; }
+.card.bg-violet { background: #8b5cf6 !important; }
+.card.bg-indigo { background: #6366f1 !important; }
+.card.bg-blue { background: #3b82f6 !important; }
+.card.bg-cyan { background: #06b6d4 !important; }
+.card.bg-emerald { background: #10b981 !important; }
+.card.bg-lime { background: #84cc16 !important; }
+
+.card.bg-primary,
+.card.bg-secondary,
+.card.bg-success,
+.card.bg-warning,
+.card.bg-danger,
+.card.bg-dark,
+.card.bg-slate,
+.card.bg-zinc,
+.card.bg-neutral,
+.card.bg-stone,
+.card.bg-amber,
+.card.bg-orange,
+.card.bg-pink,
+.card.bg-rose,
+.card.bg-fuchsia,
+.card.bg-violet,
+.card.bg-indigo,
+.card.bg-blue,
+.card.bg-cyan,
+.card.bg-emerald,
+.card.bg-lime {
+  color: #ffffff;
+  border-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .card {
+    padding: 24px;
+  }
+  
+  .card.rounded {
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 20px;
+  }
+  
+  .card.rounded {
+    border-radius: 12px;
+  }
+}
+
+@media print {
+  .card {
+    border: 1px solid #e5e7eb !important;
+    box-shadow: none !important;
+    background: #fff !important;
+    page-break-inside: avoid;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .card.default,
+  .card.elevated,
+  .card.bordered,
+  .card.bg-default {
+    background: #1f2937;
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .card.ghost {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .card.bg-light {
+    background: #374151;
+  }
+}

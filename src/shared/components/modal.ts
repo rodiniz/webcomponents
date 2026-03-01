@@ -1,112 +1,90 @@
-import { BaseComponent } from '../../core/base-component';
-import { html, render } from 'lit-html';
+import { LitElement, html, css, unsafeCSS } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
-import styles from '../../styles/theme.css?inline';
+import themeStyles from '../../styles/theme.css?inline';
 
-class UIModal extends BaseComponent {
-	private isOpen = this.useSignal(false);
+@customElement('ui-modal')
+export class UIModal extends LitElement {
+  static styles = [unsafeCSS(themeStyles)];
 
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'modal');
-		super.connectedCallback();
-		this.setupEventListeners();
-	}
+  @property({ type: String }) title: string = '';
+  @property({ type: String }) size: string = 'md';
+  @property({ type: Boolean, reflect: true, attribute: 'open' }) isOpen: boolean = false;
+  @property({ type: Boolean, attribute: 'no-close-on-escape' }) noCloseOnEscape: boolean = false;
+  @property({ type: Boolean, attribute: 'no-close-on-backdrop' }) noCloseOnBackdrop: boolean = false;
 
-	static get observedAttributes(): string[] {
-		return ['open'];
-	}
+  connectedCallback(): void {
+    this.setAttribute('data-ui', 'modal');
+    super.connectedCallback();
+    document.addEventListener('keydown', this.handleKeydown);
+  }
 
-	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-		if (name === 'open' && oldValue !== newValue) {
-			this.isOpen.set(newValue !== null);
-		}
-	}
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    document.removeEventListener('keydown', this.handleKeydown);
+  }
 
-	private setupEventListeners(): void {
-		document.addEventListener('keydown', (e) => {
-			if (e.key === 'Escape' && this.isOpen.get() && !this.hasAttribute('no-close-on-escape')) {
-				this.close();
-			}
-		});
-	}
+  willUpdate(changedProperties: Map<string, unknown>): void {
+    if (changedProperties.has('isOpen')) {
+      if (this.isOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+  }
 
-	public open(): void {
-		this.isOpen.set(true);
-		this.setAttribute('open', '');
-		this.dispatchEvent(new CustomEvent('modal-open', { bubbles: true, composed: true }));
-		document.body.style.overflow = 'hidden';
-	}
+  private handleKeydown = (e: KeyboardEvent): void => {
+    if (e.key === 'Escape' && this.isOpen && !this.noCloseOnEscape) {
+      this.close();
+    }
+  };
 
-	public close(): void {
-		this.isOpen.set(false);
-		this.removeAttribute('open');
-		this.dispatchEvent(new CustomEvent('modal-close', { bubbles: true, composed: true }));
-		document.body.style.overflow = '';
-	}
+  public open(): void {
+    this.isOpen = true;
+    this.dispatchEvent(new CustomEvent('modal-open', { bubbles: true, composed: true }));
+  }
 
-	private handleBackdropClick(e: Event): void {
-		if ((e.target as HTMLElement).classList.contains('modal-backdrop') && !this.hasAttribute('no-close-on-backdrop')) {
-			this.close();
-		}
-	}
+  public close(): void {
+    this.isOpen = false;
+    this.dispatchEvent(new CustomEvent('modal-close', { bubbles: true, composed: true }));
+  }
 
-	render(): void {
-		const open = this.isOpen.get();
-		const title = this.getAttribute('title') || '';
-		const size = this.getAttribute('size') || 'md';
+  private handleBackdropClick(e: Event): void {
+    if ((e.target as HTMLElement).classList.contains('modal-backdrop') && !this.noCloseOnBackdrop) {
+      this.close();
+    }
+  }
 
-		const backdropClasses = classMap({
-			'modal-backdrop': true,
-			'open': open
-		});
+  render() {
+    const sizeClass = `modal-${this.size}`;
+    const backdropClasses = classMap({
+      'modal-backdrop': true,
+      'open': this.isOpen
+    });
 
-		const template = html`
-			<style>
-				${styles}
-				
-				::slotted([slot="footer"]) {
-					display: flex;
-					gap: 0.75rem;
-					width: 100%;
-					justify-content: flex-end;
-				}
-			</style>
-
-			<div class=${backdropClasses} part="backdrop">
-				<div class="modal-content ${size}" part="content" @click="${(e: Event) => e.stopPropagation()}">
-					${title ? html`
-						<div class="modal-header" part="header">
-							<h2 class="modal-title">${title}</h2>
-							<button class="modal-close" part="close" aria-label="Close modal">
-								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-									<line x1="18" y1="6" x2="6" y2="18"></line>
-									<line x1="6" y1="6" x2="18" y2="18"></line>
-								</svg>
-							</button>
-						</div>
-					` : ''}
-					
-					<div class="modal-body" part="body">
-						<slot></slot>
-					</div>
-
-					<div class="modal-footer" part="footer">
-						<slot name="footer"></slot>
-					</div>
-				</div>
-			</div>
-		`;
-
-		render(template, this.shadowRoot!);
-
-		const backdrop = this.shadowRoot!.querySelector('.modal-backdrop');
-		const closeBtn = this.shadowRoot!.querySelector('.modal-close');
-
-		backdrop?.addEventListener('click', (e) => this.handleBackdropClick(e));
-		closeBtn?.addEventListener('click', () => this.close());
-	}
+    return html`
+      <div class=${backdropClasses} @click=${this.handleBackdropClick}>
+        <div class="modal-container ${sizeClass}" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          ${this.title ? html`
+            <div class="modal-header">
+              <h2 id="modal-title" class="modal-title">${this.title}</h2>
+              <button class="modal-close" @click=${this.close} aria-label="Close modal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          ` : ''}
+          <div class="modal-content">
+            <slot></slot>
+          </div>
+          <div class="modal-footer">
+            <slot name="footer"></slot>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 }
-
-export { UIModal };
-
-customElements.define('ui-modal', UIModal);

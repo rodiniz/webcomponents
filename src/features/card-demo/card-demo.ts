@@ -29,54 +29,16 @@ class CardDemoPage extends BaseComponent {
 
         .card-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 24px;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 20px;
         }
 
-        .card-content {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
+        .card-grid ui-card {
+          min-height: 140px;
         }
 
-        .card-content h3 {
-          font: 600 18px/1.3 "Sora", system-ui, sans-serif;
-          color: #0f172a;
-          margin: 0;
-        }
-
-        .card-content p {
-          font: 400 14px/1.6 "Inter", system-ui, sans-serif;
-          color: #6b7280;
-          margin: 0;
-        }
-
-        .tag {
-          display: inline-block;
-          padding: 4px 12px;
-          border-radius: 6px;
-          font: 500 12px/1.4 "Inter", system-ui, sans-serif;
-          background: #f0f9ff;
-          color: #0284c7;
-          border: 1px solid #bae6fd;
-        }
-
-        .tag.success {
-          background: #f0fdf4;
-          color: #15803d;
-          border-color: #bbf7d0;
-        }
-
-        .tag.warning {
-          background: #fef3c7;
-          color: #ca8a04;
-          border-color: #fde68a;
-        }
-
-        .tag.error {
-          background: #fee2e2;
-          color: #dc2626;
-          border-color: #fecaca;
+        .card-grid.ui-card ui-card {
+          min-height: auto;
         }
       </style>
 
@@ -90,27 +52,18 @@ class CardDemoPage extends BaseComponent {
         <p>Standard card with minimal shadow.</p>
         <div class="card-grid">
           <ui-card shadow elevation="sm">
-            <div class="card-content">
-              <h3>Default Card</h3>
-              <p>This is a default card with rounded corners and a subtle shadow.</p>
-              <span class="tag">Default</span>
-            </div>
+            <h3>Default Card</h3>
+            <p>This is a default card with rounded corners and a subtle shadow.</p>
           </ui-card>
 
           <ui-card shadow elevation="md">
-            <div class="card-content">
-              <h3>Medium Elevation</h3>
-              <p>Card with medium elevation for more prominence.</p>
-              <span class="tag success">Elevated</span>
-            </div>
+            <h3>Medium Elevation</h3>
+            <p>Card with medium elevation for more prominence.</p>
           </ui-card>
 
           <ui-card shadow elevation="lg">
-            <div class="card-content">
-              <h3>High Elevation</h3>
-              <p>High elevation for important content that needs attention.</p>
-              <span class="tag warning">Important</span>
-            </div>
+            <h3>High Elevation</h3>
+            <p>High elevation for important content that needs attention.</p>
           </ui-card>
         </div>
       </div>
@@ -120,31 +73,23 @@ class CardDemoPage extends BaseComponent {
         <p>Different visual styles for various use cases.</p>
         <div class="card-grid">
           <ui-card variant="default" shadow elevation="sm">
-            <div class="card-content">
-              <h3>Default Variant</h3>
-              <p>Standard card style with border and background.</p>
-            </div>
+            <h3>Default Variant</h3>
+            <p>Standard card style with border and background.</p>
           </ui-card>
 
           <ui-card variant="elevated" shadow elevation="md">
-            <div class="card-content">
-              <h3>Elevated Variant</h3>
-              <p>Premium look with gradient background and glow effect on hover.</p>
-            </div>
+            <h3>Elevated Variant</h3>
+            <p>Premium look with gradient background and glow effect on hover.</p>
           </ui-card>
 
           <ui-card variant="bordered" shadow elevation="sm">
-            <div class="card-content">
-              <h3>Bordered Variant</h3>
-              <p>Strong border for emphasis and structure.</p>
-            </div>
+            <h3>Bordered Variant</h3>
+            <p>Strong border for emphasis and structure.</p>
           </ui-card>
 
           <ui-card variant="ghost">
-            <div class="card-content">
-              <h3>Ghost Variant</h3>
-              <p>Subtle dashed border with transparent background.</p>
-            </div>
+            <h3>Ghost Variant</h3>
+            <p>Subtle dashed border with transparent background.</p>
           </ui-card>
         </div>
       </div>
@@ -154,75 +99,104 @@ class CardDemoPage extends BaseComponent {
         <p>Cards with colored shadows for creative effects.</p>
         <div class="card-grid">
           <ui-card shadow shadow-color="99, 102, 241" elevation="lg">
-            <div class="card-content">
-              <h3>Blue Shadow</h3>
-              <p>Card with a blue-tinted shadow for a cool, modern look.</p>
-              <span class="tag">RGB: 99, 102, 241</span>
-            </div>
+            <h3>Blue Shadow</h3>
+            <p>Card with a blue-tinted shadow for a cool, modern look.</p>
           </ui-card>
 
           <ui-card shadow shadow-color="236, 72, 153" elevation="lg">
-            <div class="card-content">
-              <h3>Pink Shadow</h3>
-              <p>Vibrant pink shadow creates an energetic, playful aesthetic.</p>
-              <span class="tag error">RGB: 236, 72, 153</span>
-            </div>
+            <h3>Pink Shadow</h3>
+            <p>Vibrant pink shadow creates an energetic, playful aesthetic.</p>
           </ui-card>
 
           <ui-card shadow shadow-color="16, 185, 129" elevation="lg">
-            <div class="card-content">
-              <h3>Green Shadow</h3>
-              <p>Fresh green shadow perfect for success states and nature themes.</p>
-              <span class="tag success">RGB: 16, 185, 129</span>
-            </div>
+            <h3>Green Shadow</h3>
+            <p>Fresh green shadow perfect for success states and nature themes.</p>
           </ui-card>
 
           <ui-card shadow shadow-color="251, 146, 60" elevation="lg">
-            <div class="card-content">
-              <h3>Orange Shadow</h3>
-              <p>Warm orange shadow adds energy and attention-grabbing appeal.</p>
-              <span class="tag warning">RGB: 251, 146, 60</span>
-            </div>
+            <h3>Orange Shadow</h3>
+            <p>Warm orange shadow adds energy and attention-grabbing appeal.</p>
           </ui-card>
         </div>
       </div>
-
-      <div class="demo-section">
-        <h2>Rounded Options</h2>
-        <p>Control corner radius with the rounded attribute.</p>
-        <div class="card-grid">
-          <ui-card rounded="true" shadow elevation="md">
-            <div class="card-content">
-              <h3>Rounded Card</h3>
-              <p>Default rounded corners (16px radius) for a soft, friendly appearance.</p>
-            </div>
-          </ui-card>
-
-          <ui-card rounded="false" shadow elevation="md">
-            <div class="card-content">
-              <h3>Square Card</h3>
-              <p>Sharp corners for a modern, geometric aesthetic.</p>
-            </div>
-          </ui-card>
-        </div>
-      </div>
-
       <div class="demo-section">
         <h2>No Shadow</h2>
         <p>Cards without shadow for minimal designs.</p>
         <div class="card-grid">
           <ui-card>
-            <div class="card-content">
-              <h3>Flat Card</h3>
-              <p>Minimal card with no shadow, perfect for clean, flat design systems.</p>
-            </div>
+            <h3>Flat Card</h3>
+            <p>Minimal card with no shadow, perfect for clean, flat design systems.</p>
           </ui-card>
 
           <ui-card rounded="false">
-            <div class="card-content">
-              <h3>Flat Square Card</h3>
-              <p>Flat card with square corners for brutalist or industrial aesthetics.</p>
-            </div>
+            <h3>Flat Square Card</h3>
+            <p>Flat card with square corners for brutalist or industrial aesthetics.</p>
+          </ui-card>
+        </div>
+      </div>      
+
+      <div class="demo-section">
+        <h2>Color Palette</h2>
+        <p>Full color spectrum available for custom theming.</p>
+        <div class="card-grid">
+          <ui-card bg="secondary" shadow elevation="sm">
+            <h3>Secondary</h3>
+            <p>Complementary accent color.</p>
+          </ui-card>
+
+          <ui-card bg="indigo" shadow elevation="sm">
+            <h3>Indigo</h3>
+            <p>Deep blue-purple accent.</p>
+          </ui-card>
+
+          <ui-card bg="violet" shadow elevation="sm">
+            <h3>Violet</h3>
+            <p>Rich purple tones.</p>
+          </ui-card>
+
+          <ui-card bg="pink" shadow elevation="sm">
+            <h3>Pink</h3>
+            <p>Playful pink accent.</p>
+          </ui-card>
+
+          <ui-card bg="rose" shadow elevation="sm">
+            <h3>Rose</h3>
+            <p>Vibrant red-pink.</p>
+          </ui-card>
+
+          <ui-card bg="fuchsia" shadow elevation="sm">
+            <h3>Fuchsia</h3>
+            <p>Bold magenta tones.</p>
+          </ui-card>
+
+          <ui-card bg="cyan" shadow elevation="sm">
+            <h3>Cyan</h3>
+            <p>Cool blue-green accent.</p>
+          </ui-card>
+
+          <ui-card bg="emerald" shadow elevation="sm">
+            <h3>Emerald</h3>
+            <p>Rich green tones.</p>
+          </ui-card>
+
+          <ui-card bg="lime" shadow elevation="sm">
+            <h3>Lime</h3>
+            <p>Fresh green-yellow accent.</p>
+          </ui-card>
+
+          <ui-card bg="amber" shadow elevation="sm">
+            <h3>Amber</h3>
+            <p>Warm golden tones.</p>
+          </ui-card>
+
+          <ui-card bg="orange" shadow elevation="sm">
+            <h3>Orange</h3>
+            <p>Energetic orange accent.</p>
+          </ui-card>
+
+          <ui-card bg="blue" shadow elevation="sm">
+            <h3>Blue</h3>
+            <p>Classic blue accent.</p>
           </ui-card>
         </div>
       </div>

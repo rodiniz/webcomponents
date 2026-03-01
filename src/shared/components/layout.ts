@@ -1,252 +1,124 @@
-import { BaseComponent } from '../../core/base-component';
-import { html, render } from 'lit-html';
-import { classMap, styleMap } from '../../core/template';
-import styles from '../../styles/theme.css?inline';
+import { LitElement, html, css, unsafeCSS } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
+import { styleMap } from '../../core/template';
+import themeStyles from '../../styles/theme.css?inline';
 
-class UILayout extends BaseComponent {
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'layout');
-		super.connectedCallback();
-	}
+@customElement('ui-layout')
+export class UILayout extends LitElement {
+  static styles = [unsafeCSS(themeStyles)];
 
-	static get observedAttributes(): string[] {
-		return ['direction'];
-	}
+  @property({ type: String }) direction: 'horizontal' | 'vertical' | 'auto' = 'auto';
 
-	attributeChangedCallback(): void {
-		this.render();
-	}
+  connectedCallback(): void {
+    this.setAttribute('data-ui', 'layout');
+    super.connectedCallback();
+  }
 
-	private getDirection(): 'horizontal' | 'vertical' | 'auto' {
-		const value = this.getAttribute('direction');
-		if (value === 'horizontal' || value === 'vertical') return value;
-		return 'auto';
-	}
+  private detectDirection(): 'horizontal' | 'vertical' {
+    if (this.direction !== 'auto') return this.direction;
 
-	private detectDirection(): 'horizontal' | 'vertical' {
-		const direction = this.getDirection();
-		if (direction !== 'auto') return direction;
+    const hasHeader = this.querySelector('ui-layout-header');
+    const hasFooter = this.querySelector('ui-layout-footer');
+    const hasSidebar = this.querySelector('ui-layout-sidebar');
 
-		const hasHeader = this.querySelector('ui-layout-header');
-		const hasFooter = this.querySelector('ui-layout-footer');
-		const hasSidebar = this.querySelector('ui-layout-sidebar');
+    if (hasSidebar) return 'horizontal';
+    if (hasHeader || hasFooter) return 'vertical';
 
-		if (hasSidebar) return 'horizontal';
-		if (hasHeader || hasFooter) return 'vertical';
+    return 'vertical';
+  }
 
-		return 'vertical';
-	}
+  render() {
+    const flexDirection = this.detectDirection() === 'horizontal' ? 'row' : 'column';
 
-	render(): void {
-		const flexDirection = this.detectDirection() === 'horizontal' ? 'row' : 'column';
-
-		const template = html`
-			<style>${styles}</style>
-			<div class="layout-container" style=${styleMap({ 'flex-direction': flexDirection })}>
-				<slot></slot>
-			</div>
-		`;
-
-		render(template, this.shadowRoot!);
-	}
+    return html`
+      <div class="layout-container" style=${styleMap({ 'flex-direction': flexDirection })}>
+        <slot></slot>
+      </div>
+    `;
+  }
 }
 
-class UILayoutHeader extends BaseComponent {
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'layout-header');
-		super.connectedCallback();
-	}
-
-	static get observedAttributes(): string[] {
-		return ['height'];
-	}
-
-	attributeChangedCallback(): void {
-		this.render();
-	}
-
-	private getHeight(): string {
-		const height = this.getAttribute('height');
-		if (height && /^\d+$/.test(height)) return height + 'px';
-		return height || '64px';
-	}
-
-	render(): void {
-		const height = this.getHeight();
-
-		const template = html`
-			<style>${styles}</style>
-			<header class="layout-header" style=${styleMap({ 'height': height })}>
-				<slot></slot>
-			</header>
-		`;
-
-		render(template, this.shadowRoot!);
-	}
+@customElement('ui-layout-header')
+export class UILayoutHeader extends LitElement {
+  static styles = css`
+    :host {
+      display: block;
+      background: var(--color-header, #ffffff);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      padding: 12px 24px;
+    }
+  `;
+  render() {
+    return html`<slot></slot>`;
+  }
 }
 
-class UILayoutFooter extends BaseComponent {
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'layout-footer');
-		super.connectedCallback();
-	}
+@customElement('ui-layout-main')
+export class UILayoutMain extends LitElement {
+  static styles = css`
+    :host { display: block; flex: 1; }
+  `;
+  render() {
+    return html`<slot></slot>`;
+  }
+}
+export { UILayoutMain as UILayoutContent };
 
-	static get observedAttributes(): string[] {
-		return ['height'];
-	}
-
-	attributeChangedCallback(): void {
-		this.render();
-	}
-
-	private getHeight(): string {
-		const height = this.getAttribute('height');
-		if (height && /^\d+$/.test(height)) return height + 'px';
-		return height || '56px';
-	}
-
-	render(): void {
-		const height = this.getHeight();
-
-		const template = html`
-			<style>${styles}</style>
-			<footer class="layout-footer" style=${styleMap({ 'height': height })}>
-				<slot></slot>
-			</footer>
-		`;
-
-		render(template, this.shadowRoot!);
-	}
+@customElement('ui-layout-sidebar')
+export class UILayoutSidebar extends LitElement {
+  static styles = css`
+    :host {
+      display: block;
+      width: var(--sidebar-width, 220px);
+      background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 16px 12px;
+      box-sizing: border-box;
+    }
+    ::slotted(.sidebar-section) {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    ::slotted(.sidebar-label) {
+      font: 600 11px/1 "Inter", system-ui, sans-serif;
+      color: rgba(255, 255, 255, 0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 12px 8px 6px;
+    }
+    ::slotted(.sidebar-item) {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.7);
+      font: 500 14px/1.4 "Inter", system-ui, sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    ::slotted(.sidebar-item:hover) {
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+    }
+  `;
+  render() {
+    return html`<slot></slot>`;
+  }
 }
 
-class UILayoutContent extends BaseComponent {
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'layout-content');
-		super.connectedCallback();
-	}
-
-	render(): void {
-		const template = html`
-			<style>${styles}</style>
-			<div class="layout-content">
-				<slot></slot>
-			</div>
-		`;
-
-		render(template, this.shadowRoot!);
-	}
+@customElement('ui-layout-footer')
+export class UILayoutFooter extends LitElement {
+  static styles = css`
+    :host {
+      display: block;
+      background: var(--color-footer, #f8fafc);
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      padding: 12px 24px;
+    }
+  `;
+  render() {
+    return html`<slot></slot>`;
+  }
 }
-
-class UILayoutSidebar extends BaseComponent {
-	private isCollapsed = false;
-	private animating = false;
-
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'layout-sidebar');
-		super.connectedCallback();
-		this.isCollapsed = this.hasAttribute('collapsed');
-		this.render();
-		this.attachEventListeners();
-	}
-
-	static get observedAttributes(): string[] {
-		return ['collapsed', 'width', 'collapsed-width', 'collapsible'];
-	}
-
-	attributeChangedCallback(name: string): void {
-		if (name === 'collapsed') {
-			this.isCollapsed = this.hasAttribute('collapsed');
-		}
-		this.render();
-	}
-
-	private getWidth(): string {
-		const width = this.getAttribute('width');
-		if (width && /^\d+$/.test(width)) return width + 'px';
-		return width || '240px';
-	}
-
-	private getCollapsedWidth(): string {
-		const width = this.getAttribute('collapsed-width');
-		if (width && /^\d+$/.test(width)) return width + 'px';
-		return width || '64px';
-	}
-
-	private isCollapsible(): boolean {
-		return this.hasAttribute('collapsible');
-	}
-
-	private attachEventListeners(): void {
-		if (!this.shadowRoot) return;
-
-		const toggleBtn = this.shadowRoot.querySelector('.sidebar-toggle');
-		if (toggleBtn) {
-			toggleBtn.addEventListener('click', () => this.toggleCollapse());
-		}
-	}
-
-	private toggleCollapse(): void {
-		if (this.animating) return;
-		this.animating = true;
-
-		this.isCollapsed = !this.isCollapsed;
-
-		if (this.isCollapsed) {
-			this.setAttribute('collapsed', '');
-		} else {
-			this.removeAttribute('collapsed');
-		}
-
-		this.dispatchEvent(
-			new CustomEvent('collapsed-change', {
-				detail: { collapsed: this.isCollapsed },
-				bubbles: true,
-				composed: true
-			})
-		);
-
-		setTimeout(() => {
-			this.animating = false;
-		}, 300);
-	}
-
-	render(): void {
-		const width = this.getWidth();
-		const collapsedWidth = this.getCollapsedWidth();
-		const isCollapsible = this.isCollapsible();
-
-		const sidebarClasses = classMap({
-			'layout-sidebar': true,
-			'collapsed': this.isCollapsed
-		});
-
-		const template = html`
-			<style>${styles}</style>
-			<aside class=${sidebarClasses} 
-				style=${styleMap({ '--sidebar-width': width, '--sidebar-collapsed-width': collapsedWidth })}>
-				<div class="sidebar-content">
-					<slot></slot>
-				</div>
-				${isCollapsible ? html`
-					<button class="sidebar-toggle" title="${this.isCollapsed ? 'Expand' : 'Collapse'}">
-						<svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-								d="M15 19l-7-7 7-7"></path>
-						</svg>
-					</button>
-				` : ''}
-			</aside>
-		`;
-
-		render(template, this.shadowRoot!);
-		this.attachEventListeners();
-	}
-}
-
-customElements.define('ui-layout', UILayout);
-customElements.define('ui-layout-header', UILayoutHeader);
-customElements.define('ui-layout-footer', UILayoutFooter);
-customElements.define('ui-layout-content', UILayoutContent);
-customElements.define('ui-layout-sidebar', UILayoutSidebar);
-
-export { UILayout, UILayoutHeader, UILayoutFooter, UILayoutContent, UILayoutSidebar };

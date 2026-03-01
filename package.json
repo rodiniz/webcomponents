@@ -39,7 +39,8 @@
     "vitest": "^4.0.18"
   },
   "dependencies": {
-    "feather-icons": "^4.29.2"
+    "feather-icons": "^4.29.2",
+    "lit": "^3.3.2"
   },
   "keywords": [
     "web-components",

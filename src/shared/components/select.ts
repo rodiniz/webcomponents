@@ -1,208 +1,123 @@
-import { BaseComponent } from '../../core/base-component';
-import { html, render } from 'lit-html';
+import { LitElement, html, css, unsafeCSS } from 'lit';
+import { customElement, property, state, query } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
-import styles from '../../styles/theme.css?inline';
+import { nothing } from 'lit';
+import themeStyles from '../../styles/theme.css?inline';
 
-interface SelectOption {
-	value: string;
-	label: string;
-	disabled?: boolean;
+@customElement('ui-select')
+export class UISelect extends LitElement {
+  static styles = [unsafeCSS(themeStyles)];
+
+  @property({ type: String }) value: string = '';
+  @property({ type: Boolean }) disabled: boolean = false;
+  @property({ type: String }) placeholder: string = 'Select an option';
+  @property({ type: String }) options: string = '[]';
+
+  @state() private isOpen: boolean = false;
+  @state() private searchTerm: string = '';
+  @state() private _options: SelectOption[] = [];
+  @query('.select-input') selectInput!: HTMLInputElement;
+
+  connectedCallback(): void {
+    this.setAttribute('data-ui', 'select');
+    super.connectedCallback();
+    this.parseOptions();
+    document.addEventListener('click', this.handleClickOutside);
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    document.removeEventListener('click', this.handleClickOutside);
+  }
+
+  willUpdate(changedProperties: Map<string, unknown>): void {
+    if (changedProperties.has('options')) {
+      this.parseOptions();
+    }
+  }
+
+  private parseOptions(): void {
+    try {
+      this._options = JSON.parse(this.options);
+    } catch (e) {
+      this._options = [];
+    }
+  }
+
+  private handleClickOutside = (e: Event): void => {
+    const path = e.composedPath();
+    const clickedInside = path.includes(this);
+    
+    if (!clickedInside && this.isOpen) {
+      this.isOpen = false;
+    }
+  };
+
+  private getSelectedLabel(): string {
+    const selected = this._options.find(opt => opt.value === this.value);
+    return selected?.label || this.placeholder;
+  }
+
+  private toggleOpen(): void {
+    if (this.disabled) return;
+    this.isOpen = !this.isOpen;
+  }
+
+  private selectOption(value: string): void {
+    this.value = value;
+    this.isOpen = false;
+    this.dispatchEvent(new CustomEvent('change', {
+      detail: { value },
+      bubbles: true,
+      composed: true
+    }));
+  }
+
+  render() {
+    const containerClass = classMap({
+      'select-container': true,
+      'open': this.isOpen,
+      'disabled': this.disabled,
+      'has-value': !!this.value
+    });
+
+    const filteredOptions = this._options.filter(opt => 
+      opt.label.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+
+    return html`
+      <div class=${containerClass} @click=${this.toggleOpen}>
+        <div class="select-display">
+          <span class="select-value">${this.getSelectedLabel()}</span>
+          <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+        ${this.isOpen ? html`
+          <div class="select-dropdown">
+            <div class="select-search">
+              <input
+                type="text"
+                class="select-input"
+                placeholder="Search..."
+                .value=${this.searchTerm}
+                @input=${(e: Event) => this.searchTerm = (e.target as HTMLInputElement).value}
+                @click=${(e: Event) => e.stopPropagation()}
+              />
+            </div>
+            <div class="select-options">
+              ${filteredOptions.length > 0 ? filteredOptions.map(opt => html`
+                <div 
+                  class="select-option ${opt.value === this.value ? 'selected' : ''}"
+                  @click=${(e: Event) => { e.stopPropagation(); this.selectOption(opt.value); }}
+                >
+                  ${opt.label}
+                </div>
+              `) : html`<div class="select-no-results">No results</div>`}
+            </div>
+          </div>
+        ` : nothing}
+      </div>
+    `;
+  }
 }
-
-class UISelect extends BaseComponent {
-	private isOpen = this.useSignal(false);
-	private selectedValue = this.useSignal('');
-	private searchTerm = this.useSignal('');
-	private options: SelectOption[] = [];
-
-	connectedCallback(): void {
-		this.setAttribute('data-ui', 'select');
-		super.connectedCallback();
-		this.parseOptions();
-		this.setupClickOutside();
-	}
-
-	static get observedAttributes(): string[] {
-		return ['value', 'disabled', 'placeholder', 'options'];
-	}
-
-	attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-		if (name === 'value' && oldValue !== newValue) {
-			this.selectedValue.set(newValue || '');
-		}
-		if (name === 'options' && oldValue !== newValue) {
-			this.parseOptions();
-		}
-		this.render();
-	}
-
-	private parseOptions(): void {
-		const optionsAttr = this.getAttribute('options');
-		if (optionsAttr) {
-			try {
-				this.options = JSON.parse(optionsAttr);
-			} catch (e) {
-				console.error('Invalid options JSON', e);
-				this.options = [];
-			}
-		}
-	}
-
-	private setupClickOutside(): void {
-		document.addEventListener('click', (e) => {
-			const path = e.composedPath();
-			const clickedInside = path.includes(this);
-			
-			if (!clickedInside && this.isOpen.get()) {
-				this.isOpen.set(false);
-			}
-		});
-	}
-
-	private toggleDropdown(): void {
-		if (!this.hasAttribute('disabled')) {
-			this.isOpen.set(!this.isOpen.get());
-			if (!this.isOpen.get()) {
-				this.searchTerm.set('');
-			}
-		}
-	}
-
-	private selectOption(value: string): void {
-		this.selectedValue.set(value);
-		this.setAttribute('value', value);
-		this.isOpen.set(false);
-		this.searchTerm.set('');
-		
-		this.dispatchEvent(new CustomEvent('select-change', {
-			bubbles: true,
-			composed: true,
-			detail: {
-				value,
-				option: this.options.find(opt => opt.value === value)
-			}
-		}));
-	}
-
-	private handleSearch(term: string): void {
-		this.searchTerm.set(term.toLowerCase());
-	}
-
-	private getFilteredOptions(): SelectOption[] {
-		const search = this.searchTerm.get();
-		if (!search) return this.options;
-		return this.options.filter(opt => 
-			opt.label.toLowerCase().includes(search) || 
-			opt.value.toLowerCase().includes(search)
-		);
-	}
-
-	private getSelectedLabel(): string {
-		const value = this.selectedValue.get();
-		const option = this.options.find(opt => opt.value === value);
-		return option?.label || this.getAttribute('placeholder') || 'Select an option';
-	}
-
-	render(): void {
-		const open = this.isOpen.get();
-		const disabled = this.hasAttribute('disabled');
-		const searchable = this.hasAttribute('searchable');
-		const label = this.getAttribute('label') || '';
-		const selectedLabel = this.getSelectedLabel();
-		const filteredOptions = this.getFilteredOptions();
-		const hasSelection = this.selectedValue.get() !== '';
-		const selectedValue = this.selectedValue.get();
-
-		const triggerClasses = classMap({
-			'select-trigger': true,
-			'open': open
-		});
-
-		const dropdownClasses = classMap({
-			'select-dropdown': true,
-			'open': open
-		});
-
-		const renderOption = (option: SelectOption) => {
-			const optionClasses = classMap({
-				'select-option': true,
-				'selected': option.value === selectedValue,
-				'disabled': !!option.disabled
-			});
-			return html`
-				<div 
-					class=${optionClasses}
-					data-value="${option.value}"
-					part="option"
-				>
-					${option.label}
-				</div>
-			`;
-		};
-
-		const template = html`
-			<style>${styles}</style>
-
-			<div class="select-container">
-				${label ? html`<label class="select-label">${label}</label>` : ''}
-				
-				<div class=${triggerClasses} part="trigger" tabindex="0" ?disabled=${disabled}>
-					<span class="select-placeholder ${hasSelection ? 'has-selection' : ''}">${selectedLabel}</span>
-					<span class="select-arrow ${open ? 'open' : ''}">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<polyline points="6 9 12 15 18 9"></polyline>
-						</svg>
-					</span>
-				</div>
-
-				<div class=${dropdownClasses} part="dropdown">
-					${searchable ? html`
-						<input 
-							type="text" 
-							class="select-search" 
-							placeholder="Search..."
-							part="search"
-						>
-					` : ''}
-					
-					${filteredOptions.length > 0 
-						? filteredOptions.map(renderOption)
-						: html`<div class="select-empty">No options found</div>`
-					}
-				</div>
-			</div>
-		`;
-
-		render(template, this.shadowRoot!);
-
-		const trigger = this.shadowRoot!.querySelector('.select-trigger');
-		const searchInput = this.shadowRoot!.querySelector('.select-search') as HTMLInputElement;
-		const options = this.shadowRoot!.querySelectorAll('.select-option:not(.disabled)');
-
-		trigger?.addEventListener('click', () => this.toggleDropdown());
-		trigger?.addEventListener('keydown', (e) => {
-			if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ') {
-				e.preventDefault();
-				this.toggleDropdown();
-			}
-		});
-
-		searchInput?.addEventListener('input', (e) => {
-			this.handleSearch((e.target as HTMLInputElement).value);
-		});
-
-		searchInput?.addEventListener('click', (e) => e.stopPropagation());
-
-		options.forEach(option => {
-			option.addEventListener('click', () => {
-				const value = option.getAttribute('data-value');
-				if (value) this.selectOption(value);
-			});
-		});
-	}
-}
-
-export { UISelect };
-export type { SelectOption };
-
-customElements.define('ui-select', UISelect);
