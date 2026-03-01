@@ -5,7 +5,15 @@ import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-upload')
 export class UIUpload extends LitElement {
-  static styles = [unsafeCSS(themeStyles)];
+  static styles = [
+    unsafeCSS(themeStyles),
+    css`
+      /* ensure container is positioned so input does not float outside */
+      .upload {
+        position: relative;
+      }
+    `
+  ];
 
   @property({ type: String }) accept: string = '';
   @property({ type: Boolean }) multiple: boolean = false;
@@ -105,14 +113,16 @@ export class UIUpload extends LitElement {
   }
 
   render() {
+    // use "upload" class to match stylesheet and provide a positioned container
     const containerClass = classMap({
-      'upload-container': true,
+      'upload': true,
       'dragging': this.isDragging,
       'disabled': this.disabled,
       'has-files': this.files.length > 0
     });
 
     return html`
+      <!-- container now has class "upload" and is positioned via CSS -->
       <div class=${containerClass}
         @dragover=${this.handleDragOver}
         @dragleave=${this.handleDragLeave}

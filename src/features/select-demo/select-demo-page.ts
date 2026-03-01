@@ -1,162 +1,237 @@
-import { BaseComponent } from '../../core/base-component';
-import { selectDemoHTML } from './select-demo-page.html';
-import { selectDemoCSS } from './select-demo-page.css';
+import { LitElement, html, css } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+import { unsafeHTML } from '../../core/template';
 import '../../shared/components/button';
 import '../../shared/components/select';
-import '../../layouts/app-layout';
-class SelectDemoPage extends BaseComponent {
-	async connectedCallback(): Promise<void> {
-		super.connectedCallback();
-		// Wait for ui-select to be defined before setting up
-		await customElements.whenDefined('ui-select');
-		// Small delay to ensure elements are connected
-		await new Promise(resolve => setTimeout(resolve, 10));
-		this.setupSelects();
-		this.setupEventListeners();
-	}
+import type { SelectOption } from '../../shared/components/select';
 
-	private setupSelects(): void {
-		// Basic select options
-		const basicSelect = this.shadowRoot!.getElementById('basicSelect') as any;
-		const disabledSelect = this.shadowRoot!.getElementById('disabledSelect') as any;
-		
-		const fruits = [
-			{ value: 'apple', label: '🍎 Apple' },
-			{ value: 'banana', label: '🍌 Banana' },
-			{ value: 'orange', label: '🍊 Orange' },
-			{ value: 'grape', label: '🍇 Grape' },
-			{ value: 'strawberry', label: '🍓 Strawberry' },
-			{ value: 'watermelon', label: '🍉 Watermelon' }
-		];
+@customElement('select-demo-page')
+export class SelectDemoPage extends LitElement {
+  @state() private results: Record<string, string> = {};
+  @state() private formResult = '';
 
-		if (basicSelect) basicSelect.setAttribute('options', JSON.stringify(fruits));
-		if (disabledSelect) disabledSelect.setAttribute('options', JSON.stringify(fruits));
+  private fruits: SelectOption[] = [
+    { value: 'apple', label: '🍎 Apple' },
+    { value: 'banana', label: '🍌 Banana' },
+    { value: 'orange', label: '🍊 Orange' },
+    { value: 'grape', label: '🍇 Grape' },
+    { value: 'strawberry', label: '🍓 Strawberry' },
+    { value: 'watermelon', label: '🍉 Watermelon' }
+  ];
 
-		// Searchable select with countries
-		const searchableSelect = this.shadowRoot!.getElementById('searchableSelect') as any;
-		const countries = [
-			{ value: 'us', label: 'United States' },
-			{ value: 'uk', label: 'United Kingdom' },
-			{ value: 'ca', label: 'Canada' },
-			{ value: 'au', label: 'Australia' },
-			{ value: 'de', label: 'Germany' },
-			{ value: 'fr', label: 'France' },
-			{ value: 'jp', label: 'Japan' },
-			{ value: 'br', label: 'Brazil' },
-			{ value: 'in', label: 'India' },
-			{ value: 'cn', label: 'China' }
-		];
+  private countries: SelectOption[] = [
+    { value: 'us', label: 'United States' },
+    { value: 'uk', label: 'United Kingdom' },
+    { value: 'ca', label: 'Canada' },
+    { value: 'au', label: 'Australia' },
+    { value: 'de', label: 'Germany' },
+    { value: 'fr', label: 'France' },
+    { value: 'jp', label: 'Japan' },
+    { value: 'br', label: 'Brazil' },
+    { value: 'in', label: 'India' },
+    { value: 'cn', label: 'China' }
+  ];
 
-		if (searchableSelect) searchableSelect.setAttribute('options', JSON.stringify(countries));
+  private languages: SelectOption[] = [
+    { value: 'javascript', label: 'JavaScript' },
+    { value: 'typescript', label: 'TypeScript' },
+    { value: 'python', label: 'Python' },
+    { value: 'java', label: 'Java' },
+    { value: 'csharp', label: 'C#' },
+    { value: 'go', label: 'Go' },
+    { value: 'rust', label: 'Rust' }
+  ];
 
-		// Preselected select
-		const preselectedSelect = this.shadowRoot!.getElementById('preselectedSelect') as any;
-		const languages = [
-			{ value: 'javascript', label: 'JavaScript' },
-			{ value: 'typescript', label: 'TypeScript' },
-			{ value: 'python', label: 'Python' },
-			{ value: 'java', label: 'Java' },
-			{ value: 'csharp', label: 'C#' },
-			{ value: 'go', label: 'Go' },
-			{ value: 'rust', label: 'Rust' }
-		];
+  private roles: SelectOption[] = [
+    { value: 'admin', label: 'Administrator' },
+    { value: 'manager', label: 'Manager' },
+    { value: 'developer', label: 'Developer' },
+    { value: 'designer', label: 'Designer' },
+    { value: 'user', label: 'User' }
+  ];
 
-		if (preselectedSelect) preselectedSelect.setAttribute('options', JSON.stringify(languages));
+  private departments: SelectOption[] = [
+    { value: 'engineering', label: 'Engineering' },
+    { value: 'design', label: 'Design' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'sales', label: 'Sales' },
+    { value: 'hr', label: 'Human Resources' }
+  ];
 
-		// Form selects
-		const roleSelect = this.shadowRoot!.getElementById('roleSelect') as any;
-		const roles = [
-			{ value: 'admin', label: 'Administrator' },
-			{ value: 'manager', label: 'Manager' },
-			{ value: 'developer', label: 'Developer' },
-			{ value: 'designer', label: 'Designer' },
-			{ value: 'user', label: 'User' }
-		];
+  static styles = css`
+    .demo-container {
+      padding: 2rem;
+      max-width: 900px;
+    }
 
-		if (roleSelect) roleSelect.setAttribute('options', JSON.stringify(roles));
+    h1 {
+      font-size: 2rem;
+      margin: 0 0 0.5rem;
+      color: #0f172a;
+    }
 
-		const departmentSelect = this.shadowRoot!.getElementById('departmentSelect') as any;
-		const departments = [
-			{ value: 'engineering', label: 'Engineering' },
-			{ value: 'design', label: 'Design' },
-			{ value: 'marketing', label: 'Marketing' },
-			{ value: 'sales', label: 'Sales' },
-			{ value: 'hr', label: 'Human Resources' }
-		];
+    p {
+      color: #64748b;
+      margin-bottom: 2rem;
+    }
 
-		if (departmentSelect) departmentSelect.setAttribute('options', JSON.stringify(departments));
-	}
+    .demo-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+    }
 
-	private setupEventListeners(): void {
-		// Basic select change
-		const basicSelect = this.shadowRoot!.getElementById('basicSelect');
-		const basicResult = this.shadowRoot!.getElementById('basicResult');
-		const basicValue = this.shadowRoot!.getElementById('basicValue');
+    .demo-section h2 {
+      margin: 0 0 1rem;
+      font-size: 1.25rem;
+      color: #0f172a;
+    }
 
-		basicSelect?.addEventListener('select-change', ((e: CustomEvent) => {
-			if (basicResult && basicValue) {
-				basicResult.style.display = 'block';
-				basicValue.textContent = `${e.detail.option.label} (${e.detail.value})`;
-			}
-		}) as EventListener);
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
 
-		// Searchable select change
-		const searchableSelect = this.shadowRoot!.getElementById('searchableSelect');
-		const searchResult = this.shadowRoot!.getElementById('searchResult');
-		const searchValue = this.shadowRoot!.getElementById('searchValue');
+    .result-display {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: #f1f5f9;
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+  `;
 
-		searchableSelect?.addEventListener('select-change', ((e: CustomEvent) => {
-			if (searchResult && searchValue) {
-				searchResult.style.display = 'block';
-				searchValue.textContent = `${e.detail.option.label} (${e.detail.value})`;
-			}
-		}) as EventListener);
+  private handleSelectChange = (id: string) => (e: CustomEvent): void => {
+    const { option, value } = e.detail;
+    this.results = {
+      ...this.results,
+      [id]: `${option.label} (${value})`
+    };
+  };
 
-		// Preselected select change
-		const preselectedSelect = this.shadowRoot!.getElementById('preselectedSelect');
-		const preselectedResult = this.shadowRoot!.getElementById('preselectedResult');
-		const preselectedValue = this.shadowRoot!.getElementById('preselectedValue');
+  private handleFormSubmit = (e: Event): void => {
+    e.preventDefault();
+    const roleSelect = this.shadowRoot?.getElementById('roleSelect') as any;
+    const deptSelect = this.shadowRoot?.getElementById('departmentSelect') as any;
+    
+    const roleValue = roleSelect?.value || 'Not selected';
+    const deptValue = deptSelect?.value || 'Not selected';
 
-		preselectedSelect?.addEventListener('select-change', ((e: CustomEvent) => {
-			if (preselectedResult && preselectedValue) {
-				preselectedResult.style.display = 'block';
-				preselectedValue.textContent = `${e.detail.option.label} (${e.detail.value})`;
-			}
-		}) as EventListener);
+    this.formResult = `Role: <strong>${roleValue}</strong><br>Department: <strong>${deptValue}</strong>`;
+  };
 
-		// Form submit
-		const userForm = this.shadowRoot!.getElementById('userForm') as HTMLFormElement;
-		const roleSelect = this.shadowRoot!.getElementById('roleSelect') as any;
-		const departmentSelect = this.shadowRoot!.getElementById('departmentSelect') as any;
-		const formResult = this.shadowRoot!.getElementById('formResult');
-		const formValue = this.shadowRoot!.getElementById('formValue');
-		const resetBtn = this.shadowRoot!.getElementById('resetForm');
+  private handleFormReset = (): void => {
+    const roleSelect = this.shadowRoot?.getElementById('roleSelect') as any;
+    const deptSelect = this.shadowRoot?.getElementById('departmentSelect') as any;
+    
+    if (roleSelect) roleSelect.value = '';
+    if (deptSelect) deptSelect.value = '';
+    this.formResult = '';
+  };
 
-		userForm?.addEventListener('submit', (e) => {
-			e.preventDefault();
-			
-			const roleValue = roleSelect?.getAttribute('value') || 'Not selected';
-			const deptValue = departmentSelect?.getAttribute('value') || 'Not selected';
+  render() {
+    return html`
+      <div class="demo-container">
+        <h1>Select Component Demo</h1>
+        <p>Customizable dropdown select with search and multi-configuration options.</p>
 
-			if (formResult && formValue) {
-				formResult.style.display = 'block';
-				formValue.innerHTML = `Role: <strong>${roleValue}</strong><br>Department: <strong>${deptValue}</strong>`;
-			}
-		});
+        <div class="demo-section">
+          <h2>Basic Select</h2>
+          <div class="demo-grid">
+            <ui-select 
+              id="basicSelect"
+              label="Choose a Fruit"
+              placeholder="Select a fruit..."
+              .options=${this.fruits}
+              @select-change=${this.handleSelectChange('basic')}
+            ></ui-select>
+            
+            <ui-select 
+              id="disabledSelect"
+              label="Disabled Select"
+              placeholder="Not available"
+              disabled
+              .options=${this.fruits}
+            ></ui-select>
+          </div>
+          ${this.results['basic'] ? html`
+            <div class="result-display">
+              <strong>Selected:</strong> ${this.results['basic']}
+            </div>
+          ` : ''}
+        </div>
 
-		resetBtn?.addEventListener('click', () => {
-			roleSelect?.removeAttribute('value');
-			departmentSelect?.removeAttribute('value');
-			if (formResult) formResult.style.display = 'none';
-		});
-	}
+        <div class="demo-section">
+          <h2>Searchable Select</h2>
+          <div class="demo-grid">
+            <ui-select 
+              id="searchableSelect"
+              label="Choose a Country"
+              placeholder="Search countries..."
+              searchable
+              .options=${this.countries}
+              @select-change=${this.handleSelectChange('search')}
+            ></ui-select>
+          </div>
+          ${this.results['search'] ? html`
+            <div class="result-display">
+              <strong>Selected Country:</strong> ${this.results['search']}
+            </div>
+          ` : ''}
+        </div>
 
-	render(): void {
-		this.shadowRoot!.innerHTML = `
-			<style>${selectDemoCSS}</style>
-			${selectDemoHTML}
-		`;
-	}
+        <div class="demo-section">
+          <h2>Select Sizes & Preselected</h2>
+          <div class="demo-grid">
+            <ui-select 
+              id="preselectedSelect"
+              label="Choose a Programming Language"
+              placeholder="Select language..."
+              value="javascript"
+              .options=${this.languages}
+              @select-change=${this.handleSelectChange('preselected')}
+            ></ui-select>
+          </div>
+          ${this.results['preselected'] ? html`
+            <div class="result-display">
+              <strong>Selected:</strong> ${this.results['preselected']}
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="demo-section">
+          <h2>Form Example</h2>
+          <form @submit=${this.handleFormSubmit} style="max-width: 600px;">
+            <ui-select 
+              id="roleSelect"
+              label="User Role"
+              placeholder="Select role..."
+              .options=${this.roles}
+            ></ui-select>
+
+            <ui-select 
+              id="departmentSelect"
+              label="Department"
+              placeholder="Select department..."
+              .options=${this.departments}
+            ></ui-select>
+
+            <div style="margin-top: 0.5rem; display: flex; gap: 1rem;">
+              <ui-button type="submit" variant="primary">Submit</ui-button>
+              <ui-button type="button" variant="ghost" @click=${this.handleFormReset}>Reset</ui-button>
+            </div>
+          </form>
+          ${this.formResult ? html`
+            <div class="result-display" style="margin-top: 1rem;">
+              <strong>Form Data:</strong><br>
+              ${unsafeHTML(this.formResult)}
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
 }
-
-customElements.define('select-demo-page', SelectDemoPage);

@@ -27,6 +27,9 @@ export class UISidebar extends LitElement {
     const links = this.shadowRoot?.querySelectorAll('.sidebar-link') || [];
     links.forEach(el => el.classList.remove('is-active'));
     link.classList.add('is-active');
+    // Emit a navigation event so outer layouts can handle SPA routing
+    const href = link.getAttribute('href') || '';
+    this.dispatchEvent(new CustomEvent('nav', { detail: { href }, bubbles: true, composed: true }));
   };
 
   private handleFooterClick = (): void => {

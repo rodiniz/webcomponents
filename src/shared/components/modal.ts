@@ -7,6 +7,11 @@ import themeStyles from '../../styles/theme.css?inline';
 export class UIModal extends LitElement {
   static styles = [unsafeCSS(themeStyles)];
 
+  // fields to remember where this element originally lived so we can
+  // restore it after closing (we portal to body while open)
+  private _originalParent?: Node | null;
+  private _originalNextSibling?: Node | null;
+
   @property({ type: String }) title: string = '';
   @property({ type: String }) size: string = 'md';
   @property({ type: Boolean, reflect: true, attribute: 'open' }) isOpen: boolean = false;
@@ -14,6 +19,9 @@ export class UIModal extends LitElement {
   @property({ type: Boolean, attribute: 'no-close-on-backdrop' }) noCloseOnBackdrop: boolean = false;
 
   connectedCallback(): void {
+    // move element into document.body so backdrops and fixed positioning
+    // are not confined by an ancestor with overflow/scrolling. this keeps
+    // the modal demo from appearing "cut off" inside the layout container.
     this.setAttribute('data-ui', 'modal');
     super.connectedCallback();
     document.addEventListener('keydown', this.handleKeydown);
@@ -41,6 +49,20 @@ export class UIModal extends LitElement {
   };
 
   public open(): void {
+    // Portal to body at open time so the modal isn't clipped by layout
+    // containers, but allow the element to remain in its original place
+    // until the user actually opens it (so demo code can query it by id).
+    if (this.parentElement && this.parentElement !== document.body) {
+      this._originalParent = this.parentElement;
+      this._originalNextSibling = this.nextSibling;
+      document.body.appendChild(this);
+    }
+
+    // ensure host fills viewport while open
+    this.style.position = 'fixed';
+    this.style.inset = '0';
+    this.style.zIndex = '10000';
+
     this.isOpen = true;
     this.dispatchEvent(new CustomEvent('modal-open', { bubbles: true, composed: true }));
   }
@@ -48,6 +70,21 @@ export class UIModal extends LitElement {
   public close(): void {
     this.isOpen = false;
     this.dispatchEvent(new CustomEvent('modal-close', { bubbles: true, composed: true }));
+
+      // restore to original location if we moved it
+      if (this._originalParent) {
+        try {
+          if (this._originalNextSibling && this._originalNextSibling.parentNode === this._originalParent) {
+            this._originalParent.insertBefore(this, this._originalNextSibling as Node);
+          } else {
+            this._originalParent.appendChild(this);
+          }
+        } catch (err) {
+          // if reinsertion fails silently continue
+        }
+        this._originalParent = undefined;
+        this._originalNextSibling = undefined;
+      }
   }
 
   private handleBackdropClick(e: Event): void {

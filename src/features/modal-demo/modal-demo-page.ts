@@ -1,97 +1,172 @@
-import { BaseComponent } from '../../core/base-component';
-import { modalDemoHTML } from './modal-demo-page.html';
-import { modalDemoCSS } from './modal-demo-page.css';
+import { LitElement, html, css } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
 import '../../shared/components/button';
 import '../../shared/components/modal';
-import '../../layouts/app-layout';
-class ModalDemoPage extends BaseComponent {
-	async connectedCallback(): Promise<void> {
-		super.connectedCallback();
-		// Wait for ui-modal and ui-button to be defined
-		await Promise.all([
-			customElements.whenDefined('ui-modal'),
-			customElements.whenDefined('ui-button')
-		]);
-		await new Promise(resolve => setTimeout(resolve, 10));
-		this.setupEventListeners();
-	}
 
-	private setupEventListeners(): void {
-		// Basic modal
-		const openBasicModal = this.shadowRoot!.getElementById('openBasicModal');
-		const basicModal = this.shadowRoot!.getElementById('basicModal') as any;
-		const basicModalClose = this.shadowRoot!.getElementById('basicModalClose');
-		const basicModalOk = this.shadowRoot!.getElementById('basicModalOk');
+@customElement('modal-demo-page')
+export class ModalDemoPage extends LitElement {
+  @state() private confirmResult = '';
+  @state() private confirmColor = '';
 
-		openBasicModal?.addEventListener('click', () => basicModal?.open());
-		basicModalClose?.addEventListener('click', () => basicModal?.close());
-		basicModalOk?.addEventListener('click', () => basicModal?.close());
+  static styles = css`
+    .demo-container {
+      padding: 2rem;
+      max-width: 900px;
+    }
 
-		// Small modal
-		const openSmallModal = this.shadowRoot!.getElementById('openSmallModal');
-		const smallModal = this.shadowRoot!.getElementById('smallModal') as any;
-		const smallModalClose = this.shadowRoot!.getElementById('smallModalClose');
+    h1 {
+      font-size: 2rem;
+      margin: 0 0 0.5rem;
+      color: #0f172a;
+    }
 
-		openSmallModal?.addEventListener('click', () => smallModal?.open());
-		smallModalClose?.addEventListener('click', () => smallModal?.close());
+    p {
+      color: #64748b;
+      margin-bottom: 2rem;
+    }
 
-		// Large modal
-		const openLargeModal = this.shadowRoot!.getElementById('openLargeModal');
-		const largeModal = this.shadowRoot!.getElementById('largeModal') as any;
-		const largeModalClose = this.shadowRoot!.getElementById('largeModalClose');
+    .demo-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+    }
 
-		openLargeModal?.addEventListener('click', () => largeModal?.open());
-		largeModalClose?.addEventListener('click', () => largeModal?.close());
+    .demo-section h2 {
+      margin: 0 0 1rem;
+      font-size: 1.25rem;
+      color: #0f172a;
+    }
 
-		// No escape modal
-		const openNoEscapeModal = this.shadowRoot!.getElementById('openNoEscapeModal');
-		const noEscapeModal = this.shadowRoot!.getElementById('noEscapeModal') as any;
-		const noEscapeClose = this.shadowRoot!.getElementById('noEscapeClose');
+    .demo-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
 
-		openNoEscapeModal?.addEventListener('click', () => noEscapeModal?.open());
-		noEscapeClose?.addEventListener('click', () => noEscapeModal?.close());
+    .result-display {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: #f1f5f9;
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+  `;
 
-		// No backdrop modal
-		const openNoBackdropModal = this.shadowRoot!.getElementById('openNoBackdropModal');
-		const noBackdropModal = this.shadowRoot!.getElementById('noBackdropModal') as any;
-		const noBackdropClose = this.shadowRoot!.getElementById('noBackdropClose');
+  render() {
+    return html`
+      <div class="demo-container">
+        <h1>Modal Component Demo</h1>
+        <p>Interactive modals with various sizes and configurations.</p>
 
-		openNoBackdropModal?.addEventListener('click', () => noBackdropModal?.open());
-		noBackdropClose?.addEventListener('click', () => noBackdropModal?.close());
+        <div class="demo-section">
+          <h2>Basic Modals</h2>
+          <div class="demo-controls">
+            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('basicModal') as any)?.open()}>
+              Open Basic Modal
+            </ui-button>
+            <ui-button variant="secondary" @click=${() => (this.shadowRoot?.getElementById('smallModal') as any)?.open()}>
+              Small Modal
+            </ui-button>
+            <ui-button variant="secondary" @click=${() => (this.shadowRoot?.getElementById('largeModal') as any)?.open()}>
+              Large Modal
+            </ui-button>
+          </div>
+        </div>
 
-		// Confirm modal
-		const openConfirmModal = this.shadowRoot!.getElementById('openConfirmModal');
-		const confirmModal = this.shadowRoot!.getElementById('confirmModal') as any;
-		const confirmCancel = this.shadowRoot!.getElementById('confirmCancel');
-		const confirmDelete = this.shadowRoot!.getElementById('confirmDelete');
-		const confirmResult = this.shadowRoot!.getElementById('confirmResult');
-		const confirmText = this.shadowRoot!.getElementById('confirmText');
+        <div class="demo-section">
+          <h2>Modal Behaviors</h2>
+          <div class="demo-controls">
+            <ui-button variant="ghost" @click=${() => (this.shadowRoot?.getElementById('noEscapeModal') as any)?.open()}>
+              No Close on Escape
+            </ui-button>
+            <ui-button variant="ghost" @click=${() => (this.shadowRoot?.getElementById('noBackdropModal') as any)?.open()}>
+              No Close on Backdrop
+            </ui-button>
+          </div>
+        </div>
 
-		openConfirmModal?.addEventListener('click', () => confirmModal?.open());
-		confirmCancel?.addEventListener('click', () => {
-			confirmModal?.close();
-			if (confirmResult && confirmText) {
-				confirmResult.style.display = 'block';
-				confirmText.textContent = 'Cancelled';
-				confirmText.style.color = '#64748b';
-			}
-		});
-		confirmDelete?.addEventListener('click', () => {
-			confirmModal?.close();
-			if (confirmResult && confirmText) {
-				confirmResult.style.display = 'block';
-				confirmText.textContent = 'Item deleted!';
-				confirmText.style.color = '#ef4444';
-			}
-		});
-	}
+        <div class="demo-section">
+          <h2>Confirmation Modal</h2>
+          <div class="demo-controls">
+            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('confirmModal') as any)?.open()}>
+              Delete Item
+            </ui-button>
+          </div>
+          ${this.confirmResult ? html`
+            <div class="result-display" style="color: ${this.confirmColor}">
+              <strong>Result:</strong> ${this.confirmResult}
+            </div>
+          ` : ''}
+        </div>
 
-	render(): void {
-		this.shadowRoot!.innerHTML = `
-			<style>${modalDemoCSS}</style>
-			${modalDemoHTML}
-		`;
-	}
+        <ui-modal id="basicModal" title="Welcome!" size="md">
+          <p>This is a basic modal with a title and content.</p>
+          <p>You can close it by:</p>
+          <ul>
+            <li>Clicking the X button</li>
+            <li>Pressing the Escape key</li>
+            <li>Clicking outside the modal</li>
+          </ul>
+          <div slot="footer">
+            <ui-button variant="secondary" @click=${() => (this.shadowRoot?.getElementById('basicModal') as any)?.close()}>Close</ui-button>
+            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('basicModal') as any)?.close()}>Got it!</ui-button>
+          </div>
+        </ui-modal>
+
+        <ui-modal id="smallModal" title="Small Modal" size="sm">
+          <p>This is a small modal perfect for quick messages or confirmations.</p>
+          <div slot="footer">
+            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('smallModal') as any)?.close()}>Close</ui-button>
+          </div>
+        </ui-modal>
+
+        <ui-modal id="largeModal" title="Large Modal" size="lg">
+          <p>This is a large modal that can contain more content.</p>
+          <div style="height: 400px; background: #f1f5f9; border-radius: 8px; padding: 1rem; margin: 1rem 0; overflow-y: auto;">
+            <p><strong>Scrollable Content Area</strong></p>
+            <p>When content exceeds the modal height, it automatically becomes scrollable.</p>
+            ${Array(20).fill(html`<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>`)}
+          </div>
+          <div slot="footer">
+            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('largeModal') as any)?.close()}>Close</ui-button>
+          </div>
+        </ui-modal>
+
+        <ui-modal id="noEscapeModal" title="No Escape Close" size="md" no-close-on-escape>
+          <p>This modal cannot be closed by pressing the Escape key.</p>
+          <p>You must click the close button or click outside.</p>
+          <div slot="footer">
+            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('noEscapeModal') as any)?.close()}>Close</ui-button>
+          </div>
+        </ui-modal>
+
+        <ui-modal id="noBackdropModal" title="No Backdrop Close" size="md" no-close-on-backdrop>
+          <p>This modal cannot be closed by clicking the backdrop.</p>
+          <p>You must use the close button or press Escape.</p>
+          <div slot="footer">
+            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('noBackdropModal') as any)?.close()}>Close</ui-button>
+          </div>
+        </ui-modal>
+
+        <ui-modal id="confirmModal" title="Confirm Delete" size="sm">
+          <p>Are you sure you want to delete this item?</p>
+          <p style="color: #ef4444; font-size: 0.875rem;">This action cannot be undone.</p>
+          <div slot="footer">
+            <ui-button variant="ghost" @click=${() => {
+              (this.shadowRoot?.getElementById('confirmModal') as any)?.close();
+              this.confirmResult = 'Cancelled';
+              this.confirmColor = '#64748b';
+            }}>Cancel</ui-button>
+            <ui-button variant="primary" @click=${() => {
+              (this.shadowRoot?.getElementById('confirmModal') as any)?.close();
+              this.confirmResult = 'Item deleted!';
+              this.confirmColor = '#ef4444';
+            }}>Delete</ui-button>
+          </div>
+        </ui-modal>
+      </div>
+    `;
+  }
 }
-
-customElements.define('modal-demo-page', ModalDemoPage);

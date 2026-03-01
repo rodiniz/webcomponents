@@ -144,6 +144,15 @@ class AppLayout extends BaseComponent {
     sidebar.items = this.navItems;
     sidebar.footerItems = this.footerItems;
 
+    // listen for navigation events emitted by the sidebar
+    sidebar.addEventListener('nav', (ev: Event) => {
+      const href = (ev as CustomEvent).detail?.href;
+      if (href && !href.startsWith('http')) {
+        window.history.pushState({}, '', href);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+    });
+
     this.shadowRoot!.innerHTML = `
       <style>${styles}${layoutStyles}</style>
       <ui-top-bar title="${this.pageTitle}" subtitle="${this.pageSubtitle}"></ui-top-bar>
@@ -162,20 +171,7 @@ class AppLayout extends BaseComponent {
       layoutContainer.insertBefore(sidebar, layoutContainer.firstChild);
     }
 
-    // Add click handlers for navigation after sidebar is rendered
-    requestAnimationFrame(() => {
-      const sidebarLinks = (sidebar as HTMLElement).shadowRoot?.querySelectorAll('.sidebar-link') || [];
-      sidebarLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-          const href = (link as HTMLElement).getAttribute('href');
-          if (href && !href.startsWith('http')) {
-            e.preventDefault();
-            window.history.pushState({}, '', href);
-            window.dispatchEvent(new PopStateEvent('popstate'));
-          }
-        });
-      });
-    });
+    // navigation handled via 'nav' events from the sidebar component
   }
 }
 

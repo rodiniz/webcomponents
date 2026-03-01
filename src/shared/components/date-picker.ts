@@ -59,13 +59,21 @@ export class UIDatePicker extends LitElement {
 
   private handleInputChange(e: Event): void {
     const input = e.target as HTMLInputElement;
-    this.selectedDate = input.value;
-    this.value = input.value;
-    this.dispatchEvent(new CustomEvent('change', {
-      detail: { value: input.value },
-      bubbles: true,
-      composed: true
-    }));
+    const newVal = input.value;
+    // Defer applying the value update until the next frame.  When the
+    // native date picker UI is displayed, updating the shadow DOM too
+    // quickly can cause the hidden input to be replaced and the picker
+    // to flicker/close.  A short delay gives the browser time to finish
+    // its own internal animation before we re-render.
+    requestAnimationFrame(() => {
+      this.selectedDate = newVal;
+      this.value = newVal;
+      this.dispatchEvent(new CustomEvent('change', {
+        detail: { value: newVal },
+        bubbles: true,
+        composed: true
+      }));
+    });
   }
 
   private showPicker(): void {

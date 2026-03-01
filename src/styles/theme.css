@@ -362,6 +362,9 @@ tr:last-child td {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* default size ensures box remains visible when size class is missing */
+  min-width: 18px;
+  min-height: 18px;
   border: 2px solid var(--color-border, #cbd5e1);
   border-radius: var(--radius-sm, 4px);
   background: white;
@@ -710,6 +713,7 @@ input[type="checkbox"] {
 
 .upload {
   display: flex;
+  position: relative; /* necessary for absolute input to stay within box */
   flex-direction: column;
   gap: 0.75rem;
 }

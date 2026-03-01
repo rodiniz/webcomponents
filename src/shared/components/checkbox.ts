@@ -27,6 +27,9 @@ export class UICheckbox extends LitElement {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      /* default size ensures a visible container even if size class is missing */
+      width: 18px;
+      height: 18px;
       border: 2px solid #cbd5e1;
       border-radius: 4px;
       background: white;
@@ -92,7 +95,23 @@ export class UICheckbox extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
   @property({ type: Boolean, reflect: true }) indeterminate: boolean = false;
   @property({ type: String }) label: string = '';
-  @property({ type: String }) size: 'sm' | 'md' | 'lg' = 'md';
+  // size is validated through the accessor so external invalid values don't break layout
+  private _size: 'sm' | 'md' | 'lg' = 'md';
+
+  @property({ type: String })
+  get size() {
+    return this._size;
+  }
+  set size(value: 'sm' | 'md' | 'lg') {
+    const valid = ['sm', 'md', 'lg'];
+    const newVal = valid.includes(value) ? value : 'md';
+    if (value && !valid.includes(value)) {
+      console.warn(`ui-checkbox received invalid size "${value}"; falling back to \"md\"`);
+    }
+    const old = this._size;
+    this._size = newVal as 'sm' | 'md' | 'lg';
+    this.requestUpdate('size', old);
+  }
 
   @state() private _internalChecked: boolean = false;
   @state() private _internalIndeterminate: boolean = false;

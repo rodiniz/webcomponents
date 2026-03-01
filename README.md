@@ -29,6 +29,8 @@ Check out the interactive demo and explore component implementations:
 
 Each demo includes the component implementation and usage examples. Visit the live demo site to see all components in action.
 
+> **Note:** the `<ui-checkbox>` supports three size values: `sm`, `md` (default), and `lg`. Passing any other value will emit a console warning and fall back to `md` so the checkbox box remains visible.
+
 ## Installation
 
 ```bash
