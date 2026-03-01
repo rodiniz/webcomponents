@@ -54,6 +54,10 @@ export class ModalDemoPage extends LitElement {
     }
   `;
 
+  private getModal(id: string): any {
+    return this.shadowRoot?.getElementById(id) || document.getElementById(id);
+  }
+
   render() {
     return html`
       <div class="demo-container">
@@ -63,13 +67,13 @@ export class ModalDemoPage extends LitElement {
         <div class="demo-section">
           <h2>Basic Modals</h2>
           <div class="demo-controls">
-            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('basicModal') as any)?.open()}>
+            <ui-button variant="primary" @click=${() => this.getModal('basicModal')?.open()}>
               Open Basic Modal
             </ui-button>
-            <ui-button variant="secondary" @click=${() => (this.shadowRoot?.getElementById('smallModal') as any)?.open()}>
+            <ui-button variant="secondary" @click=${() => this.getModal('smallModal')?.open()}>
               Small Modal
             </ui-button>
-            <ui-button variant="secondary" @click=${() => (this.shadowRoot?.getElementById('largeModal') as any)?.open()}>
+            <ui-button variant="secondary" @click=${() => this.getModal('largeModal')?.open()}>
               Large Modal
             </ui-button>
           </div>
@@ -78,10 +82,10 @@ export class ModalDemoPage extends LitElement {
         <div class="demo-section">
           <h2>Modal Behaviors</h2>
           <div class="demo-controls">
-            <ui-button variant="ghost" @click=${() => (this.shadowRoot?.getElementById('noEscapeModal') as any)?.open()}>
+            <ui-button variant="ghost" @click=${() => this.getModal('noEscapeModal')?.open()}>
               No Close on Escape
             </ui-button>
-            <ui-button variant="ghost" @click=${() => (this.shadowRoot?.getElementById('noBackdropModal') as any)?.open()}>
+            <ui-button variant="ghost" @click=${() => this.getModal('noBackdropModal')?.open()}>
               No Close on Backdrop
             </ui-button>
           </div>
@@ -90,7 +94,7 @@ export class ModalDemoPage extends LitElement {
         <div class="demo-section">
           <h2>Confirmation Modal</h2>
           <div class="demo-controls">
-            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('confirmModal') as any)?.open()}>
+            <ui-button variant="primary" @click=${() => this.getModal('confirmModal')?.open()}>
               Delete Item
             </ui-button>
           </div>
@@ -101,24 +105,52 @@ export class ModalDemoPage extends LitElement {
           ` : ''}
         </div>
 
-        <ui-modal id="basicModal" title="Welcome!" size="md">
-          <p>This is a basic modal with a title and content.</p>
-          <p>You can close it by:</p>
-          <ul>
-            <li>Clicking the X button</li>
-            <li>Pressing the Escape key</li>
-            <li>Clicking outside the modal</li>
-          </ul>
+        <ui-modal id="basicModal" title="Premium Feature Unlocked" size="md">
+          <div class="demo-modal-hero">
+            <div class="demo-modal-hero-content">
+              <div class="demo-modal-hero-icon">⚡</div>
+              <div class="demo-modal-hero-title">Experience Velocity</div>
+              <div class="demo-modal-hero-subtitle">v2.0 UI Framework Integration</div>
+            </div>
+          </div>
+          
+          <div class="demo-modal-body-text">
+            Experience the next generation of UI design with our premium web components. Precision-engineered for performance and aesthetics.
+          </div>
+
+          <div class="demo-modal-grid">
+            <div class="demo-modal-card">
+              <div class="demo-modal-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </div>
+              <div class="demo-modal-card-title">Layered Design</div>
+            </div>
+            <div class="demo-modal-card">
+              <div class="demo-modal-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              </div>
+              <div class="demo-modal-card-title">Real-time Data</div>
+            </div>
+          </div>
+
           <div slot="footer">
-            <ui-button variant="secondary" @click=${() => (this.shadowRoot?.getElementById('basicModal') as any)?.close()}>Close</ui-button>
-            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('basicModal') as any)?.close()}>Got it!</ui-button>
+            <ui-button variant="secondary" @click=${() => this.getModal('basicModal')?.close()}>Maybe Later</ui-button>
+            <ui-button variant="primary" @click=${() => this.getModal('basicModal')?.close()}>Get Started</ui-button>
           </div>
         </ui-modal>
 
-        <ui-modal id="smallModal" title="Small Modal" size="sm">
-          <p>This is a small modal perfect for quick messages or confirmations.</p>
+        <ui-modal id="smallModal" title="Quick Notification" size="sm">
+          <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; padding: 1rem 0;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: #dcfce7; color: #166534; display: flex; align-items: center; justify-content: center;">
+              <svg style="width: 24px; height: 24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+              <h3 style="margin: 0; font-size: 1.1rem;">Changes Saved</h3>
+              <p style="margin: 0.5rem 0 0; color: #64748b;">Your preferences have been updated successfully.</p>
+            </div>
+          </div>
           <div slot="footer">
-            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('smallModal') as any)?.close()}>Close</ui-button>
+            <ui-button variant="primary" style="width: 100%;" @click=${() => this.getModal('smallModal')?.close()}>Awesome!</ui-button>
           </div>
         </ui-modal>
 
@@ -130,7 +162,7 @@ export class ModalDemoPage extends LitElement {
             ${Array(20).fill(html`<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>`)}
           </div>
           <div slot="footer">
-            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('largeModal') as any)?.close()}>Close</ui-button>
+            <ui-button variant="primary" @click=${() => this.getModal('largeModal')?.close()}>Close</ui-button>
           </div>
         </ui-modal>
 
@@ -138,7 +170,7 @@ export class ModalDemoPage extends LitElement {
           <p>This modal cannot be closed by pressing the Escape key.</p>
           <p>You must click the close button or click outside.</p>
           <div slot="footer">
-            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('noEscapeModal') as any)?.close()}>Close</ui-button>
+            <ui-button variant="primary" @click=${() => this.getModal('noEscapeModal')?.close()}>Close</ui-button>
           </div>
         </ui-modal>
 
@@ -146,7 +178,7 @@ export class ModalDemoPage extends LitElement {
           <p>This modal cannot be closed by clicking the backdrop.</p>
           <p>You must use the close button or press Escape.</p>
           <div slot="footer">
-            <ui-button variant="primary" @click=${() => (this.shadowRoot?.getElementById('noBackdropModal') as any)?.close()}>Close</ui-button>
+            <ui-button variant="primary" @click=${() => this.getModal('noBackdropModal')?.close()}>Close</ui-button>
           </div>
         </ui-modal>
 
@@ -155,15 +187,15 @@ export class ModalDemoPage extends LitElement {
           <p style="color: #ef4444; font-size: 0.875rem;">This action cannot be undone.</p>
           <div slot="footer">
             <ui-button variant="ghost" @click=${() => {
-              (this.shadowRoot?.getElementById('confirmModal') as any)?.close();
-              this.confirmResult = 'Cancelled';
-              this.confirmColor = '#64748b';
-            }}>Cancel</ui-button>
+        this.getModal('confirmModal')?.close();
+        this.confirmResult = 'Cancelled';
+        this.confirmColor = '#64748b';
+      }}>Cancel</ui-button>
             <ui-button variant="primary" @click=${() => {
-              (this.shadowRoot?.getElementById('confirmModal') as any)?.close();
-              this.confirmResult = 'Item deleted!';
-              this.confirmColor = '#ef4444';
-            }}>Delete</ui-button>
+        this.getModal('confirmModal')?.close();
+        this.confirmResult = 'Item deleted!';
+        this.confirmColor = '#ef4444';
+      }}>Delete</ui-button>
           </div>
         </ui-modal>
       </div>

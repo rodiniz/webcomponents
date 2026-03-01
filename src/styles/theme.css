@@ -85,15 +85,18 @@ body {
   color: var(--color-primary);
   border-color: var(--color-border-strong);
 }
+
 .btn.danger {
   background: #ef4444;
   color: white;
   border-color: #ef4444;
 }
+
 .btn-danger:hover {
   background: #6626dc;
   border-color: #dc2626;
 }
+
 .btn.has-icon {
   line-height: 1.2;
 }
@@ -335,6 +338,7 @@ tr:last-child td {
 .input-error.hidden {
   display: none;
 }
+
 /* ============================================
    CHECKBOX COMPONENT STYLES
    ============================================ */
@@ -471,22 +475,53 @@ input[type="checkbox"] {
   padding: 1rem;
 }
 
-.modal-content {
+.modal-container {
   background: var(--color-surface, white);
   border-radius: var(--radius-lg, 16px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-border, #e2e8f0);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   width: 100%;
-  animation: slideUp 0.2s ease-out;
+  animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  position: relative;
 }
 
-.modal-content.sm { max-width: 400px; }
-.modal-content.md { max-width: 600px; }
-.modal-content.lg { max-width: 800px; }
-.modal-content.xl { max-width: 1200px; }
-.modal-content.full { max-width: 95vw; }
+.modal-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary, #24ec71), var(--color-header, #34a8eb));
+  z-index: 1;
+}
+
+.modal-container.modal-sm {
+  max-width: 360px;
+}
+
+.modal-container.modal-md {
+  max-width: 600px;
+}
+
+.modal-container.modal-lg {
+  max-width: 800px;
+}
+
+.modal-container.modal-xl {
+  max-width: 1200px;
+}
+
+.modal-container.modal-full {
+  max-width: 95vw;
+}
 
 .modal-header {
   padding: 1.5rem;
@@ -503,22 +538,134 @@ input[type="checkbox"] {
   margin: 0;
 }
 
+.modal-body {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--color-border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background: var(--color-muted, #f8fafc);
+}
+
 .modal-close {
-  background: none;
+  background: rgba(15, 23, 42, 0.05);
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.6rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-md, 8px);
-  color: var(--color-text-muted, #64748b);
-  transition: all 0.2s;
+  border-radius: var(--radius-pill, 99px);
+  color: var(--color-ink, #0f172a);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 36px;
+  height: 36px;
 }
 
 .modal-close:hover {
-  background: var(--color-muted, #f1f5f9);
-  color: var(--color-ink, #0f172a);
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  transform: rotate(90deg);
+}
+
+.modal-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Demo specific modal content enhancement */
+.demo-modal-hero {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--color-border);
+  height: 200px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-modal-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(36, 236, 113, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(52, 168, 235, 0.15) 0%, transparent 50%);
+}
+
+.demo-modal-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+}
+
+.demo-modal-hero-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.demo-modal-hero-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.02em;
+}
+
+.demo-modal-hero-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.demo-modal-body-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-muted, #64748b);
+  margin-bottom: 1rem;
+}
+
+.demo-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.demo-modal-card {
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--color-muted, #f8fafc);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.demo-modal-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.demo-modal-card-title {
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
 .modal-body {
@@ -536,8 +683,13 @@ input[type="checkbox"] {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -545,6 +697,7 @@ input[type="checkbox"] {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -696,6 +849,7 @@ input[type="checkbox"] {
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -713,7 +867,8 @@ input[type="checkbox"] {
 
 .upload {
   display: flex;
-  position: relative; /* necessary for absolute input to stay within box */
+  position: relative;
+  /* necessary for absolute input to stay within box */
   flex-direction: column;
   gap: 0.75rem;
 }
@@ -1119,10 +1274,12 @@ input[type="checkbox"] {
 }
 
 @keyframes stepGlow {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-2px);
   }
@@ -1415,6 +1572,7 @@ input[type="checkbox"] {
 
 /* Responsive */
 @media (max-width: 768px) {
+
   .layout-header,
   .layout-footer {
     padding: 0 1rem;
@@ -1440,6 +1598,7 @@ input[type="checkbox"] {
 .react-datepicker-popper {
   z-index: 99999 !important;
 }
+
 /* Card Component */
 :host([data-ui="card"]) {
   display: block;
@@ -1490,7 +1649,7 @@ input[type="checkbox"] {
   border: none;
   background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
   border-radius: 16px;
-  box-shadow: 
+  box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.02),
     0 4px 8px rgba(0, 0, 0, 0.04),
     0 12px 24px rgba(0, 0, 0, 0.04);
@@ -1498,7 +1657,7 @@ input[type="checkbox"] {
 
 .card.elevated:hover {
   transform: translateY(-4px);
-  box-shadow: 
+  box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.04),
     0 8px 16px rgba(0, 0, 0, 0.06),
     0 24px 48px rgba(99, 102, 241, 0.12);
@@ -1532,7 +1691,7 @@ input[type="checkbox"] {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 16px;
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
@@ -1563,6 +1722,7 @@ input[type="checkbox"] {
     opacity: 0;
     transform: translateY(16px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1573,29 +1733,97 @@ input[type="checkbox"] {
   animation: cardAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.card.bg-transparent { background: transparent !important; }
-.card.bg-primary { background: #6366f1 !important; }
-.card.bg-secondary { background: #8b5cf6 !important; }
-.card.bg-success { background: #10b981 !important; }
-.card.bg-warning { background: #f59e0b !important; }
-.card.bg-danger { background: #ef4444 !important; }
-.card.bg-dark { background: #1f2937 !important; }
-.card.bg-light { background: #f3f4f6 !important; }
-.card.bg-slate { background: #64748b !important; }
-.card.bg-zinc { background: #71717a !important; }
-.card.bg-neutral { background: #737373 !important; }
-.card.bg-stone { background: #78716c !important; }
-.card.bg-amber { background: #f59e0b !important; }
-.card.bg-orange { background: #f97316 !important; }
-.card.bg-pink { background: #ec4899 !important; }
-.card.bg-rose { background: #f43f5e !important; }
-.card.bg-fuchsia { background: #d946ef !important; }
-.card.bg-violet { background: #8b5cf6 !important; }
-.card.bg-indigo { background: #6366f1 !important; }
-.card.bg-blue { background: #3b82f6 !important; }
-.card.bg-cyan { background: #06b6d4 !important; }
-.card.bg-emerald { background: #10b981 !important; }
-.card.bg-lime { background: #84cc16 !important; }
+.card.bg-transparent {
+  background: transparent !important;
+}
+
+.card.bg-primary {
+  background: #6366f1 !important;
+}
+
+.card.bg-secondary {
+  background: #8b5cf6 !important;
+}
+
+.card.bg-success {
+  background: #10b981 !important;
+}
+
+.card.bg-warning {
+  background: #f59e0b !important;
+}
+
+.card.bg-danger {
+  background: #ef4444 !important;
+}
+
+.card.bg-dark {
+  background: #1f2937 !important;
+}
+
+.card.bg-light {
+  background: #f3f4f6 !important;
+}
+
+.card.bg-slate {
+  background: #64748b !important;
+}
+
+.card.bg-zinc {
+  background: #71717a !important;
+}
+
+.card.bg-neutral {
+  background: #737373 !important;
+}
+
+.card.bg-stone {
+  background: #78716c !important;
+}
+
+.card.bg-amber {
+  background: #f59e0b !important;
+}
+
+.card.bg-orange {
+  background: #f97316 !important;
+}
+
+.card.bg-pink {
+  background: #ec4899 !important;
+}
+
+.card.bg-rose {
+  background: #f43f5e !important;
+}
+
+.card.bg-fuchsia {
+  background: #d946ef !important;
+}
+
+.card.bg-violet {
+  background: #8b5cf6 !important;
+}
+
+.card.bg-indigo {
+  background: #6366f1 !important;
+}
+
+.card.bg-blue {
+  background: #3b82f6 !important;
+}
+
+.card.bg-cyan {
+  background: #06b6d4 !important;
+}
+
+.card.bg-emerald {
+  background: #10b981 !important;
+}
+
+.card.bg-lime {
+  background: #84cc16 !important;
+}
 
 .card.bg-primary,
 .card.bg-secondary,
@@ -1626,7 +1854,7 @@ input[type="checkbox"] {
   .card {
     padding: 24px;
   }
-  
+
   .card.rounded {
     border-radius: 14px;
   }
@@ -1636,7 +1864,7 @@ input[type="checkbox"] {
   .card {
     padding: 20px;
   }
-  
+
   .card.rounded {
     border-radius: 12px;
   }
@@ -1652,6 +1880,7 @@ input[type="checkbox"] {
 }
 
 @media (prefers-color-scheme: dark) {
+
   .card.default,
   .card.elevated,
   .card.bordered,
@@ -1659,7 +1888,7 @@ input[type="checkbox"] {
     background: #1f2937;
     border-color: rgba(255, 255, 255, 0.08);
   }
-  
+
   .card.ghost {
     border-color: rgba(255, 255, 255, 0.12);
   }

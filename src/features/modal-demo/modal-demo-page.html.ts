@@ -43,24 +43,48 @@ export const modalDemoHTML = `
 		</div>
 
 		<!-- Modals -->
-		<ui-modal id="basicModal" title="Welcome!" size="md">
-			<p>This is a basic modal with a title and content.</p>
-			<p>You can close it by:</p>
-			<ul>
-				<li>Clicking the X button</li>
-				<li>Pressing the Escape key</li>
-				<li>Clicking outside the modal</li>
-			</ul>
+		<ui-modal id="basicModal" title="Premium Feature Unlocked" size="md">
+			<div class="demo-modal-hero">
+				<img src="/premium-demo.png" alt="Premium Dashboard">
+			</div>
+			
+			<div class="demo-modal-body-text">
+				Experience the next generation of UI design with our premium web components. Precision-engineered for performance and aesthetics.
+			</div>
+
+			<div class="demo-modal-grid">
+				<div class="demo-modal-card">
+					<div class="demo-modal-card-icon">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+					</div>
+					<div class="demo-modal-card-title">Layered Design</div>
+				</div>
+				<div class="demo-modal-card">
+					<div class="demo-modal-card-icon">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+					</div>
+					<div class="demo-modal-card-title">Real-time Data</div>
+				</div>
+			</div>
+
 			<div slot="footer">
-				<ui-button id="basicModalClose" variant="secondary">Close</ui-button>
-				<ui-button id="basicModalOk" variant="primary">Got it!</ui-button>
+				<ui-button id="basicModalClose" variant="secondary">Maybe Later</ui-button>
+				<ui-button id="basicModalOk" variant="primary">Get Started</ui-button>
 			</div>
 		</ui-modal>
 
-		<ui-modal id="smallModal" title="Small Modal" size="sm">
-			<p>This is a small modal perfect for quick messages or confirmations.</p>
+		<ui-modal id="smallModal" title="Quick Notification" size="sm">
+			<div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; padding: 1rem 0;">
+				<div style="width: 48px; height: 48px; border-radius: 50%; background: #dcfce7; color: #166534; display: flex; align-items: center; justify-content: center;">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+				</div>
+				<div>
+					<h3 style="margin: 0; font-size: 1.1rem;">Changes Saved</h3>
+					<p style="margin: 0.5rem 0 0; color: #64748b;">Your preferences have been updated successfully.</p>
+				</div>
+			</div>
 			<div slot="footer">
-				<ui-button id="smallModalClose" variant="primary">Close</ui-button>
+				<ui-button id="smallModalClose" variant="primary" style="width: 100%;">Awesome!</ui-button>
 			</div>
 		</ui-modal>
 

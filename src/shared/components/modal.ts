@@ -5,7 +5,20 @@ import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-modal')
 export class UIModal extends LitElement {
-  static styles = [unsafeCSS(themeStyles)];
+  static styles = [
+    unsafeCSS(themeStyles),
+    css`
+      :host {
+        display: contents;
+      }
+      :host([open]) {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+      }
+    `
+  ];
 
   // fields to remember where this element originally lived so we can
   // restore it after closing (we portal to body while open)
@@ -52,16 +65,12 @@ export class UIModal extends LitElement {
     // Portal to body at open time so the modal isn't clipped by layout
     // containers, but allow the element to remain in its original place
     // until the user actually opens it (so demo code can query it by id).
-    if (this.parentElement && this.parentElement !== document.body) {
-      this._originalParent = this.parentElement;
+    const parent = this.parentNode;
+    if (parent && parent !== document.body) {
+      this._originalParent = parent;
       this._originalNextSibling = this.nextSibling;
       document.body.appendChild(this);
     }
-
-    // ensure host fills viewport while open
-    this.style.position = 'fixed';
-    this.style.inset = '0';
-    this.style.zIndex = '10000';
 
     this.isOpen = true;
     this.dispatchEvent(new CustomEvent('modal-open', { bubbles: true, composed: true }));
@@ -71,20 +80,21 @@ export class UIModal extends LitElement {
     this.isOpen = false;
     this.dispatchEvent(new CustomEvent('modal-close', { bubbles: true, composed: true }));
 
-      // restore to original location if we moved it
-      if (this._originalParent) {
-        try {
-          if (this._originalNextSibling && this._originalNextSibling.parentNode === this._originalParent) {
-            this._originalParent.insertBefore(this, this._originalNextSibling as Node);
-          } else {
-            this._originalParent.appendChild(this);
-          }
-        } catch (err) {
-          // if reinsertion fails silently continue
+    // restore to original location if we moved it
+    if (this._originalParent) {
+      try {
+        if (this._originalNextSibling && this._originalNextSibling.parentNode === this._originalParent) {
+          this._originalParent.insertBefore(this, this._originalNextSibling as Node);
+        } else {
+          this._originalParent.appendChild(this);
         }
-        this._originalParent = undefined;
-        this._originalNextSibling = undefined;
+      } catch (err) {
+        // if reinsertion fails silently continue
+        console.error('Modal restoration failed:', err);
       }
+      this._originalParent = undefined;
+      this._originalNextSibling = undefined;
+    }
   }
 
   private handleBackdropClick(e: Event): void {
@@ -103,18 +113,16 @@ export class UIModal extends LitElement {
     return html`
       <div class=${backdropClasses} @click=${this.handleBackdropClick}>
         <div class="modal-container ${sizeClass}" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-          ${this.title ? html`
-            <div class="modal-header">
-              <h2 id="modal-title" class="modal-title">${this.title}</h2>
-              <button class="modal-close" @click=${this.close} aria-label="Close modal">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-          ` : ''}
-          <div class="modal-content">
+          <div class="modal-header">
+            ${this.title ? html`<h2 id="modal-title" class="modal-title">${this.title}</h2>` : html`<div></div>`}
+            <button class="modal-close" @click=${this.close} aria-label="Close modal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <div class="modal-body">
             <slot></slot>
           </div>
           <div class="modal-footer">
