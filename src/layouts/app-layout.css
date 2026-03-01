@@ -3,7 +3,7 @@
   flex-direction: column;
   width: 100%;
   height: 100vh;
-  background: #f9fafb;
+  background: hsl(var(--background));
   box-sizing: border-box;
 }
 
@@ -11,6 +11,7 @@ ui-top-bar {
   display: block;
   width: 100%;
   flex-shrink: 0;
+  z-index: 20;
 }
 
 .layout-container {
@@ -20,35 +21,34 @@ ui-top-bar {
   width: 100%;
   min-height: 0;
   position: relative;
+  background: hsl(var(--muted) / 0.3);
 }
 
 ui-sidebar {
   display: block;
-  width: 280px;
+  width: 260px;
   flex-shrink: 0;
   position: relative;
   z-index: 10;
+  border-right: 1px solid hsl(var(--border));
 }
 
 .main-area {
   flex: 1 1 auto;
-  margin-left: 80px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 32px 48px;
-  background: #f9fafb;
+  padding: 2rem 3rem;
   box-sizing: border-box;
 }
 
 .content-area {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 32px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  background: hsl(var(--background));
+  border-radius: var(--radius);
+  padding: 2rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   box-sizing: border-box;
-  margin-bottom: 32px;
-  transition: all 0.2s ease;
+  margin-bottom: 2rem;
   width: 100%;
 }
 
@@ -84,7 +84,7 @@ ui-sidebar {
   .main-area {
     padding: 24px 32px;
   }
-  
+
   .content-area {
     padding: 28px;
   }
@@ -94,7 +94,7 @@ ui-sidebar {
   .layout-container {
     flex-direction: column;
   }
-  
+
   ui-sidebar {
     width: 100%;
     position: relative;
@@ -102,12 +102,12 @@ ui-sidebar {
     border-bottom: 1px solid #e5e7eb;
     max-height: 200px;
   }
-  
+
   .main-area {
     margin-left: 0;
     padding: 16px 24px;
   }
-  
+
   .content-area {
     padding: 20px;
     margin-bottom: 20px;

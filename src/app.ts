@@ -1,11 +1,14 @@
 import './styles/theme.css';
 import './styles/theme-shadcn.css';
+import { applyTheme } from './core/theme-service';
 import { store } from './core/store';
 import './core/router';
 
-const applyTheme = (theme: string): void => {
+// Inject default theme variables into :root before components mount
+applyTheme('zinc');
+
+const applyLegacyTheme = (theme: string): void => {
 	document.documentElement.dataset.theme = theme;
 };
-
-applyTheme(store.getState().theme);
-store.subscribe(state => applyTheme(state.theme));
+applyLegacyTheme(store.getState().theme);
+store.subscribe(state => applyLegacyTheme(state.theme));

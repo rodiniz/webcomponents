@@ -43,7 +43,7 @@ export class UILayoutHeader extends LitElement {
   static styles = css`
     :host {
       display: block;
-      background: var(--color-header, #ffffff);
+      background: var(--color-header, #44cbd7ff);
       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
       padding: 12px 24px;
     }

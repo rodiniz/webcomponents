@@ -85,6 +85,12 @@ export const routes: RouteOld[] = [
     layout: 'app-layout',
     load: () => import('../features/stepper-demo/stepper-demo-page'),
     component: 'stepper-demo-page'
+  },
+  {
+    path: '/radio',
+    layout: 'app-layout',
+    load: () => import('../features/radio-demo/radio-demo-page'),
+    component: 'radio-demo-page'
   }
 ];
 
@@ -105,6 +111,7 @@ class AppLayout extends BaseComponent {
     { icon: 'message-circle', label: 'Toast', href: '/toast' },
     { icon: 'layers', label: 'Stepper', href: '/stepper' },
     { icon: 'list', label: 'Select', href: '/select' },
+    { icon: 'radio', label: 'Radio', href: '/radio' },
   ];
 
   private footerItems = [
@@ -135,6 +142,7 @@ class AppLayout extends BaseComponent {
       '/toast': { title: 'Toast', subtitle: 'Notification and alert system' },
       '/stepper': { title: 'Stepper', subtitle: 'Progressive step navigation' },
       '/select': { title: 'Select', subtitle: 'Customizable dropdown select with search' },
+      '/radio': { title: 'Radio', subtitle: 'Single-selection control with card and list variants' },
     };
 
     const info = titles[path] || { title: 'Dashboard', subtitle: 'Explore our component library' };
@@ -154,7 +162,7 @@ class AppLayout extends BaseComponent {
   render(): void {
     const template = html`
       <style>${styles}${layoutStyles}</style>
-      <ui-top-bar .title=${this.pageTitle} .subtitle=${this.pageSubtitle}></ui-top-bar>
+      <ui-top-bar .title=${this.pageTitle} .subtitle=${this.pageSubtitle} bg-color="#747499ff"></ui-top-bar>
       <div class="layout-container">
         <ui-sidebar 
           .brand=${'Web Components'} 

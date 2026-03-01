@@ -39,15 +39,18 @@ npm install @diniz/webcomponents
 
 ## Quick Start
 
-```typescript
 import '@diniz/webcomponents';
 import '@diniz/webcomponents/dist/style.css';
+import { html, render } from '@diniz/webcomponents';
 
-// Components are now available
-document.body.innerHTML = `
+// Render components declaratively using lit-html
+const template = html`
   <ui-button variant="primary">Click Me</ui-button>
   <ui-date-picker format="DD/MM/YYYY"></ui-date-picker>
+  <ui-select label="Choose an option" .options=${[{value: '1', label: 'Option 1'}]}></ui-select>
 `;
+
+render(template, document.body);
 ```
 
 ## Quick Start with Vite (No Framework)
@@ -472,20 +475,58 @@ That's it! Your app now has client-side routing with:
 
 ## Components
 
-- **ui-button** - Button with variants, sizes, icons
-- **ui-input** - Input with validation
-- **ui-table** - Data table with actions
-- **ui-date-picker** - Date picker
-- **ui-pagination** - Pagination control
-- **ui-select** - Dropdown selection
-- **ui-checkbox** - Checkbox input
-- **ui-modal** - Modal dialog
-- **ui-card** - Card container
-- **ui-tabs** - Tab navigation
-- **ui-stepper** - Step indicator
-- **ui-toast** - Toast notifications
-- **ui-upload** - File upload
 - **ui-layout** - Application layout
+
+### Detailed Component Usage
+
+#### 1. UI Select (`ui-select`)
+Modern dropdown with search support.
+```html
+<ui-select 
+  label="Country" 
+  placeholder="Select a country..." 
+  searchable
+  .options=${[
+    { value: 'us', label: 'United States' },
+    { value: 'br', label: 'Brazil' }
+  ]}
+></ui-select>
+```
+
+#### 2. UI Checkbox (`ui-checkbox`)
+Custom checkbox with various sizes and states.
+```html
+<ui-checkbox 
+  name="terms" 
+  label="I agree to the terms" 
+  size="md" 
+  checked
+></ui-checkbox>
+```
+
+#### 3. UI Stepper (`ui-stepper`)
+Guided multi-step progress indicator.
+```html
+<ui-stepper 
+  active="2" 
+  orientation="horizontal"
+  .steps=${[
+    { title: 'Step 1', description: 'Setup' },
+    { title: 'Step 2', description: 'Configure' },
+    { title: 'Step 3', description: 'Review', state: 'upcoming' }
+  ]}
+></ui-stepper>
+```
+
+#### 4. UI Upload (`ui-upload`)
+Drag-and-drop file upload with preview.
+```html
+<ui-upload
+  label="Profile Picture"
+  accept=".jpg,.png"
+  maxSize="5MB"
+></ui-upload>
+```
 
 For detailed documentation on each component, see the demo implementations in `src/features/`.
 

@@ -20,7 +20,15 @@ export type ValidationRule =
 
 @customElement('ui-input')
 export class UIInput extends LitElement {
-  static styles = [unsafeCSS(themeStyles)];
+  static styles = [
+    unsafeCSS(themeStyles),
+    css`
+      :host {
+        display: block;
+        margin-bottom: 1rem;
+      }
+    `
+  ];
 
   @property({ type: String }) type: InputType = 'text';
   @property({ type: String }) label: string = '';

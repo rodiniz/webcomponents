@@ -1,10 +1,10 @@
 <section class="form-hero">
-	<div>			
+	<div>
 		<h1>Form Elements</h1>
 		<p class="hero-subtitle">
 			Bring inputs, selects, checkboxes, uploads, and native fields together in one cohesive flow.
 		</p>
-	</div>	
+	</div>
 </section>
 
 <section class="form-shell">
@@ -14,24 +14,23 @@
 			<p>Collect the essentials to launch a workspace.</p>
 
 			<ui-input label="Workspace name" placeholder="Studio Atlas" name="workspace" required></ui-input>
-			<ui-input label="Owner email" type="email" placeholder="owner@company.com" name="ownerEmail" required></ui-input>
+			<ui-input label="Owner email" type="email" placeholder="owner@company.com" name="ownerEmail"
+				required></ui-input>
 
 			<div class="split">
 				<ui-select id="roleSelect" label="Default role" name="role"></ui-select>
 				<ui-select id="regionSelect" label="Region" name="region"></ui-select>
-				
+
 			</div>
 			<ui-select id="categorySelect" label="Category" name="category"></ui-select>
-			<ui-date-picker label="Launch date" name="launchDate" placeholder="Select date" format="MM/DD/YYYY"></ui-date-picker>
+			<ui-date-picker label="Launch date" name="launchDate" placeholder="Select date"
+				format="MM/DD/YYYY"></ui-date-picker>
+			<div style="margin-top: 1rem;">
 
-			<ui-upload
-				label="Brand assets"
-				helper="Upload logos or product shots. PNG, JPG, or SVG."
-				name="brandAssets"
-				accept=".png,.jpg,.jpeg,.svg"
-				multiple
-			></ui-upload>
-		</div>		
+			</div>
+			<ui-upload label="Brand assets" helper="Upload logos or product shots. PNG, JPG, or SVG." name="brandAssets"
+				accept=".png,.jpg,.jpeg,.svg" multiple></ui-upload>
+		</div>
 
 		<div class="form-actions">
 			<ui-button type="submit" variant="primary" icon="check">Save form</ui-button>
