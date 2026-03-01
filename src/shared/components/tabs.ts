@@ -4,6 +4,10 @@ import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import themeStyles from '../../styles/theme.css?inline';
 import tabsStyles from './tabs.css?inline';
 
+export interface TabChangeDetail {
+  id: string;
+}
+
 @customElement('ui-tabs')
 export class UITabs extends LitElement {
   static styles = [unsafeCSS(themeStyles), unsafeCSS(tabsStyles)];
@@ -23,7 +27,7 @@ export class UITabs extends LitElement {
 
     tabsSlot?.addEventListener('slotchange', () => this.syncTabs());
     panelsSlot?.addEventListener('slotchange', () => this.syncTabs());
-    
+
     requestAnimationFrame(() => this.syncTabs());
   }
 
@@ -160,4 +164,4 @@ export class UITabs extends LitElement {
   }
 }
 
-export type { TabChangeDetail };
+

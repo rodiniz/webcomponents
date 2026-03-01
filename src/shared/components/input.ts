@@ -2,16 +2,16 @@ import { LitElement, html, css, unsafeCSS, nothing } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import themeStyles from '../../styles/theme.css?inline';
 
-type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
+export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
 
 interface ValidationResult {
   valid: boolean;
   message?: string;
 }
 
-type CustomValidator = (value: string, input: HTMLInputElement) => ValidationResult;
+export type CustomValidator = (value: string, input: HTMLInputElement) => ValidationResult;
 
-type ValidationRule = 
+export type ValidationRule =
   | { type: 'emailDomain'; domain: string }
   | { type: 'match'; selector: string }
   | { type: 'minLength'; length: number }
@@ -130,11 +130,11 @@ export class UIInput extends LitElement {
   private updateErrorDisplay(): void {
     const wrapper = this.shadowRoot?.querySelector('.input-wrapper');
     const errorEl = this.shadowRoot?.querySelector('.input-error');
-    
+
     if (wrapper) {
       wrapper.classList.toggle('invalid', !this.valid && this.touched);
     }
-    
+
     if (errorEl) {
       if (!this.valid && this.touched && this.error) {
         (errorEl as HTMLElement).textContent = this.error;
@@ -143,12 +143,56 @@ export class UIInput extends LitElement {
         errorEl.classList.add('hidden');
       }
     }
-    
+
     if (this.inputEl) {
       this.inputEl.setAttribute('aria-invalid', String(!this.valid && this.touched));
       if (this.name) {
         this.inputEl.setAttribute('aria-describedby', `${this.name}-error`);
       }
+    }
+  }
+
+  private parseValidationRule(rule: string): ValidationRule | null {
+    try {
+      return JSON.parse(rule) as ValidationRule;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  private applyValidationRule(rule: ValidationRule): ValidationResult {
+    const value = this.value;
+    switch (rule.type) {
+      case 'emailDomain':
+        return {
+          valid: value.endsWith(`@${rule.domain}`),
+          message: `Email must be from ${rule.domain}`
+        };
+      case 'match':
+        const otherInput = document.querySelector(rule.selector) as (HTMLInputElement | any);
+        if (!otherInput) return { valid: true };
+        const otherValue = otherInput.value ?? '';
+        return {
+          valid: value === otherValue,
+          message: `Values do not match`
+        };
+      case 'minLength':
+        return {
+          valid: value.length >= rule.length,
+          message: `Minimum length is ${rule.length}`
+        };
+      case 'maxLength':
+        return {
+          valid: value.length <= rule.length,
+          message: `Maximum length is ${rule.length}`
+        };
+      case 'regex':
+        return {
+          valid: new RegExp(rule.pattern).test(value),
+          message: `Invalid format`
+        };
+      default:
+        return { valid: true };
     }
   }
 

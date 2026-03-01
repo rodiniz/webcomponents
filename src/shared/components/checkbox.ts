@@ -113,50 +113,40 @@ export class UICheckbox extends LitElement {
     this.requestUpdate('size', old);
   }
 
-  @state() private _internalChecked: boolean = false;
-  @state() private _internalIndeterminate: boolean = false;
+
 
   connectedCallback(): void {
     this.setAttribute('data-ui', 'checkbox');
     super.connectedCallback();
   }
 
-  willUpdate(changedProperties: Map<string, unknown>): void {
-    if (changedProperties.has('checked')) {
-      this._internalChecked = this.checked;
-    }
-    if (changedProperties.has('indeterminate')) {
-      this._internalIndeterminate = this.indeterminate;
-    }
-  }
 
-  private handleChange = (): void => {
+
+  private handleChange = (e: Event): void => {
     if (this.disabled) return;
 
-    if (this._internalIndeterminate) {
-      this._internalIndeterminate = false;
+    const input = e.target as HTMLInputElement;
+    const isChecked = input.checked;
+
+    if (this.indeterminate) {
       this.indeterminate = false;
     }
 
-    this._internalChecked = !this._internalChecked;
-    this.checked = this._internalChecked;
+    this.checked = isChecked;
 
     this.dispatchEvent(new CustomEvent('checkbox-change', {
       bubbles: true,
       composed: true,
-      detail: { checked: this._internalChecked }
+      detail: { checked: isChecked }
     }));
   };
 
   public setChecked(checked: boolean): void {
-    this._internalChecked = checked;
     this.checked = checked;
-    this._internalIndeterminate = false;
     this.indeterminate = false;
   }
 
   public setIndeterminate(indeterminate: boolean): void {
-    this._internalIndeterminate = indeterminate;
     this.indeterminate = indeterminate;
   }
 
@@ -173,14 +163,14 @@ export class UICheckbox extends LitElement {
       'size-sm': this.size === 'sm',
       'size-md': this.size === 'md',
       'size-lg': this.size === 'lg',
-      'checked': this._internalChecked,
-      'indeterminate': this._internalIndeterminate,
+      'checked': this.checked,
+      'indeterminate': this.indeterminate,
       'disabled': this.disabled
     });
 
     return html`
-      <label class=${containerClasses} @click=${this.handleChange}>
-        <input type="checkbox" ?checked=${this._internalChecked} ?disabled=${this.disabled}>
+      <label class=${containerClasses}>
+        <input type="checkbox" .checked=${this.checked} .indeterminate=${this.indeterminate} ?disabled=${this.disabled} @change=${this.handleChange}>
         <div class=${boxClasses}>
           <svg class="checkbox-icon check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
             <polyline points="20 6 9 17 4 12"></polyline>

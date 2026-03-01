@@ -7,6 +7,7 @@ import '../../shared/components/checkbox';
 import '../../shared/components/date-picker';
 import '../../shared/components/upload';
 import { http } from '../../core/http';
+import { getFormValues } from '../../core/dom-helpers';
 import type { SelectOption } from '../../shared/components/select';
 
 type Category = {
@@ -155,22 +156,16 @@ export class FormDemoPage extends LitElement {
 
   private handleSubmit = (e: Event): void => {
     e.preventDefault();
-    this.formOutput = 'Form submitted! Check console for values.';
-    
     const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    const values: Record<string, string> = {};
-    
-    formData.forEach((value, key) => {
-      values[key] = value.toString();
-    });
-    
+    const values = getFormValues(form);
+
+    this.formOutput = JSON.stringify(values, null, 2);
     console.log('Form values:', values);
   };
 
   private handleReset = (): void => {
     this.formOutput = 'Submit the form to see values.';
-    
+
     this.shadowRoot?.querySelectorAll('ui-input').forEach(input => {
       (input as any).value = '';
     });
@@ -222,6 +217,11 @@ export class FormDemoPage extends LitElement {
               accept=".png,.jpg,.jpeg,.svg"
               multiple
             ></ui-upload>
+
+            <div style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.75rem;">
+              <ui-checkbox name="newsletter" label="Subscribe to our newsletter" checked></ui-checkbox>
+              <ui-checkbox name="terms" label="I agree to the terms and conditions"></ui-checkbox>
+            </div>
           </div>		
 
           <div class="form-actions">

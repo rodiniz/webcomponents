@@ -4,7 +4,7 @@ import layoutStyles from './app-layout.css?inline';
 import '../shared/components/sidebar';
 import '../shared/components/top-bar';
 import '../shared/components/button';
-import feather from 'feather-icons';
+import { html, render } from '../core/template';
 import type { RouteOld } from '../core/router';
 
 export const routes: RouteOld[] = [
@@ -36,13 +36,19 @@ export const routes: RouteOld[] = [
     path: '/table-demo',
     layout: 'app-layout',
     load: () => import('../features/table-demo/table-demo'),
-    component: 'table-demo'   
+    component: 'table-demo'
   },
   {
     path: '/forms',
     layout: 'app-layout',
     load: () => import('../features/form-demo/form-demo-page'),
     component: 'form-demo-page'
+  },
+  {
+    path: '/select',
+    layout: 'app-layout',
+    load: () => import('../features/select-demo/select-demo-page'),
+    component: 'select-demo-page'
   },
   {
     path: '/modal',
@@ -98,6 +104,7 @@ class AppLayout extends BaseComponent {
     { icon: 'log-in', label: 'Login', href: '/login' },
     { icon: 'message-circle', label: 'Toast', href: '/toast' },
     { icon: 'layers', label: 'Stepper', href: '/stepper' },
+    { icon: 'list', label: 'Select', href: '/select' },
   ];
 
   private footerItems = [
@@ -127,36 +134,35 @@ class AppLayout extends BaseComponent {
       '/login': { title: 'Login Card', subtitle: 'Modern login form with validation' },
       '/toast': { title: 'Toast', subtitle: 'Notification and alert system' },
       '/stepper': { title: 'Stepper', subtitle: 'Progressive step navigation' },
+      '/select': { title: 'Select', subtitle: 'Customizable dropdown select with search' },
     };
-    
+
     const info = titles[path] || { title: 'Dashboard', subtitle: 'Explore our component library' };
     this.pageTitle = info.title;
     this.pageSubtitle = info.subtitle;
     this.render();
   }
 
+  private handleNav = (ev: CustomEvent): void => {
+    const href = ev.detail?.href;
+    if (href && !href.startsWith('http')) {
+      window.history.pushState({}, '', href);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+  };
 
   render(): void {
-    // Create sidebar element programmatically to properly set properties
-    const sidebar = document.createElement('ui-sidebar') as any;
-    sidebar.brand = 'Web Components';
-    sidebar.version = 'v1.0';
-    sidebar.items = this.navItems;
-    sidebar.footerItems = this.footerItems;
-
-    // listen for navigation events emitted by the sidebar
-    sidebar.addEventListener('nav', (ev: Event) => {
-      const href = (ev as CustomEvent).detail?.href;
-      if (href && !href.startsWith('http')) {
-        window.history.pushState({}, '', href);
-        window.dispatchEvent(new PopStateEvent('popstate'));
-      }
-    });
-
-    this.shadowRoot!.innerHTML = `
+    const template = html`
       <style>${styles}${layoutStyles}</style>
-      <ui-top-bar title="${this.pageTitle}" subtitle="${this.pageSubtitle}"></ui-top-bar>
+      <ui-top-bar .title=${this.pageTitle} .subtitle=${this.pageSubtitle}></ui-top-bar>
       <div class="layout-container">
+        <ui-sidebar 
+          .brand=${'Web Components'} 
+          .version=${'v1.0'} 
+          .items=${this.navItems} 
+          .footerItems=${this.footerItems}
+          @nav=${this.handleNav}
+        ></ui-sidebar>
         <div class="main-area">
           <main class="content-area">
             <slot></slot>
@@ -164,17 +170,12 @@ class AppLayout extends BaseComponent {
         </div>
       </div>
     `;
-    
-    // Insert sidebar into layout-container
-    const layoutContainer = this.shadowRoot!.querySelector('.layout-container');
-    if (layoutContainer) {
-      layoutContainer.insertBefore(sidebar, layoutContainer.firstChild);
-    }
 
-    // navigation handled via 'nav' events from the sidebar component
+    render(template, this.shadowRoot!);
   }
 }
 
 customElements.define('app-layout', AppLayout);
 
 export { AppLayout };
+

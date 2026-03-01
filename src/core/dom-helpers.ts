@@ -28,7 +28,7 @@ export function queryElement<T extends Record<string, any>>(
   selector: string
 ): (HTMLElement & T) | null {
   if (!root) return null;
-  
+
   const element = root.querySelector(selector);
   return element as (HTMLElement & T) | null;
 }
@@ -44,7 +44,7 @@ export function queryElements<T extends Record<string, any>>(
   selector: string
 ): NodeListOf<HTMLElement & T> {
   if (!root) return [] as any as NodeListOf<HTMLElement & T>;
-  
+
   return root.querySelectorAll(selector) as NodeListOf<HTMLElement & T>;
 }
 
@@ -165,28 +165,25 @@ function resolveFieldName(element: HTMLElement): string {
 
 function getCustomElementValue(element: HTMLElement): FormValue {
   const tagName = element.tagName.toLowerCase();
-  
+
   if (tagName === 'ui-checkbox') {
-    return element.hasAttribute('checked');
+    return (element as any).checked === true || element.hasAttribute('checked');
   }
 
   if (tagName === 'ui-upload') {
     const files = (element as any)?.filesValue;
-    if (Array.isArray(files) && files.length > 0) return files;
+    if (Array.isArray(files)) return files;
     return [];
   }
 
   // Try .value property first (works for ui-input, ui-select, ui-date-picker)
-  const valueProperty = (element as any)?.value;
-  if (typeof valueProperty === 'string' && valueProperty !== '') {
-    return valueProperty;
+  if ('value' in element) {
+    const value = (element as any).value;
+    if (value !== undefined && value !== null) return value;
   }
 
   // Fall back to value attribute
-  const attrValue = element.getAttribute('value');
-  if (attrValue) return attrValue;
-  
-  return '';
+  return element.getAttribute('value') || '';
 }
 
 /**

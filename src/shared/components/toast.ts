@@ -4,6 +4,23 @@ import themeStyles from '../../styles/theme.css?inline';
 import toastStyles from './toast.css?inline';
 import feather from 'feather-icons';
 
+export type ToastType = 'success' | 'error' | 'warning' | 'info';
+export type ToastPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+export interface ToastConfig {
+  title: string;
+  description?: string;
+  type?: ToastType;
+  duration?: number;
+  closable?: boolean;
+}
+
+interface ToastItem {
+  id: string;
+  element: HTMLElement;
+  timer?: number;
+}
+
 @customElement('ui-toast')
 export class UIToast extends LitElement {
   static styles = [unsafeCSS(themeStyles), unsafeCSS(toastStyles)];
@@ -157,4 +174,4 @@ export class UIToast extends LitElement {
   }
 }
 
-export type { ToastType, ToastPosition, ToastConfig };
+
