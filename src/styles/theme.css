@@ -72,6 +72,66 @@ body {
   opacity: 0.9;
 }
 
+.btn.sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  min-height: 1.75rem;
+}
+
+.btn.md {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+.btn.lg {
+  font-size: 1rem;
+  padding: 0.625rem 1.25rem;
+}
+
+.btn.sm.icon-only {
+  padding: 0.25rem;
+  min-width: 1.75rem;
+  min-height: 1.75rem;
+}
+
+.btn.md.icon-only {
+  padding: 0.5rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+}
+
+.btn.lg.icon-only {
+  padding: 0.625rem;
+  min-width: 3rem;
+  min-height: 3rem;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon svg {
+  width: 1em;
+  height: 1em;
+}
+
+.btn.sm .btn-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn.md .btn-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn.lg .btn-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
 .input-field {
   width: 100%;
   height: 2.5rem;
@@ -137,6 +197,27 @@ tr:last-child td {
 
 .table-wrap.zebra tbody tr:nth-child(even) td {
   background: hsl(var(--muted) / 0.35);
+}
+
+.table-wrap table tr.has-children > td:first-child {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.table-wrap table tr.has-children > td:first-child ui-button {
+  flex-shrink: 0;
+}
+
+.table-wrap table tr.child-row td {
+  background: hsl(var(--muted) / 0.25);
+  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+}
+
+.table-wrap .child-row-indent {
+  display: inline-block;
+  width: 8px;
 }
 
 .dashboard-layout {

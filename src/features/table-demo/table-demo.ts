@@ -195,6 +195,30 @@ export class TableDemo extends LitElement {
       selected: index % 2 === 0
     }));
 
+    const rowsWithChildren: TableRow[] = [
+      { name: 'Electronics', category: 'Category', price: '$500', children: [
+        { name: 'Laptop', category: 'Electronics', price: '$1200' },
+        { name: 'Phone', category: 'Electronics', price: '$800' },
+        { name: 'Tablet', category: 'Electronics', price: '$400' }
+      ]},
+      { name: 'Clothing', category: 'Category', price: '$50', children: [
+        { name: 'T-Shirt', category: 'Clothing', price: '$25' },
+        { name: 'Jeans', category: 'Clothing', price: '$60' }
+      ]},
+      { name: 'Books', category: 'Category', price: '$20', children: [
+        { name: 'Novel', category: 'Books', price: '$15' },
+        { name: 'Textbook', category: 'Books', price: '$80' },
+        { name: 'Comic', category: 'Books', price: '$10' }
+      ]},
+      { name: 'Furniture', category: 'Category', price: '$200' }
+    ];
+
+    const childColumns: TableColumn[] = [
+      { key: 'name', label: 'Name' },
+      { key: 'category', label: 'Category' },
+      { key: 'price', label: 'Price', align: 'right' }
+    ];
+
     const optionColumns: TableColumn[] = [
       {
         key: 'selected',
@@ -251,6 +275,15 @@ export class TableDemo extends LitElement {
           .rows=${optionRows}
           .bordered=${false}
           .zebra=${true}
+        ></ui-table>
+      </div>
+
+      <div class="demo-section">
+        <h2>Expandable Rows</h2>
+        <p class="intro">Rows with child items can be expanded/collapsed. Click the chevron icon to toggle.</p>
+        <ui-table
+          .columns=${childColumns}
+          .rows=${rowsWithChildren}
         ></ui-table>
       </div>
     `;
