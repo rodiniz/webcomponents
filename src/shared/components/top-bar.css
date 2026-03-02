@@ -47,6 +47,11 @@
 	flex-shrink: 0;
 }
 
+.actions-slot ::slotted(ui-select) {
+	min-width: 180px;
+	width: 180px;
+}
+
 .theme-picker {
 	width: 130px;
 }

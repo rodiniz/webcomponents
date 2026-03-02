@@ -1,5 +1,6 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { LitElement, html, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { classMap } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
 import './button';
 
@@ -8,6 +9,7 @@ export interface TableColumn {
   label: string;
   align?: 'left' | 'center' | 'right';
   visible?: boolean;
+  template?: (row: TableRow, rowIndex: number) => unknown;
   actions?: {
     edit?: boolean;
     delete?: boolean;
@@ -24,6 +26,8 @@ export class UITable extends LitElement {
 
   @property({ type: Array }) columns: TableColumn[] = [];
   @property({ type: Array }) rows: TableRow[] = [];
+  @property({ type: Boolean, reflect: true }) bordered: boolean = true;
+  @property({ type: Boolean, reflect: true }) zebra: boolean = false;
 
   connectedCallback(): void {
     this.setAttribute('data-ui', 'table');
@@ -51,8 +55,14 @@ export class UITable extends LitElement {
   render() {
     const visibleColumns = this.columns.filter(col => col.visible !== false);
 
+    const wrapClasses = classMap({
+      'table-wrap': true,
+      'no-border': !this.bordered,
+      'zebra': this.zebra
+    });
+
     return html`
-      <div class="table-wrap">
+      <div class=${wrapClasses}>
         <table>
           <thead>
             <tr>
@@ -65,14 +75,17 @@ export class UITable extends LitElement {
             ${this.rows.map((row, rowIndex) => html`
               <tr data-row-index="${rowIndex}">
                 ${visibleColumns.map(column => {
+      if (column.template) {
+        return html`<td class="align-${column.align ?? 'left'}">${column.template(row, rowIndex)}</td>`;
+      }
       if (column.actions) {
         return html`
                       <td class="align-center actions-cell">
                         ${column.actions.edit ? html`
-                          <ui-button variant="primary" class="action-btn" icon="edit" size="sm" data-action="edit" data-row-index="${rowIndex}" @click=${() => this.handleAction('edit', rowIndex)}>Edit</ui-button>
+                          <ui-button variant="primary" class="action-btn" icon="edit" size="sm" data-action="edit" data-row-index="${rowIndex}" @click=${() => this.handleAction('edit', rowIndex)}></ui-button>
                         ` : ''}
                         ${column.actions.delete ? html`
-                          <ui-button variant="danger" class="action-btn" icon="trash" size="sm" data-action="delete" data-row-index="${rowIndex}" @click=${() => this.handleAction('delete', rowIndex)}>Delete</ui-button>
+                          <ui-button variant="danger" class="action-btn" icon="trash" size="sm" data-action="delete" data-row-index="${rowIndex}" @click=${() => this.handleAction('delete', rowIndex)}></ui-button>
                         ` : ''}
                       </td>
                     `;

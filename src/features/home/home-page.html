@@ -1,144 +1,99 @@
 <section class="hero">
-	<div class="hero-content">
-		<h1 class="hero-title">@diniz/webcomponents</h1>
-		<p class="hero-subtitle">
-			A lightweight, framework-agnostic web components library built with vanilla TypeScript. 
-			Create modern, reactive UIs using native Web Components API with zero dependencies.
-		</p>
-		<div class="hero-actions">
-			<ui-button variant="primary" size="lg">Explore Components</ui-button>
-			<ui-button variant="ghost" size="lg">View on GitHub</ui-button>
-		</div>
-	</div>
-	<div class="hero-visual">
-		<div class="feature-icons">
-			<div class="icon-item">✨</div>
-			<div class="icon-item">⚡</div>
-			<div class="icon-item">🎨</div>
-			<div class="icon-item">📦</div>
-		</div>
-	</div>
+  <div class="hero-content">
+    <p class="eyebrow">Web components, plus app primitives</p>
+    <h1 class="hero-title">UI that ships with routing and state.</h1>
+    <p class="hero-subtitle">
+      Build with native custom elements, a focused router, and predictable state.
+      No framework required, just clean primitives for real product screens.
+    </p>
+    <div class="hero-actions">
+      <ui-button variant="primary" size="lg">Explore Components</ui-button>
+      <ui-button variant="ghost" size="lg">View on GitHub</ui-button>
+    </div>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Routing</span>
+        <span class="meta-value">data-link, guards, lazy load</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">State</span>
+        <span class="meta-value">store + signals</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Templates</span>
+        <span class="meta-value">lit-html partial updates</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="stack">
+      <div class="stack-card">
+        <span class="stack-title">Router</span>
+        <span class="stack-desc">Simple routes, guardable screens.</span>
+      </div>
+      <div class="stack-card">
+        <span class="stack-title">Store</span>
+        <span class="stack-desc">Predictable state you can trust.</span>
+      </div>
+      <div class="stack-card">
+        <span class="stack-title">Components</span>
+        <span class="stack-desc">Accessible UI, ready to theme.</span>
+      </div>
+    </div>
+  </div>
 </section>
 
-<section class="features">
-	<h2>Why Use This Library?</h2>
-	<div class="features-grid">
-		<div class="feature-card">
-			<div class="feature-icon">✨</div>
-			<h3>Native Web Components</h3>
-			<p>Built on standard Custom Elements API. Works with any framework or none at all.</p>
-		</div>
-		<div class="feature-card">
-			<div class="feature-icon">⚡</div>
-			<h3>Reactive Signals</h3>
-			<p>Built-in signal-based reactivity system similar to Solid.js for smooth updates.</p>
-		</div>
-		<div class="feature-card">
-			<div class="feature-icon">🎨</div>
-			<h3>Theme Support</h3>
-			<p>CSS custom properties make theming and customization effortless.</p>
-		</div>
-		<div class="feature-card">
-			<div class="feature-icon">📦</div>
-			<h3>Zero Dependencies</h3>
-			<p>No framework required. Lightweight and fast with nothing to bloat your bundle.</p>
-		</div>
-		<div class="feature-card">
-			<div class="feature-icon">🔒</div>
-			<h3>TypeScript Support</h3>
-			<p>Full type safety and IntelliSense support for better development experience.</p>
-		</div>
-		<div class="feature-card">
-			<div class="feature-icon">♿</div>
-			<h3>Accessible</h3>
-			<p>Built with ARIA attributes and keyboard navigation from the ground up.</p>
-		</div>
-	</div>
+<section class="advantages">
+  <h2>Advantages</h2>
+  <div class="advantages-grid">
+    <div class="advantage-card">
+      <h3>Routing that stays out of your way</h3>
+      <p>Client-side navigation, lazy loading, and guard hooks with a tiny API.</p>
+    </div>
+    <div class="advantage-card">
+      <h3>State that is predictable</h3>
+      <p>Global store and per-component signals for updates without ceremony.</p>
+    </div>
+    <div class="advantage-card">
+      <h3>Framework-agnostic by default</h3>
+      <p>Native Custom Elements that work in any stack or with no stack at all.</p>
+    </div>
+    <div class="advantage-card">
+      <h3>Efficient rendering</h3>
+      <p>`lit-html` templates update only what changed, keeping UIs fast.</p>
+    </div>
+    <div class="advantage-card">
+      <h3>Theming and design tokens</h3>
+      <p>CSS variables make brand alignment quick without rewriting components.</p>
+    </div>
+    <div class="advantage-card">
+      <h3>TypeScript-first</h3>
+      <p>Typed APIs and IntelliSense to keep teams aligned and productive.</p>
+    </div>
+  </div>
 </section>
 
-<section class="components">
-	<h2>Available Components</h2>
-	<div class="components-grid">
-		<div class="component-item">
-			<span class="component-name">ui-button</span>
-			<span class="component-desc">Flexible button with variants and sizes</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-input</span>
-			<span class="component-desc">Text input with validation</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-select</span>
-			<span class="component-desc">Dropdown select component</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-checkbox</span>
-			<span class="component-desc">Custom checkbox component</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-date-picker</span>
-			<span class="component-desc">Date selection with format options</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-table</span>
-			<span class="component-desc">Data table with sorting and actions</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-modal</span>
-			<span class="component-desc">Dialog modal component</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-tabs</span>
-			<span class="component-desc">Tab navigation component</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-card</span>
-			<span class="component-desc">Card container component</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-toast</span>
-			<span class="component-desc">Toast notification system</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-stepper</span>
-			<span class="component-desc">Multi-step progress indicator</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-upload</span>
-			<span class="component-desc">File upload with drag-drop</span>
-		</div>
-		<div class="component-item">
-			<span class="component-name">ui-layout</span>
-			<span class="component-desc">Flexible page layout system</span>
-		</div>
-	</div>
-</section>
+<section class="split">
+  <div class="split-card">
+    <h3>Routing that reads like a map</h3>
+    <ul class="feature-list">
+      <li>Define routes once, lazy load screens on demand.</li>
+      <li>Use `data-link` for navigation without custom handlers.</li>
+      <li>Protect routes with sync or async guards.</li>
+    </ul>
+  </div>
+  <div class="split-card code-card">
+    <h3>State that feels native</h3>
+    <pre><code>const count = this.useSignal(0);
 
-<section class="quick-start">
-	<h2>Quick Start</h2>
-	<div class="code-blocks">
-		<div class="code-block">
-			<h3>Installation</h3>
-			<pre><code>npm install @diniz/webcomponents</code></pre>
-		</div>
-		<div class="code-block">
-			<h3>Basic Usage</h3>
-			<pre><code>&lt;ui-button variant="primary"&gt;Click Me&lt;/ui-button&gt;
-&lt;ui-input placeholder="Enter text"&gt;&lt;/ui-input&gt;
-&lt;ui-date-picker format="MM/DD/YYYY"&gt;&lt;/ui-date-picker&gt;</code></pre>
-		</div>
-		<div class="code-block">
-			<h3>With Events</h3>
-			<pre><code>const picker = document.querySelector('ui-date-picker');
-picker?.addEventListener('date-change', (e) =&gt; {
-  console.log('Date:', e.detail.value);
+store.subscribe(state => {
+  document.body.dataset.theme = state.theme;
 });</code></pre>
-		</div>
-	</div>
+  </div>
 </section>
 
 <section class="cta">
-	<h2>Ready to Build Amazing UIs?</h2>
-	<p>Explore the interactive component library and see what you can create.</p>
-	<ui-button variant="primary" size="lg" icon="arrow-right">Start Exploring</ui-button>
+  <h2>Build faster without giving up control</h2>
+  <p>Explore the demo components or start a screen with routing and state already solved.</p>
+  <ui-button variant="primary" size="lg" icon="arrow-right">Start Exploring</ui-button>
 </section>

@@ -1,5 +1,5 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, html, unsafeCSS } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import { classMap, styleMap } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
 
@@ -15,6 +15,9 @@ export class UICard extends LitElement {
   @property({ type: Boolean, reflect: true }) interactive: boolean = false;
   @property({ type: Boolean, reflect: true }) animated: boolean = false;
   @property({ type: String, attribute: 'bg' }) bg: string = 'default';
+
+  @state() private hasHeader: boolean = false;
+  @state() private hasFooter: boolean = false;
 
   connectedCallback(): void {
     this.setAttribute('data-ui', 'card');
@@ -38,6 +41,16 @@ export class UICard extends LitElement {
     }
   }
 
+  private handleHeaderSlotChange = (event: Event): void => {
+    const slot = event.target as HTMLSlotElement;
+    this.hasHeader = slot.assignedNodes({ flatten: true }).length > 0;
+  };
+
+  private handleFooterSlotChange = (event: Event): void => {
+    const slot = event.target as HTMLSlotElement;
+    this.hasFooter = slot.assignedNodes({ flatten: true }).length > 0;
+  };
+
   render() {
     const classes = classMap({
       'card': true,
@@ -51,9 +64,27 @@ export class UICard extends LitElement {
       [`bg-${this.bg}`]: true
     });
 
+    const headerClasses = classMap({
+      'card-header': true,
+      'is-empty': !this.hasHeader
+    });
+
+    const footerClasses = classMap({
+      'card-footer': true,
+      'is-empty': !this.hasFooter
+    });
+
     return html`
       <div class=${classes} style=${styleMap({ 'box-shadow': this.shadow ? this.getShadowValue() : 'none' })}>
-        <slot></slot>
+        <div class=${headerClasses}>
+          <slot name="header" @slotchange=${this.handleHeaderSlotChange}></slot>
+        </div>
+        <div class="card-content">
+          <slot name="content"><slot></slot></slot>
+        </div>
+        <div class=${footerClasses}>
+          <slot name="footer" @slotchange=${this.handleFooterSlotChange}></slot>
+        </div>
       </div>
     `;
   }

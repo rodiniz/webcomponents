@@ -4,6 +4,7 @@ import '../../shared/components/table';
 import '../../shared/components/pagination';
 import '../../shared/components/modal';
 import '../../shared/components/button';
+import '../../shared/components/checkbox';
 import type { TableColumn, TableRow } from '../../shared/components/table';
 import { http } from '../../core/http';
 
@@ -189,6 +190,23 @@ export class TableDemo extends LitElement {
   }
 
   render() {
+    const optionRows = (this.data?.rows ?? []).slice(0, 5).map((row, index) => ({
+      ...row,
+      selected: index % 2 === 0
+    }));
+
+    const optionColumns: TableColumn[] = [
+      {
+        key: 'selected',
+        label: '',
+        align: 'center',
+        template: row => html`<ui-checkbox size="sm" ?checked=${row.selected}></ui-checkbox>`
+      },
+      { key: 'title', label: 'Title' },
+      { key: 'category', label: 'Category' },
+      { key: 'price', label: 'Price', align: 'right' }
+    ];
+
     return html`
       <h1>Table Demo</h1>
       <p class="intro">Example of loading JSON data and rendering a table.</p>
@@ -212,7 +230,7 @@ export class TableDemo extends LitElement {
         ` : ''}
         <ui-table 
           id="demo-table" 
-          .data=${this.data}
+          .data=${this.data || { columns: [], rows: [] }}
           @edit-action=${this.handleEditAction}
           @delete-action=${this.handleDeleteAction}
         ></ui-table>
@@ -223,6 +241,17 @@ export class TableDemo extends LitElement {
           .pageSize=${this.pageSize}
           @page-change=${this.handlePageChange}
         ></ui-pagination>
+      </div>
+
+      <div class="demo-section">
+        <h2>Templates + Options</h2>
+        <p class="intro">Checkbox template column, zebra rows, and no outer border.</p>
+        <ui-table
+          .columns=${optionColumns}
+          .rows=${optionRows}
+          .bordered=${false}
+          .zebra=${true}
+        ></ui-table>
       </div>
     `;
   }
