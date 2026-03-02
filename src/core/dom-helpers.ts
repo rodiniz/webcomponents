@@ -116,6 +116,15 @@ export type UIModalElement = HTMLElement & {
 };
 
 /**
+ * Type-safe helper specifically for ui-picklist elements
+ */
+export type UIPicklistElement = HTMLElement & {
+  setAvailableItems: (items: { value: string; label: string }[]) => void;
+  setSelectedItems: (items: { value: string; label: string }[]) => void;
+  getValue: () => { available: string[]; selected: string[] };
+};
+
+/**
  * Query a ui-table element
  */
 export function queryTable(
@@ -143,6 +152,16 @@ export function queryModal(
   selector: string
 ): UIModalElement | null {
   return queryElement<UIModalElement>(root, selector);
+}
+
+/**
+ * Query a ui-picklist element
+ */
+export function queryPicklist(
+  root: Document | ShadowRoot | Element | null,
+  selector: string
+): UIPicklistElement | null {
+  return queryElement<UIPicklistElement>(root, selector);
 }
 
 export type FormValue = string | string[] | boolean | File[];

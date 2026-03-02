@@ -11,6 +11,7 @@ export { UICard } from '../shared/components/card';
 export { UIToast } from '../shared/components/toast';
 export { UIStepper } from '../shared/components/stepper';
 export { UIUpload } from '../shared/components/upload';
+export { UIPicklist } from '../shared/components/picklist';
 export { UILayout, UILayoutHeader, UILayoutFooter, UILayoutContent, UILayoutSidebar } from '../shared/components/layout';
 
 // Base Component
@@ -24,6 +25,7 @@ export type { SelectOption } from '../shared/components/select';
 export type { TabChangeDetail } from '../shared/components/tabs';
 export type { ToastType, ToastPosition, ToastConfig } from '../shared/components/toast';
 export type { StepperOrientation, StepperSize, StepperStep, StepChangeDetail, StepState } from '../shared/components/stepper';
+export type { PicklistChangeDetail } from '../shared/components/picklist';
 
 // HTTP Client
 export { http, HTTPClient } from '../core/http';

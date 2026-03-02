@@ -93,6 +93,12 @@ export const routes: RouteOld[] = [
     layout: 'app-layout',
     load: () => import('../features/radio-demo/radio-demo-page'),
     component: 'radio-demo-page'
+  },
+  {
+    path: '/picklist',
+    layout: 'app-layout',
+    load: () => import('../features/picklist-demo/picklist-demo'),
+    component: 'picklist-demo'
   }
 ];
 
@@ -114,6 +120,7 @@ class AppLayout extends BaseComponent {
     { icon: 'layers', label: 'Stepper', href: '/stepper' },
     { icon: 'list', label: 'Select', href: '/select' },
     { icon: 'radio', label: 'Radio', href: '/radio' },
+    { icon: 'list', label: 'Picklist', href: '/picklist' },
   ];
 
   private footerItems = [
@@ -145,6 +152,7 @@ class AppLayout extends BaseComponent {
       '/stepper': { title: 'Stepper', subtitle: 'Progressive step navigation' },
       '/select': { title: 'Select', subtitle: 'Customizable dropdown select with search' },
       '/radio': { title: 'Radio', subtitle: 'Single-selection control with card and list variants' },
+      '/picklist': { title: 'Picklist', subtitle: 'Dual-list component for multi-select' },
     };
 
     const info = titles[path] || { title: 'Dashboard', subtitle: 'Explore our component library' };
