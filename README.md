@@ -96,6 +96,8 @@ npm run build:lib
 
 Distributable files are generated in `dist/`.
 
+Library builds are scoped to `src/lib/index.ts` and intentionally exclude demo/app sources such as `src/features`.
+
 ## Advantages
 
 - Built-in routing with lazy loading, guards, and `data-link` navigation
