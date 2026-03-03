@@ -186,7 +186,7 @@ class AppLayout extends BaseComponent {
           id="themeSelect"
           label="Theme"
           placeholder="Select theme..."
-          value="zinc"
+          value="shadcn"
           .options=${THEME_LIST}
           @select-change=${this.handleThemeChange}
         ></ui-select>

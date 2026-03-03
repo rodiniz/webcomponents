@@ -5,7 +5,7 @@ import { store } from './core/store';
 import './core/router';
 
 // Inject default theme variables into :root before components mount
-applyTheme('zinc');
+applyTheme('shadcn');
 
 const applyLegacyTheme = (theme: string): void => {
 	document.documentElement.dataset.theme = theme;

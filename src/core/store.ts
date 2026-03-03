@@ -11,7 +11,7 @@ const listeners = new Set<Listener>();
 
 const state: AppState = {
   user: null,
-  theme: 'light'
+  theme: 'shadcn'
 };
 
 export const store = {

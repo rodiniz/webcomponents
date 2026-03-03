@@ -9,9 +9,23 @@
  *    without any Shadow-DOM piercing tricks.
  */
 
-export type Theme = 'zinc' | 'rose' | 'blue' | 'green' | 'orange' | 'violet';
+export type Theme = 'shadcn' | 'zinc' | 'rose' | 'blue' | 'green' | 'orange' | 'violet';
 
 const THEMES: Record<Theme, string> = {
+    shadcn: `
+    --primary-h: 222.2; --primary-s: 47.4%; --primary-l: 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 215 20.2% 65.1%;
+    --radius: 0.5rem;
+  `,
     zinc: `
     --primary-h: 240; --primary-s: 5.9%; --primary-l: 10%;
     --primary-foreground: 0 0% 98%;
@@ -109,7 +123,7 @@ export function applyTheme(theme: Theme): void {
         document.head.appendChild(tag);
     }
 
-    const vars = THEMES[theme] ?? THEMES.zinc;
+    const vars = THEMES[theme] ?? THEMES.shadcn;
 
     // Compute derived shim variables
     tag.textContent = `:root {
@@ -131,15 +145,15 @@ export function applyTheme(theme: Theme): void {
 
 export function getCurrentTheme(): Theme {
     const tag = document.getElementById(STYLE_TAG_ID) as HTMLStyleElement | null;
-    if (!tag) return 'zinc';
+  if (!tag) return 'shadcn';
     // Parse the active theme by checking which h value is set
     const text = tag.textContent ?? '';
     for (const [name] of Object.entries(THEMES)) {
-        if (name !== 'zinc' && text.includes(`--primary-h: ${parseHue(name as Theme)}`)) {
+      if (text.includes(`--primary-h: ${parseHue(name as Theme)}`)) {
             return name as Theme;
         }
     }
-    return 'zinc';
+    return 'shadcn';
 }
 
 function parseHue(theme: Theme): string {
@@ -148,6 +162,7 @@ function parseHue(theme: Theme): string {
 }
 
 export const THEME_LIST: { value: Theme; label: string }[] = [
+  { value: 'shadcn', label: 'Shadcn' },
     { value: 'zinc', label: 'Zinc' },
     { value: 'rose', label: 'Rose' },
     { value: 'blue', label: 'Blue' },
