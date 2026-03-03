@@ -6,6 +6,36 @@ A framework-agnostic Web Components library that ships with the app primitives y
 
 Live demo (GitHub Pages): https://rodiniz.github.io/webcomponents/
 
+## GitHub Pages routing
+
+GitHub Pages serves static files and does not automatically rewrite SPA routes to `index.html`. To make client-side routes work, set the Vite base path to your repo name and add a simple 404 fallback.
+
+1) Set the base path in `vite.config.ts`:
+
+```ts
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  base: '/webcomponents/',
+});
+```
+
+2) Add a `404.html` in `public/` so Vite copies it to the build output:
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="0; url=/webcomponents/" />
+    <title>Redirecting...</title>
+  </head>
+  <body>Redirecting...</body>
+</html>
+```
+
+With the base path set, the router uses `import.meta.env.BASE_URL` and links via `data-link` will resolve correctly on GitHub Pages.
+
 ## Getting Started (Vite)
 
 ### 1) Create a new Vite app
@@ -85,6 +115,23 @@ npm run dev
 ```
 
 Open the URL shown in the terminal (usually http://localhost:5173), click **Go to button test**, and confirm the `ui-button` renders.
+
+## ThemeService usage
+
+The ThemeService writes CSS variables into `:root` so all components pick up the active theme automatically.
+
+```ts
+import { applyTheme, getCurrentTheme, THEME_LIST } from '@diniz/webcomponents';
+
+// Apply a default theme on startup
+applyTheme('shadcn');
+
+// Switch themes (example)
+const next = THEME_LIST.find(t => t.value !== getCurrentTheme())?.value ?? 'shadcn';
+applyTheme(next);
+```
+
+Available theme names: `shadcn`, `zinc`, `rose`, `blue`, `green`, `orange`, `violet`.
 
 ## For contributors
 

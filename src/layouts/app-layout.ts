@@ -6,6 +6,7 @@ import '../shared/components/top-bar';
 import '../shared/components/button';
 import '../shared/components/select';
 import { html, render } from '../core/template';
+import { buildPath, getRoutePath } from '../core/navigation';
 import { THEME_LIST, applyTheme } from '../core/theme-service';
 import type { RouteOld } from '../core/router';
 
@@ -136,7 +137,7 @@ class AppLayout extends BaseComponent {
   }
 
   private updateTitle(): void {
-    const path = window.location.pathname;
+    const path = getRoutePath(window.location.pathname);
     const titles: Record<string, { title: string; subtitle: string }> = {
       '/': { title: 'Web Components', subtitle: 'A framework-agnostic component library' },
       '/button': { title: 'Button', subtitle: 'Flexible button with variants and sizes' },
@@ -164,7 +165,8 @@ class AppLayout extends BaseComponent {
   private handleNav = (ev: CustomEvent): void => {
     const href = ev.detail?.href;
     if (href && !href.startsWith('http')) {
-      window.history.pushState({}, '', href);
+      const fullPath = buildPath(href);
+      window.history.pushState({}, '', fullPath);
       window.dispatchEvent(new PopStateEvent('popstate'));
     }
   };
