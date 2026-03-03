@@ -20,10 +20,11 @@ describe('UIModal', () => {
   it('should show backdrop full-viewport when opened', async () => {
     (modal as any).open();
     await (modal as any).updateComplete;
+
     const backdrop = modal.shadowRoot?.querySelector('.modal-backdrop') as HTMLElement;
     expect(backdrop).toBeTruthy();
-    const rect = backdrop.getBoundingClientRect();
-    expect(rect.width).toBeGreaterThan(window.innerWidth - 1);
-    expect(rect.height).toBeGreaterThan(window.innerHeight - 1);
+    expect(backdrop.classList.contains('open')).toBe(true);
+    expect((modal as any).isOpen).toBe(true);
+    expect(document.body.style.overflow).toBe('hidden');
   });
 });

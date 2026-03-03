@@ -1,4 +1,4 @@
-import { LitElement, html, css, unsafeCSS, nothing } from 'lit';
+import { LitElement, html, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import themeStyles from '../../styles/theme.css?inline';
@@ -8,6 +8,8 @@ import feather from 'feather-icons';
 @customElement('ui-sidebar')
 export class UISidebar extends LitElement {
   static styles = [unsafeCSS(themeStyles), unsafeCSS(sidebarStyles)];
+
+  private readonly iconMap = feather.icons as Record<string, { toSvg: () => string }>;
 
   @property({ type: String }) brand: string = 'App';
   @property({ type: String }) version: string = 'v1.0';
@@ -55,7 +57,7 @@ export class UISidebar extends LitElement {
         <div class="nav-section" @click=${this.handleClick}>
           ${this.items.map(item => html`
             <a class="sidebar-link" href="${item.href || '#'}">
-              <span class="link-icon">${unsafeHTML(feather.icons[item.icon]?.toSvg() || '')}</span>
+              <span class="link-icon">${unsafeHTML(this.iconMap[item.icon]?.toSvg() || '')}</span>
               <span>${item.label}</span>
             </a>
           `)}
@@ -63,7 +65,7 @@ export class UISidebar extends LitElement {
         <div class="sidebar-footer" @click=${this.handleFooterClick}>
           ${this.footerItems.map(item => html`
             <a class="sidebar-link" href="${item.href || '#'}" target="${item.href?.startsWith('http') ? '_blank' : '_self'}">
-              <span class="link-icon">${unsafeHTML(feather.icons[item.icon]?.toSvg() || '')}</span>
+              <span class="link-icon">${unsafeHTML(this.iconMap[item.icon]?.toSvg() || '')}</span>
               <span>${item.label}</span>
             </a>
           `)}

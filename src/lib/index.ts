@@ -36,5 +36,5 @@ export { queryElement, queryElements, queryTable, queryPagination, queryModal, a
 export type { UITableElement, UIPaginationElement, UIModalElement, FormValue, GetFormValuesOptions, ValidationResult } from '../core/dom-helpers';
 
 // Router
-export { createRouter } from '../core/router';
-export type { Route } from '../core/router';
+export { createRouter } from '../core/router-lib';
+export type { Route } from '../core/router-lib';

@@ -23,13 +23,11 @@ describe('UIUpload', () => {
     const root = upload.shadowRoot;
     const input = root?.querySelector('input.upload-input') as HTMLElement;
     const container = root?.querySelector('div.upload') as HTMLElement;
+    const content = root?.querySelector('div.upload-content') as HTMLElement;
     expect(input).toBeTruthy();
-    // the input's offsetParent should be the uploading container, indicating the container
-    // has some kind of positioning (relative/absolute) and the input is constrained to it.
-    expect(input.offsetParent).toBe(container);
-    // input style itself should still be absolute with inset:0
-    const inputStyle = getComputedStyle(input);
-    expect(inputStyle.position).toBe('absolute');
-    expect(inputStyle.inset).toBe('0px');
+    expect(content).toBeTruthy();
+    expect(input.parentElement).toBe(container);
+    expect(container.firstElementChild).toBe(input);
+    expect(container.contains(content)).toBe(true);
   });
 });

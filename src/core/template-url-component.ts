@@ -1,4 +1,4 @@
-import { LitElement, html, css, unsafeCSS, TemplateResult, PropertyValues, nothing } from 'lit';
+import { LitElement, html, TemplateResult, PropertyValues } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 
@@ -122,7 +122,7 @@ export abstract class TemplateUrlComponent extends LitElement {
   protected emit<T>(name: string, data?: T): void {
     const emitter = this._outputs.get(name);
     if (emitter) {
-      (emitter as EventEmitter<T>).emit(data);
+      (emitter as EventEmitter<T | undefined>).emit(data);
     }
   }
 }

@@ -1,4 +1,4 @@
-import { LitElement, html, css, unsafeCSS, nothing } from 'lit';
+import { LitElement, html, unsafeCSS, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
@@ -143,5 +143,3 @@ export class UIPagination extends LitElement {
     `;
   }
 }
-
-import { nothing } from 'lit';
