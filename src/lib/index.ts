@@ -38,3 +38,7 @@ export type { UITableElement, UIPaginationElement, UIModalElement, FormValue, Ge
 // Router
 export { createRouter } from '../core/router-lib';
 export type { Route } from '../core/router-lib';
+
+// Theme Service
+export { applyTheme, getCurrentTheme, THEME_LIST } from '../core/theme-service';
+export type { Theme } from '../core/theme-service';
