@@ -1,6 +1,8 @@
 import { LitElement, html, css, unsafeCSS, nothing } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
+import { unsafeHTML } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
+import feather from 'feather-icons';
 
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
 
@@ -27,6 +29,47 @@ export class UIInput extends LitElement {
         display: block;
         margin-bottom: 1rem;
       }
+
+      .input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .input-icon {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        color: hsl(var(--muted-foreground));
+        transition: color 0.15s ease;
+      }
+
+      .input-icon svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .input-icon.left {
+        left: 0.75rem;
+      }
+
+      .input-icon.right {
+        right: 0.75rem;
+      }
+
+      .input-field.has-icon-left {
+        padding-left: 2.5rem;
+      }
+
+      .input-field.has-icon-right {
+        padding-right: 2.5rem;
+      }
+
+      .input-wrapper:focus-within .input-icon {
+        color: hsl(var(--ring));
+      }
     `
   ];
 
@@ -44,6 +87,8 @@ export class UIInput extends LitElement {
   @property({ type: Boolean }) disabled: boolean = false;
   @property({ type: String }) name: string = '';
   @property({ type: String }) validationRule: string = '';
+  @property({ type: String }) icon: string = '';
+  @property({ type: String }) iconPosition: 'left' | 'right' = 'left';
 
   @state() private value: string = '';
   @state() private valid: boolean = true;
@@ -58,6 +103,12 @@ export class UIInput extends LitElement {
   connectedCallback(): void {
     this.setAttribute('data-ui', 'input');
     super.connectedCallback();
+  }
+
+  private getIcon(): { svg: string; name: string } | null {
+    if (!this.icon) return null;
+    const svg = feather.icons[this.icon as keyof typeof feather.icons]?.toSvg() || '';
+    return { svg, name: this.icon };
   }
 
   setCustomValidator(validator: CustomValidator): void {
@@ -207,29 +258,36 @@ export class UIInput extends LitElement {
   render() {
     const isInvalid = !this.valid && this.touched;
     const hasLabel = this.label !== '';
+    const icon = this.getIcon();
+    const hasIcon = icon !== null;
+    const iconClass = hasIcon ? `has-icon-${this.iconPosition}` : '';
 
     return html`
       <div class="input-wrapper${isInvalid ? ' invalid' : ''}${this.disabled ? ' disabled' : ''}">
         ${hasLabel ? html`<label class="input-label">${this.label}${this.required ? ' *' : ''}</label>` : ''}
-        <input
-          part="input"
-          class="input-field"
-          type="${this.type}"
-          placeholder="${this.placeholder}"
-          name="${this.name}"
-          .value=${this.value}
-          ?required=${this.required}
-          pattern="${this.pattern}"
-          minlength=${this.minlength ?? nothing}
-          maxlength=${this.maxlength ?? nothing}
-          min=${this.min}
-          max=${this.max}
-          ?disabled=${this.disabled}
-          aria-invalid="${isInvalid}"
-          aria-describedby="${this.name}-error"
-          @input=${this.handleInput}
-          @blur=${this.handleBlur}
-        />
+        <div class="input-container">
+          ${hasIcon && this.iconPosition === 'left' ? html`<span class="input-icon left">${unsafeHTML(icon!.svg)}</span>` : ''}
+          <input
+            part="input"
+            class="input-field ${iconClass}"
+            type="${this.type}"
+            placeholder="${this.placeholder}"
+            name="${this.name}"
+            .value=${this.value}
+            ?required=${this.required}
+            pattern="${this.pattern}"
+            minlength="${this.minlength !== null ? this.minlength : ''}"
+            maxlength="${this.maxlength !== null ? this.maxlength : ''}"
+            min=${this.min}
+            max=${this.max}
+            ?disabled=${this.disabled}
+            aria-invalid="${isInvalid}"
+            aria-describedby="${this.name}-error"
+            @input=${this.handleInput}
+            @blur=${this.handleBlur}
+          />
+          ${hasIcon && this.iconPosition === 'right' ? html`<span class="input-icon right">${unsafeHTML(icon!.svg)}</span>` : ''}
+        </div>
         <span class="input-error${isInvalid && this.error ? '' : ' hidden'}" id="${this.name}-error" role="alert">${this.error}</span>
       </div>
     `;

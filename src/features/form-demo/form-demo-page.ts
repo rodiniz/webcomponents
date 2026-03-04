@@ -201,7 +201,7 @@ export class FormDemoPage extends LitElement {
             <p>Collect the essentials to launch a workspace.</p>
 
             <ui-input label="Workspace name" placeholder="Studio Atlas" name="workspace" required></ui-input>
-            <ui-input label="Owner email" type="email" placeholder="owner@company.com" name="ownerEmail" required></ui-input>
+            <ui-input label="Owner email" icon="mail" icon-position="left" type="email" placeholder="owner@company.com" name="ownerEmail" required></ui-input>
 
             <div class="split">
               <ui-select id="roleSelect" label="Default role" name="role" .options=${roles}></ui-select>

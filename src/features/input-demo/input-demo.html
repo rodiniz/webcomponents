@@ -14,6 +14,8 @@
 				required
 				minlength="3"
 				maxlength="20"
+				icon="user"
+				icon-position="left"
 			></ui-input>
 
 			<ui-input
@@ -22,6 +24,8 @@
 				placeholder="you@example.com"
 				name="email"
 				required
+				icon="mail"
+				icon-position="left"
 			></ui-input>
 
 			<ui-input
@@ -31,6 +35,8 @@
 				name="password"
 				required
 				minlength="8"
+				icon="lock"
+				icon-position="left"
 			></ui-input>
 
 			<ui-input
@@ -39,6 +45,8 @@
 				placeholder="(555) 123-4567"
 				name="phone"
 				pattern="[0-9\-\(\)\s]+"
+				icon="phone"
+				icon-position="left"
 			></ui-input>
 		</div>
 	</section>
@@ -56,6 +64,8 @@
 				validate="email:company.com"
 				custom-error="Must be a company.com email"
 				id="corp-email"
+				icon="mail"
+				icon-position="left"
 			></ui-input>
 
 			<ui-input
@@ -67,6 +77,44 @@
 				validate="match:#corp-email"
 				custom-error="Emails must match"
 				id="confirm-email"
+				icon="check"
+				icon-position="right"
+			></ui-input>
+		</div>
+	</section>
+	
+	<section class="demo-section">
+		<h2>Icon Positioning</h2>
+		<div class="form-grid">
+			<ui-input
+				label="Search (Left Icon)"
+				placeholder="Search..."
+				name="search-left"
+				icon="search"
+				icon-position="left"
+			></ui-input>
+
+			<ui-input
+				label="Amount (Right Icon)"
+				type="number"
+				placeholder="0.00"
+				name="amount"
+				icon="dollar-sign"
+				icon-position="right"
+			></ui-input>
+
+			<ui-input
+				placeholder="Search without label..."
+				name="search-no-label"
+				icon="search"
+				icon-position="left"
+			></ui-input>
+
+			<ui-input
+				placeholder="Calendar picker..."
+				name="calendar"
+				icon="calendar"
+				icon-position="right"
 			></ui-input>
 		</div>
 	</section>

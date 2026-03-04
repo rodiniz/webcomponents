@@ -1,6 +1,6 @@
 ---
 name: webcomponents
-description: Use this skill when working with @your-org/webcomponents library. This library provides lightweight web components including ui-button, ui-input, ui-table, ui-date-picker, ui-pagination, ui-card, and ui-toast.
+description: Use this skill when working with @your-org/webcomponents library. This library provides lightweight web components including ui-button, ui-input, ui-table, ui-date-picker, ui-pagination, ui-card, ui-toast, ui-toggle-switch, and more form controls.
 ---
 
 # Web Components Library
@@ -52,11 +52,43 @@ This skill provides guidance on using the @your-org/webcomponents library.
   - `validate="max:N"` - maximum length
   - `validate="regex:pattern"` - custom regex
 - Custom error message via `custom-error` attribute
+- Icon support via `icon` attribute (uses feather-icons)
+- Icon position via `icon-position` ("left" or "right")
 
 ```html
 <ui-input label="Email" type="email" required></ui-input>
 <ui-input label="Corporate Email" validate="email:company.com" custom-error="Must be company email"></ui-input>
 <ui-input label="Confirm Password" validate="match:#password" custom-error="Passwords must match"></ui-input>
+<ui-input label="Search" icon="search" icon-position="left" placeholder="Search..."></ui-input>
+<ui-input label="Amount" icon="dollar-sign" icon-position="right" type="number"></ui-input>
+```
+
+### ui-toggle-switch
+- Modern on/off switch for boolean values
+- Sizes: `sm`, `md` (default), `lg`
+- Supports label, disabled state, keyboard navigation
+- Emits 'toggle-change' event with { checked }
+- Can be used in forms with `name` attribute
+
+```html
+<ui-toggle-switch label="Enable notifications"></ui-toggle-switch>
+<ui-toggle-switch label="Dark mode" checked></ui-toggle-switch>
+<ui-toggle-switch label="Small switch" size="sm"></ui-toggle-switch>
+<ui-toggle-switch label="Disabled" disabled></ui-toggle-switch>
+
+<!-- In forms -->
+<form>
+  <ui-toggle-switch name="newsletter" label="Subscribe to newsletter"></ui-toggle-switch>
+  <ui-toggle-switch name="terms" label="Accept terms" checked></ui-toggle-switch>
+</form>
+
+<!-- JavaScript -->
+<script>
+  const toggle = document.querySelector('ui-toggle-switch');
+  toggle.addEventListener('toggle-change', (e) => {
+    console.log('Checked:', e.detail.checked);
+  });
+</script>
 ```
 
 ### ui-table

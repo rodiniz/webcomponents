@@ -12,6 +12,7 @@ export { UIToast } from '../shared/components/toast';
 export { UIStepper } from '../shared/components/stepper';
 export { UIUpload } from '../shared/components/upload';
 export { UIPicklist } from '../shared/components/picklist';
+export { UIToggleSwitch } from '../shared/components/toggle-switch';
 export { UILayout, UILayoutHeader, UILayoutFooter, UILayoutContent, UILayoutSidebar } from '../shared/components/layout';
 
 // Base Component

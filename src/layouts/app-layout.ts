@@ -100,6 +100,12 @@ export const routes: RouteOld[] = [
     layout: 'app-layout',
     load: () => import('../features/picklist-demo/picklist-demo'),
     component: 'picklist-demo'
+  },
+  {
+    path: '/toggle-switch',
+    layout: 'app-layout',
+    load: () => import('../features/toggle-switch-demo/toggle-switch-demo-page'),
+    component: 'toggle-switch-demo-page'
   }
 ];
 
@@ -122,6 +128,7 @@ class AppLayout extends BaseComponent {
     { icon: 'list', label: 'Select', href: '/select' },
     { icon: 'radio', label: 'Radio', href: '/radio' },
     { icon: 'list', label: 'Picklist', href: '/picklist' },
+    { icon: 'toggle-right', label: 'Toggle Switch', href: '/toggle-switch' },
   ];
 
   private footerItems = [
@@ -154,6 +161,7 @@ class AppLayout extends BaseComponent {
       '/select': { title: 'Select', subtitle: 'Customizable dropdown select with search' },
       '/radio': { title: 'Radio', subtitle: 'Single-selection control with card and list variants' },
       '/picklist': { title: 'Picklist', subtitle: 'Dual-list component for multi-select' },
+      '/toggle-switch': { title: 'Toggle Switch', subtitle: 'Modern on/off control for boolean settings' },
     };
 
     const info = titles[path] || { title: 'Dashboard', subtitle: 'Explore our component library' };

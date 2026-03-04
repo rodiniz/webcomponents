@@ -40,7 +40,8 @@ npm install @diniz/webcomponents
 ## Available Components
 
 - **ui-button** - Button with variants (primary, secondary, ghost), sizes, and icon support
-- **ui-input** - Input with native and custom validation, multiple types
+- **ui-input** - Input with native and custom validation, multiple types, and icon support
+- **ui-toggle-switch** - Modern on/off switch for boolean settings with keyboard support
 - **ui-card** - Card container with elevation, variants, and customizable shadows
 - **ui-table** - Data table with columns, rows, and row actions
 - **ui-date-picker** - Date picker with format and range support
