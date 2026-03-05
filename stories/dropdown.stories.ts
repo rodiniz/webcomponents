@@ -11,8 +11,8 @@ type DropdownArgs = {
 };
 
 const defaultItems: DropdownItem[] = [
-  { id: 'create', label: 'Create a recording' },
-  { id: 'upload', label: 'Upload a recording' }
+  { id: 'create', label: 'Create a recording' ,disabled: false},
+  { id: 'upload', label: 'Upload a recording', disabled: false }
 ];
 
 const meta: Meta<DropdownArgs> = {

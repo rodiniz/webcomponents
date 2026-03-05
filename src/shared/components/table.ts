@@ -247,33 +247,7 @@ export class UITable extends LitElement {
         @click=${() => this.toggleExpand(rowIndex)}
       ></ui-button>
     `;
-  }
-
-  private renderChildRow(childRow: TableRow, rowIndex: number, depth: number) {
-    const visibleColumns = this.columns.filter(col => col.visible !== false);
-    
-    return html`
-      <tr class="child-row" data-row-index="${rowIndex}" data-depth="${depth}">
-        ${visibleColumns.map((column, colIndex) => {
-          if (column.template) {
-            return html`<td class="align-${column.align ?? 'left'}">${column.template(childRow, rowIndex)}</td>`;
-          }
-          if (column.actions) {
-            return html`<td class="align-center actions-cell"></td>`;
-          }
-          if (colIndex === 0) {
-            return html`
-              <td class="align-${column.align ?? 'left'}">
-                <span class="child-row-indent" style="margin-left: ${depth * 24}px"></span>
-                ${String(childRow[column.key] ?? '')}
-              </td>
-            `;
-          }
-          return html`<td class="align-${column.align ?? 'left'}">${String(childRow[column.key] ?? '')}</td>`;
-        })}
-      </tr>
-    `;
-  }
+  }  
 
   private renderRows() {
     const rows: unknown[] = [];

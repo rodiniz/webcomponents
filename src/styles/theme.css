@@ -306,22 +306,23 @@ tr:last-child td {
 }
 
 .table-wrap table tr.child-row td {
-  background: hsl(var(--muted) / 0.12);
+  background: hsl(var(--background));
   border-bottom: none;
-  padding: 0;
+  padding: 0.75rem 1rem 1rem;
 }
 
 .child-table-wrap {
-  padding: 1rem 1.25rem 1.25rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 2px);
+  overflow: hidden;
+  background: hsl(var(--background));
 }
 
 .nested-table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid hsl(var(--border));
-  border-radius: calc(var(--radius) - 2px);
-  overflow: hidden;
   background: hsl(var(--background));
+  font-size: 0.9rem;
 }
 
 .nested-table thead {
@@ -331,21 +332,29 @@ tr:last-child td {
 
 .nested-table th,
 .nested-table td {
-  padding: 1rem 1.5rem;
-  font-size: 0.92rem;
-  line-height: 1.4;
-  border-bottom: 1px solid hsl(var(--border));
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.7);
+  text-align: left;
+}
+
+.nested-table th {
+  position: relative;
+  user-select: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: hsl(var(--muted-foreground));
+  letter-spacing: 0.02em;
 }
 
 .nested-table tr:last-child td {
   border-bottom: none;
 }
 
-.nested-table tbody tr:nth-child(even) td {
+.table-wrap.zebra .nested-table tbody tr:nth-child(even) td {
   background: hsl(var(--muted) / 0.2);
 }
 
-.nested-table tbody tr:hover td {
+.table-wrap .nested-table tbody tr:hover td {
   background: hsl(var(--muted) / 0.25);
 }
 
