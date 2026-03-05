@@ -13,7 +13,7 @@ export class UIButton extends LitElement {
 
   @property({ type: String, reflect: true }) variant: ButtonVariant = 'primary';
   @property({ type: String, reflect: true }) size: ButtonSize = 'md';
-  @property({ type: String }) type: string = 'button';
+  @property({ type: String }) type: 'button' | 'submit' | 'reset' = 'button';
   @property({ type: String }) icon: string = '';
   @property({ type: String }) iconPosition: 'left' | 'right' = 'left';
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;

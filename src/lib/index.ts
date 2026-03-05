@@ -13,6 +13,11 @@ export { UIStepper } from '../shared/components/stepper';
 export { UIUpload } from '../shared/components/upload';
 export { UIPicklist } from '../shared/components/picklist';
 export { UIToggleSwitch } from '../shared/components/toggle-switch';
+export { UILink } from '../shared/components/link';
+export { UIAccordion } from '../shared/components/accordion';
+export { UISpinner } from '../shared/components/spinner';
+export { UITooltip } from '../shared/components/tooltip';
+export { UIDropdown } from '../shared/components/dropdown';
 export { UILayout, UILayoutHeader, UILayoutFooter, UILayoutContent, UILayoutSidebar } from '../shared/components/layout';
 
 // Base Component
@@ -27,6 +32,11 @@ export type { TabChangeDetail } from '../shared/components/tabs';
 export type { ToastType, ToastPosition, ToastConfig } from '../shared/components/toast';
 export type { StepperOrientation, StepperSize, StepperStep, StepChangeDetail, StepState } from '../shared/components/stepper';
 export type { PicklistChangeDetail } from '../shared/components/picklist';
+export type { LinkVariant } from '../shared/components/link';
+export type { AccordionItem } from '../shared/components/accordion';
+export type { SpinnerSize, SpinnerVariant } from '../shared/components/spinner';
+export type { TooltipPosition, TooltipTrigger } from '../shared/components/tooltip';
+export type { DropdownItem, DropdownSize } from '../shared/components/dropdown';
 
 // HTTP Client
 export { http, HTTPClient } from '../core/http';
