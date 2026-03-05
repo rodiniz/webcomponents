@@ -2,9 +2,10 @@
 
 A framework-agnostic Web Components library that ships with the app primitives you usually have to wire up yourself.
 
-## Demo
+## Demo & Documentation
 
-Live demo (GitHub Pages): https://rodiniz.github.io/webcomponents/
+- **Live demo**: https://rodiniz.github.io/webcomponents/
+- **[Storybook](https://rodiniz.github.io/webcomponents/)** - Interactive component library with live demos and theme switching
 
 ## GitHub Pages routing
 

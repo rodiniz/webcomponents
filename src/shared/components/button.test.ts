@@ -69,8 +69,13 @@ describe('UIButton', () => {
     document.body.appendChild(btn);
     await (btn as any).updateComplete;
     const shadowRoot = btn.shadowRoot;
-    const renderedBtn = shadowRoot?.querySelector('button');
-    expect(renderedBtn?.textContent?.trim()).toContain('Click me');
+    const slot = shadowRoot?.querySelector('slot') as HTMLSlotElement;
+    const slottedText = slot
+      ?.assignedNodes({ flatten: true })
+      .map(node => node.textContent ?? '')
+      .join(' ')
+      .trim();
+    expect(slottedText).toContain('Click me');
     btn.remove();
   });
 

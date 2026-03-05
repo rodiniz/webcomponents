@@ -1,0 +1,1 @@
+import"./iframe-Bw_KO9Y0.js";import"./unsafe-html-rRkyaLOt.js";function e(t){return t&&typeof t=="object"&&"get"in t?t.get():t}function p(t){return Object.entries(t).filter(([n,r])=>e(r)).map(([n])=>n).join(" ")}function c(t){return Object.entries(t).filter(([n,r])=>e(r)!=="").map(([n,r])=>`${n}: ${e(r)}`).join("; ")}export{p as c,c as s};

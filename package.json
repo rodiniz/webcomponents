@@ -19,6 +19,8 @@
   ],
   "scripts": {
     "dev": "vite",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
     "build": "vite build",
     "build:prod": "vite build --mode production",
     "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json && node scripts/copy-lib-assets.mjs",
@@ -29,14 +31,18 @@
     "test:run": "vitest run"
   },
   "devDependencies": {
+    "@storybook/addon-links": "^10.2.15",
+    "@storybook/web-components-vite": "^10.2.15",
     "@types/feather-icons": "^4.29.4",
     "@types/node": "^25.3.2",
     "@vitest/ui": "^4.0.18",
     "jsdom": "^28.1.0",
     "lit-html": "^3.3.2",
+    "storybook": "^10.2.15",
     "typescript": "^5.9.3",
     "vite": "^5.4.21",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "@storybook/addon-docs": "^10.2.15"
   },
   "dependencies": {
     "feather-icons": "^4.29.2",

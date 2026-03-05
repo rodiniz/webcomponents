@@ -1,5 +1,5 @@
 import { LitElement, html, css, unsafeCSS } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { classMap, unsafeHTML } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
 import feather from 'feather-icons';
@@ -19,11 +19,23 @@ export class UIButton extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
 
   private buttonEl: HTMLButtonElement | null = null;
+  @state() private hasLabelContent: boolean = false;
 
   connectedCallback(): void {
     this.setAttribute('data-ui', 'button');
     super.connectedCallback();
   }
+
+  private handleSlotChange = (e: Event): void => {
+    const slot = e.target as HTMLSlotElement;
+    const hasContent = slot
+      .assignedNodes({ flatten: true })
+      .some(node => node.textContent?.trim().length);
+
+    if (hasContent !== this.hasLabelContent) {
+      this.hasLabelContent = hasContent;
+    }
+  };
 
   private getIcon(): { svg: string; name: string } | null {
     if (!this.icon) return null;
@@ -67,9 +79,8 @@ export class UIButton extends LitElement {
 
   render() {
     const icon = this.getIcon();
-    const content = this.innerHTML.trim();
     const hasIcon = icon !== null;
-    const isIconOnly = hasIcon && !content;
+    const isIconOnly = hasIcon && !this.hasLabelContent;
 
     const classes = classMap({
       'btn': true,
@@ -79,16 +90,18 @@ export class UIButton extends LitElement {
       'icon-only': isIconOnly
     });
 
+    const slotEl = html`<slot @slotchange=${this.handleSlotChange}></slot>`;
+
     const renderContent = () => {
-      if (hasIcon && content) {
+      if (hasIcon && this.hasLabelContent) {
         const iconEl = html`<span class="btn-icon">${unsafeHTML(icon!.svg)}</span>`;
         return this.iconPosition === 'left' 
-          ? html`${iconEl}<span>${content}</span>`
-          : html`<span>${content}</span>${iconEl}`;
+          ? html`${iconEl}${slotEl}`
+          : html`${slotEl}${iconEl}`;
       } else if (hasIcon) {
         return html`<span class="btn-icon">${unsafeHTML(icon!.svg)}</span>`;
       }
-      return content;
+      return slotEl;
     };
 
     return html`
