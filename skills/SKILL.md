@@ -1,5 +1,5 @@
 ---
-name: webcomponents
+name: skills
 description: Use this skill when working with @your-org/webcomponents library. This library provides lightweight web components including ui-button, ui-input, ui-table, ui-treeview, ui-date-picker, ui-pagination, ui-card, ui-toast, ui-toggle-switch, and more form controls.
 ---
 
@@ -26,6 +26,7 @@ This skill provides guidance on using the @your-org/webcomponents library.
 - Elevation levels: `none`, `sm`, `md`, `lg`, `xl`
 - Customizable shadow color via `shadow-color` (RGB format)
 - Rounded corners via `rounded` attribute (default: true)
+- Background colors via `bg` attribute (e.g., `primary`, `rose`, `light`, `dark`)
 
 ```html
 <ui-card shadow elevation="md">
@@ -39,6 +40,10 @@ This skill provides guidance on using the @your-org/webcomponents library.
 
 <ui-card variant="bordered" rounded="false">
   <p>Square card with border</p>
+</ui-card>
+
+<ui-card bg="rose" shadow elevation="md">
+  <p>Card with a rose background</p>
 </ui-card>
 ```
 
@@ -92,23 +97,29 @@ This skill provides guidance on using the @your-org/webcomponents library.
 ```
 
 ### ui-table
-- Columns: array of { key, label, align?, actions? }
+- Columns: array of { key, label, align?, sortable?, resizable?, actions?, ... }
 - Rows: array of objects
-- Emits 'row-action' event with { action, row, rowIndex }
+- Sorting and resizing are per-column (no table-level flags)
+- Server-side sorting via `sortMode="server"` + `sort-change` event
+- Emits `action` (row actions) and `sort-change` (server sorting)
 
 ```javascript
 const table = document.querySelector('ui-table');
-table.data = {
-  columns: [
-    { key: 'name', label: 'Name' },
-    { key: 'price', label: 'Price', align: 'right' },
-    { key: 'actions', label: 'Actions', actions: { edit: true, delete: true } }
-  ],
-  rows: [
-    { name: 'Product 1', price: '$19.99' },
-    { name: 'Product 2', price: '$29.99' }
-  ]
-};
+table.columns = [
+  { key: 'name', label: 'Name', sortable: true, resizable: true },
+  { key: 'price', label: 'Price', align: 'right', sortable: true },
+  { key: 'actions', label: 'Actions', actions: { edit: true, delete: true } }
+];
+table.rows = [
+  { name: 'Product 1', price: '$19.99' },
+  { name: 'Product 2', price: '$29.99' }
+];
+
+table.sortMode = 'server';
+table.addEventListener('sort-change', (e) => {
+  const { key, direction } = e.detail;
+  console.log('Sort request:', key, direction);
+});
 ```
 
 ### ui-treeview

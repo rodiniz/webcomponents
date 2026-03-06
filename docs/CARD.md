@@ -66,6 +66,41 @@ A flexible and customizable card container component with shadow effects, color 
 </ui-card>
 ```
 
+### Background Color
+
+Use the `bg` attribute to apply a predefined background color class. The component maps
+`bg="<name>"` to a `.card.bg-<name>` style.
+
+```html
+<ui-card bg="primary" shadow elevation="md">
+  <h3>Primary Card</h3>
+  <p>Uses the primary background style.</p>
+</ui-card>
+
+<ui-card bg="rose" shadow elevation="md">
+  <h3>Rose Card</h3>
+  <p>Uses the rose background style.</p>
+</ui-card>
+
+<ui-card bg="light" shadow elevation="sm">
+  <h3>Light Card</h3>
+  <p>Soft neutral background.</p>
+</ui-card>
+```
+
+Available `bg` values include: `transparent`, `primary`, `secondary`, `success`, `warning`, `danger`,
+`dark`, `light`, `slate`, `zinc`, `neutral`, `stone`, `amber`, `orange`, `pink`, `rose`, `fuchsia`,
+`violet`, `indigo`, `blue`, `cyan`, `emerald`, `lime`.
+
+You can also override the background manually with CSS if you need a custom color:
+
+```css
+ui-card.custom-bg .card {
+  background: #0f172a;
+  color: #f8fafc;
+}
+```
+
 ## Attributes
 
 | Attribute | Type | Default | Description |
