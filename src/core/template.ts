@@ -1,8 +1,8 @@
-import { html as litHtml, TemplateResult, SVGTemplateResult, nothing, render } from 'lit-html';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { html as litHtml, type TemplateResult, type SVGTemplateResult, nothing, render } from 'lit';
+import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import { Signal, createSignal } from './base-component';
 
-export { nothing, render } from 'lit-html';
+export { nothing, render } from 'lit';
 export { unsafeHTML };
 
 export type TemplateResultType = TemplateResult | SVGTemplateResult | typeof nothing;

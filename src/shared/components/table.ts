@@ -39,8 +39,6 @@ export class UITable extends LitElement {
   @property({ type: Boolean, reflect: true }) bordered: boolean = true;
   @property({ type: Boolean, reflect: true }) zebra: boolean = false;
   @property({ type: Boolean, reflect: true }) collapsible: boolean = true;
-  @property({ type: Boolean, reflect: true }) sortable: boolean = false;
-  @property({ type: Boolean, reflect: true }) resizable: boolean = false;
 
   @state() private expandedRows: Set<number> = new Set();
   @state() private sortKey: string | null = null;
@@ -138,8 +136,7 @@ export class UITable extends LitElement {
   }
 
   private handleHeaderClick(column: TableColumn): void {
-    const isSortable = this.sortable && column.sortable !== false;
-    if (!isSortable) return;
+    if (!column.sortable) return;
 
     if (this.sortKey === column.key) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -170,10 +167,10 @@ export class UITable extends LitElement {
   }
 
   private getSortedRows(): TableRow[] {
-    if (!this.sortKey || !this.sortable) return this.rows;
+    if (!this.sortKey) return this.rows;
 
     const column = this.columns.find(col => col.key === this.sortKey);
-    if (!column || column.sortable === false) return this.rows;
+    if (!column || !column.sortable) return this.rows;
 
     const rows = [...this.rows];
     rows.sort((rowA, rowB) => {
@@ -199,7 +196,7 @@ export class UITable extends LitElement {
   }
 
   private handleResizeStart(event: MouseEvent, column: TableColumn): void {
-    if (!this.resizable || column.resizable === false) return;
+    if (!column.resizable) return;
 
     event.preventDefault();
     event.stopPropagation();
@@ -340,7 +337,7 @@ export class UITable extends LitElement {
           <thead>
             <tr>
               ${visibleColumns.map(column => {
-                const isSortable = this.sortable && column.sortable !== false;
+                const isSortable = Boolean(column.sortable);
                 const isSorted = this.sortKey === column.key;
                 const headerClasses = classMap({
                   [`align-${column.align ?? 'left'}`]: true,
@@ -350,7 +347,7 @@ export class UITable extends LitElement {
                 const sortIndicator = isSortable
                   ? html`<span class="sort-indicator ${isSorted ? this.sortDirection : ''}"></span>`
                   : '';
-                const resizer = this.resizable && column.resizable !== false
+                const resizer = column.resizable
                   ? html`<span class="column-resizer" @mousedown=${(event: MouseEvent) => this.handleResizeStart(event, column)}></span>`
                   : '';
 

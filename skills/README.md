@@ -44,6 +44,7 @@ npm install @diniz/webcomponents
 - **ui-toggle-switch** - Modern on/off switch for boolean settings with keyboard support
 - **ui-card** - Card container with elevation, variants, and customizable shadows
 - **ui-table** - Data table with columns, rows, and row actions
+- **ui-treeview** - Hierarchical tree view with lazy loading and HTTP integration
 - **ui-date-picker** - Date picker with format and range support
 - **ui-pagination** - Pagination control with page change events
 - **ui-toast** - Toast notifications with auto-dismiss and stacking

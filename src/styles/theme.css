@@ -209,7 +209,7 @@ table {
 }
 
 thead {
-  background: hsl(var(--background));
+  background: var(--color-header, hsl(var(--muted)));
   border-bottom: 1px solid hsl(var(--border));
 }
 
@@ -225,7 +225,8 @@ th {
   user-select: none;
   font-weight: 600;
   font-size: 0.85rem;
-  color: hsl(var(--muted-foreground));
+  font-family: var(--font-family, inherit);
+  color: var(--color-header-foreground, hsl(var(--foreground)));
   letter-spacing: 0.02em;
 }
 
@@ -326,7 +327,7 @@ tr:last-child td {
 }
 
 .nested-table thead {
-  background: hsl(var(--background));
+  background: var(--color-header, hsl(var(--muted)));
   border-bottom: 1px solid hsl(var(--border));
 }
 

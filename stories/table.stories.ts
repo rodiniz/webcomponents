@@ -1,12 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
 import type { TableColumn, TableRow } from '../src/shared/components/table';
+import { http } from '../src/lib/index';
 import '../src/shared/components/table';
 
 const columns: TableColumn[] = [
-  { key: 'name', label: 'Name', sortable: true, minWidth: 140 },
-  { key: 'role', label: 'Role', sortable: true, minWidth: 180 },
-  { key: 'status', label: 'Status', sortable: true, minWidth: 120 },
+  { key: 'name', label: 'Name', sortable: true, resizable: true, minWidth: 140 },
+  { key: 'role', label: 'Role', sortable: true, resizable: true, minWidth: 180 },
+  { key: 'status', label: 'Status', sortable: true, resizable: true, minWidth: 120 },
   { key: 'actions', label: 'Actions', align: 'center', actions: { edit: true, delete: true }, resizable: false }
 ];
 
@@ -20,8 +21,6 @@ type TableArgs = {
   bordered: boolean;
   zebra: boolean;
   collapsible: boolean;
-  sortable: boolean;
-  resizable: boolean;
 };
 
 const meta: Meta<TableArgs> = {
@@ -30,16 +29,12 @@ const meta: Meta<TableArgs> = {
   argTypes: {
     bordered: { control: 'boolean' },
     zebra: { control: 'boolean' },
-    collapsible: { control: 'boolean' },
-    sortable: { control: 'boolean' },
-    resizable: { control: 'boolean' }
+    collapsible: { control: 'boolean' }
   },
   args: {
     bordered: true,
     zebra: true,
-    collapsible: true,
-    sortable: true,
-    resizable: true
+    collapsible: true
   }
 };
 
@@ -48,15 +43,13 @@ export default meta;
 type Story = StoryObj<TableArgs>;
 
 export const Playground: Story = {
-  render: ({ bordered, zebra, collapsible, sortable, resizable }) => html`
+  render: ({ bordered, zebra, collapsible }) => html`
     <ui-table
       .columns=${columns}
       .rows=${rows}
       ?bordered=${bordered}
       ?zebra=${zebra}
       ?collapsible=${collapsible}
-      ?sortable=${sortable}
-      ?resizable=${resizable}
     ></ui-table>
   `
 };
@@ -86,8 +79,270 @@ export const WithChildRow: Story = {
       bordered
       zebra
       collapsible
-      sortable
-      resizable
     ></ui-table>
   `
+};
+
+/**
+ * Example: Loading table data from a mock API using HTTPClient
+ * This demonstrates the basic pattern for fetching and displaying data
+ */
+export const LoadingFromAPI: Story = {
+  render: () => {
+    class TodoTable extends HTMLElement {
+      async connectedCallback() {
+        this.innerHTML = '<div style="padding: 20px; color: #1976d2;">⏳ Loading todos...</div>';
+        
+        try {
+          const columns: TableColumn[] = [
+            { key: 'id', label: 'ID', sortable: true, resizable: true, minWidth: 100 },
+            { key: 'title', label: 'Title', sortable: true, resizable: true, minWidth: 200 },
+            { key: 'completed', label: 'Completed', sortable: true, resizable: true, minWidth: 120 }
+          ];
+
+          const data = await http.get<any>('https://jsonplaceholder.typicode.com/todos?_limit=5');
+          
+          const rows: TableRow[] = data.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            completed: item.completed ? 'Yes' : 'No'
+          }));
+
+          this.innerHTML = `
+            <div style="padding: 20px;">
+              <p style="margin-bottom: 16px; color: #666;">Data loaded successfully from API</p>
+            </div>
+          `;
+          
+          const table = document.createElement('ui-table');
+          table.setAttribute('bordered', '');
+          table.setAttribute('zebra', '');
+          (table as any).columns = columns;
+          (table as any).rows = rows;
+          
+          this.appendChild(table);
+        } catch (error) {
+          this.innerHTML = `
+            <div style="padding: 20px; color: #d32f2f;">
+              <p>Error loading data: ${(error as Error).message}</p>
+            </div>
+          `;
+        }
+      }
+    }
+
+    if (!customElements.get('todo-table')) {
+      customElements.define('todo-table', TodoTable);
+    }
+
+    return html`<todo-table></todo-table>`;
+  }
+};
+
+/**
+ * Example: API Loading with Loading State
+ * Shows how to handle loading, success, and error states
+ */
+export const APILoadingWithState: Story = {
+  render: () => {
+    class UserTable extends HTMLElement {
+      async connectedCallback() {
+        this.innerHTML = '<div style="padding: 20px; color: #1976d2;">⏳ Loading users...</div>';
+        
+        try {
+          const columns: TableColumn[] = [
+            { key: 'id', label: 'User ID', sortable: true, resizable: true, minWidth: 100 },
+            { key: 'name', label: 'Name', sortable: true, resizable: true, minWidth: 180 },
+            { key: 'email', label: 'Email', sortable: true, resizable: true, minWidth: 200 },
+            { key: 'status', label: 'Status', sortable: true, resizable: true, minWidth: 120 }
+          ];
+
+          const data = await http.get<any>('https://jsonplaceholder.typicode.com/users?_limit=5');
+          
+          const rows: TableRow[] = data.map((user: any) => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            status: 'Active'
+          }));
+
+          this.innerHTML = `
+            <div style="padding: 20px;">
+              <p style="margin-bottom: 16px; color: #2e7d32;">✓ Successfully loaded ${rows.length} users</p>
+            </div>
+          `;
+          
+          const table = document.createElement('ui-table');
+          table.setAttribute('bordered', '');
+          table.setAttribute('zebra', '');
+          (table as any).columns = columns;
+          (table as any).rows = rows;
+          
+          this.appendChild(table);
+        } catch (error) {
+          this.innerHTML = `
+            <div style="padding: 20px; background-color: #ffebee; border-radius: 4px;">
+              <p style="color: #d32f2f; font-weight: bold;">Error Loading Data</p>
+              <p style="color: #d32f2f; font-size: 14px;">${(error as Error).message}</p>
+              <p style="color: #666; font-size: 12px; margin-top: 8px;">
+                Tip: Check your API endpoint and network connection
+              </p>
+            </div>
+          `;
+        }
+      }
+    }
+
+    if (!customElements.get('user-table')) {
+      customElements.define('user-table', UserTable);
+    }
+
+    return html`<user-table></user-table>`;
+  }
+};
+
+/**
+ * Example: Creating a Custom Element Component that loads API data
+ * This shows the recommended pattern for encapsulating API calls in a component
+ */
+export const APIDataComponent: Story = {
+  render: () => {
+    // Define a custom component that loads data
+    class APIDataTable extends HTMLElement {
+      private tableElement: any;
+      private isLoading = true;
+
+      async connectedCallback() {
+        this.render();
+        await this.loadData();
+      }
+
+      private render() {
+        this.innerHTML = `
+          <div style="padding: 20px;">
+            <div id="status" style="margin-bottom: 16px; color: #1976d2;">
+              Loading users from API...
+            </div>
+            <ui-table
+              id="data-table"
+              bordered
+              zebra
+            ></ui-table>
+          </div>
+        `;
+        this.tableElement = this.querySelector('ui-table');
+      }
+
+      private async loadData() {
+        const columns: TableColumn[] = [
+          { key: 'id', label: 'ID', sortable: true, resizable: true, minWidth: 80 },
+          { key: 'username', label: 'Username', sortable: true, resizable: true, minWidth: 150 },
+          { key: 'phone', label: 'Phone', sortable: true, resizable: true, minWidth: 160 },
+          { key: 'company', label: 'Company', sortable: true, resizable: true, minWidth: 180 }
+        ];
+
+        try {
+          const data = await http.get<any>('https://jsonplaceholder.typicode.com/users?_limit=8');
+          
+          const rows: TableRow[] = data.map((user: any) => ({
+            id: user.id,
+            username: user.username,
+            phone: user.phone,
+            company: user.company.name
+          }));
+
+          // Update table with loaded data
+          if (this.tableElement) {
+            this.tableElement.columns = columns;
+            this.tableElement.rows = rows;
+          }
+
+          // Update status
+          const statusDiv = this.querySelector('#status');
+          if (statusDiv) {
+            statusDiv.innerHTML = `✓ Loaded ${rows.length} users successfully`;
+            statusDiv.style.color = '#2e7d32';
+          }
+        } catch (error) {
+          // Update status with error
+          const statusDiv = this.querySelector('#status');
+          if (statusDiv) {
+            statusDiv.innerHTML = `✗ Error: ${(error as Error).message}`;
+            statusDiv.style.color = '#d32f2f';
+          }
+        }
+      }
+    }
+
+    if (!customElements.get('api-data-table')) {
+      customElements.define('api-data-table', APIDataTable);
+    }
+
+    return html`<api-data-table></api-data-table>`;
+  }
+};
+
+/**
+ * Example: Using HTTPClient with Custom Configuration
+ * Demonstrates baseURL, headers, and timeout configuration
+ */
+export const APIWithCustomConfig: Story = {
+  render: () => {
+    class PostTable extends HTMLElement {
+      async connectedCallback() {
+        this.innerHTML = '<div style="padding: 20px; color: #1976d2;">⏳ Loading posts...</div>';
+        
+        try {
+          const columns: TableColumn[] = [
+            { key: 'id', label: 'Post ID', sortable: true, resizable: true, minWidth: 100 },
+            { key: 'title', label: 'Title', sortable: true, resizable: true, minWidth: 300 },
+            { key: 'userId', label: 'Author ID', sortable: true, resizable: true, minWidth: 120 }
+          ];
+
+          // Configure HTTP client
+          http.setBaseURL('https://jsonplaceholder.typicode.com');
+          http.setDefaultTimeout(5000);
+          
+          // Make request with configured client
+          const posts = await http.get<any>('/posts?_limit=5');
+          
+          const rows: TableRow[] = posts.map((post: any) => ({
+            id: post.id,
+            title: post.title,
+            userId: post.userId
+          }));
+
+          this.innerHTML = `
+            <div style="padding: 20px;">
+              <div style="margin-bottom: 16px; padding: 12px; background-color: #e3f2fd; border-left: 4px solid #1976d2; border-radius: 2px;">
+                <p style="margin: 0; font-size: 14px; color: #1976d2;">
+                  ℹ️ This example uses HTTPClient with baseURL and timeout configuration
+                </p>
+              </div>
+            </div>
+          `;
+          
+          const table = document.createElement('ui-table');
+          table.setAttribute('bordered', '');
+          table.setAttribute('zebra', '');
+          (table as any).columns = columns;
+          (table as any).rows = rows;
+          
+          this.appendChild(table);
+        } catch (error) {
+          this.innerHTML = `
+            <div style="padding: 20px; color: #d32f2f;">
+              <p>Error: ${(error as Error).message}</p>
+            </div>
+          `;
+        }
+      }
+    }
+
+    if (!customElements.get('post-table')) {
+      customElements.define('post-table', PostTable);
+    }
+
+    return html`<post-table></post-table>`;
+  }
 };

@@ -1,6 +1,6 @@
 ---
 name: webcomponents
-description: Use this skill when working with @your-org/webcomponents library. This library provides lightweight web components including ui-button, ui-input, ui-table, ui-date-picker, ui-pagination, ui-card, ui-toast, ui-toggle-switch, and more form controls.
+description: Use this skill when working with @your-org/webcomponents library. This library provides lightweight web components including ui-button, ui-input, ui-table, ui-treeview, ui-date-picker, ui-pagination, ui-card, ui-toast, ui-toggle-switch, and more form controls.
 ---
 
 # Web Components Library
@@ -109,6 +109,36 @@ table.data = {
     { name: 'Product 2', price: '$29.99' }
   ]
 };
+```
+
+### ui-treeview
+- **Lazy Loading**: Load child nodes on-demand via `onLoadChildren` callback
+- **HTTP Integration**: Works seamlessly with library's HTTPClient
+- **Multi-Select**: Support for selecting multiple nodes
+- **Custom Templates**: Customize node appearance with templates
+- **Event System**: `node-selected` and `node-expanded` events
+- **Full docs**: [TREEVIEW.md](../docs/TREEVIEW.md)
+
+```javascript
+const treeview = document.querySelector('ui-treeview');
+treeview.items = [
+  { id: '1', label: 'Users', lazy: true },
+  { id: '2', label: 'Posts', lazy: true }
+];
+
+treeview.options = {
+  onLoadChildren: async (node) => {
+    if (node.id === '1') {
+      const users = await http.get('/api/users');
+      return users.map((u) => ({ id: u.id, label: u.name, isLeaf: true }));
+    }
+    return [];
+  }
+};
+
+treeview.addEventListener('node-selected', (e) => {
+  console.log('Selected:', e.detail.node.label);
+});
 ```
 
 ### ui-date-picker

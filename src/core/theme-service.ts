@@ -133,7 +133,9 @@ export function applyTheme(theme: Theme): void {
     --color-primary-contrast: hsl(var(--primary-foreground));
     --color-ink: hsl(var(--foreground));
     --color-muted: hsl(var(--muted));
-    --color-header: hsl(var(--background));
+    /* Header tint tracks the selected theme hue for visible Storybook switching. */
+    --color-header: hsl(var(--primary-h) 45% 95%);
+    --color-header-foreground: hsl(var(--foreground));
     --color-border: hsl(var(--border));
     --color-page-bg: hsl(var(--background));
     --color-page-text: hsl(var(--foreground));

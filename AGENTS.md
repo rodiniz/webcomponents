@@ -14,6 +14,7 @@ Web Components library with reusable UI components.
 - **ui-table** - Data table with actions
 - **ui-date-picker** - Date picker
 - **ui-pagination** - Pagination
+- **ui-treeview** - Hierarchical tree with lazy loading
 
 ## Scripts
 
@@ -25,4 +26,4 @@ Web Components library with reusable UI components.
 ## Skills
 
 This project includes a skill for working with the web components:
-- **webcomponents** - Documentation for using ui-button, ui-input, ui-table, ui-date-picker, ui-pagination
+- **webcomponents** - Documentation for using ui-button, ui-input, ui-table, ui-treeview, ui-date-picker, ui-pagination
