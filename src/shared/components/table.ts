@@ -4,6 +4,12 @@ import { classMap, styleMap } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
 import './button';
 
+export interface PagedData {
+  columns: TableColumn[];
+  rows: TableRow[];
+  total: number;
+}
+
 export interface TableColumn {
   key: string;
   label: string;
@@ -30,6 +36,12 @@ export interface TableRow {
   childRows?: TableRow[];
 }
 
+export interface SortChangeDetail {
+  key: string;
+  direction: 'asc' | 'desc';
+  column: TableColumn;
+}
+
 @customElement('ui-table')
 export class UITable extends LitElement {
   static styles = [unsafeCSS(themeStyles)];
@@ -39,6 +51,7 @@ export class UITable extends LitElement {
   @property({ type: Boolean, reflect: true }) bordered: boolean = true;
   @property({ type: Boolean, reflect: true }) zebra: boolean = false;
   @property({ type: Boolean, reflect: true }) collapsible: boolean = true;
+  @property({ type: String, reflect: true }) sortMode: 'client' | 'server' = 'client';
 
   @state() private expandedRows: Set<number> = new Set();
   @state() private sortKey: string | null = null;
@@ -66,13 +79,13 @@ export class UITable extends LitElement {
     }
   }
 
-  set data(value: { columns: TableColumn[]; rows: TableRow[] }) {
+  set data(value: PagedData) {
     this.columns = value.columns;
     this.rows = value.rows;
   }
 
-  get data(): { columns: TableColumn[]; rows: TableRow[] } {
-    return { columns: this.columns, rows: this.rows };
+  get data(): PagedData {
+    return { columns: this.columns, rows: this.rows, total: this.rows.length };
   }
 
   private handleAction(action: string, rowIndex: number): void {
@@ -144,6 +157,18 @@ export class UITable extends LitElement {
       this.sortKey = column.key;
       this.sortDirection = 'asc';
     }
+
+    if (this.sortMode === 'server') {
+      this.dispatchEvent(new CustomEvent<SortChangeDetail>('sort-change', {
+        detail: {
+          key: this.sortKey,
+          direction: this.sortDirection,
+          column
+        },
+        bubbles: true,
+        composed: true
+      }));
+    }
   }
 
   private compareValues(a: unknown, b: unknown, sortType?: 'string' | 'number' | 'date'): number {
@@ -168,6 +193,8 @@ export class UITable extends LitElement {
 
   private getSortedRows(): TableRow[] {
     if (!this.sortKey) return this.rows;
+
+    if (this.sortMode === 'server') return this.rows;
 
     const column = this.columns.find(col => col.key === this.sortKey);
     if (!column || !column.sortable) return this.rows;

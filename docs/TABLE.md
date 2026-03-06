@@ -1,6 +1,6 @@
 # ui-table Component
 
-Data table with sortable columns, resizable columns, collapsible rows, and row actions.
+Data table with per-column sorting, per-column resizing, collapsible rows, row actions, and theme-aware header styling.
 
 ## Basic Usage
 
@@ -49,6 +49,11 @@ Each column object in the `columns` array supports the following properties:
 
 Enable sorting per column by setting `sortable: true`. Click column headers to sort ascending/descending.
 
+Note: sorting is configured on each column. There is no table-level `sortable` flag.
+
+By default, sorting is done on the client. To request sorted data from an API instead, set
+`sortMode="server"` and listen to the `sort-change` event.
+
 ```javascript
 const table = document.querySelector('ui-table');
 table.columns = [
@@ -77,9 +82,38 @@ table.columns = [
 ];
 ```
 
+### Server-Side Sorting (API)
+
+```javascript
+import { http } from '@diniz/webcomponents';
+
+const table = document.querySelector('ui-table');
+table.sortMode = 'server';
+
+table.columns = [
+  { key: 'name', label: 'Name', sortable: true },
+  { key: 'email', label: 'Email', sortable: true },
+  { key: 'status', label: 'Status', sortable: true }
+];
+
+async function fetchSorted(key, direction) {
+  const data = await http.get(`/api/users?sort=${key}&direction=${direction}`);
+  table.rows = data;
+}
+
+table.addEventListener('sort-change', (e) => {
+  const { key, direction } = e.detail;
+  fetchSorted(key, direction).catch((error) => {
+    console.error('Failed to sort:', error);
+  });
+});
+```
+
 ## Resizing Columns
 
 Enable resizing per column by setting `resizable: true`. Drag the handle at the right edge of the column header to resize.
+
+Note: resizing is configured on each column. There is no table-level `resizable` flag.
 
 ```javascript
 const table = document.querySelector('ui-table');
@@ -164,6 +198,70 @@ table.rows = [
 ];
 ```
 
+## Loading Data From API
+
+Use the library HTTP client (`http`) to fetch data and bind it to `table.rows`.
+
+### Basic API Loading
+
+```javascript
+import { http } from '@diniz/webcomponents';
+
+const table = document.querySelector('ui-table');
+
+table.columns = [
+  { key: 'id', label: 'ID', sortable: true, resizable: true, minWidth: 90 },
+  { key: 'name', label: 'Name', sortable: true, resizable: true, minWidth: 160 },
+  { key: 'email', label: 'Email', sortable: true, resizable: true, minWidth: 220 }
+];
+
+async function loadUsers() {
+  try {
+    const users = await http.get('https://jsonplaceholder.typicode.com/users?_limit=8');
+    table.rows = users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email
+    }));
+  } catch (error) {
+    console.error('Failed to load users:', error);
+    table.rows = [];
+  }
+}
+
+loadUsers();
+```
+
+### API Loading With Client Configuration
+
+```javascript
+import { http } from '@diniz/webcomponents';
+
+const table = document.querySelector('ui-table');
+
+http.setBaseURL('https://jsonplaceholder.typicode.com');
+http.setDefaultTimeout(5000);
+
+async function loadPosts() {
+  const posts = await http.get('/posts?_limit=5');
+  table.rows = posts.map((post) => ({
+    id: post.id,
+    title: post.title,
+    userId: post.userId
+  }));
+}
+
+table.columns = [
+  { key: 'id', label: 'Post ID', sortable: true, resizable: true, minWidth: 90 },
+  { key: 'title', label: 'Title', sortable: true, resizable: true, minWidth: 260 },
+  { key: 'userId', label: 'Author ID', sortable: true, resizable: true, minWidth: 110 }
+];
+
+loadPosts().catch((error) => {
+  console.error('Failed to load posts:', error);
+});
+```
+
 ## Complete Example
 
 ```html
@@ -219,6 +317,8 @@ table.rows = [
 
 - `action` - Fired when a row action (edit/delete) is clicked
   - Event detail: `{ action: string, row: object, rowIndex: number }`
+- `sort-change` - Fired when user clicks a sortable header and `sortMode="server"`
+  - Event detail: `{ key: string, direction: 'asc' | 'desc', column: TableColumn }`
 
 ### Methods
 
@@ -230,22 +330,28 @@ const data = table.data; // { columns, rows }
 table.data = { columns: [...], rows: [...] };
 ```
 
-## Styling
+## Theming
 
-Customize table appearance via CSS:
+`ui-table` uses the shared theme tokens from `ThemeService` and updates automatically when the active theme changes.
+
+Header styling uses:
+- `--color-header` for `thead` background
+- `--color-header-foreground` for header text color
+
+The default theme pipeline sets these tokens for you. You can still override them per instance:
 
 ```css
 ui-table {
-  --table-border-color: #ddd;
-  --table-row-hover-bg: #f5f5f5;
-  --table-header-bg: #f9f9f9;
-  --table-text-color: #333;
+  --color-header: hsl(var(--primary-h) 45% 95%);
+  --color-header-foreground: hsl(var(--foreground));
 }
 ```
 
 ## Types
 
 ```typescript
+type SortDirection = 'asc' | 'desc';
+
 interface TableColumn {
   key: string;
   label: string;
@@ -270,5 +376,11 @@ interface TableRow {
   children?: TableRow[];
   childColumns?: TableColumn[];
   childRows?: TableRow[];
+}
+
+interface SortChangeDetail {
+  key: string;
+  direction: SortDirection;
+  column: TableColumn;
 }
 ```
