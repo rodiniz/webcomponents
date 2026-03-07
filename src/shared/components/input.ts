@@ -144,7 +144,7 @@ export class UIInput extends LitElement {
   }
 
   private doValidate(): boolean {
-    debugger;
+
     if (!this.inputEl) return true;
 
     if (this.validationRule) {

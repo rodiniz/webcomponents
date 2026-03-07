@@ -7,11 +7,35 @@ export type Route = {
   guard?: () => boolean | Promise<boolean>;
 };
 
+function matchRoute(routePath: string, path: string): boolean | Record<string, string> {
+  const routeParts = routePath.split('/');
+  const pathParts = path.split('/');
+
+  if (routeParts.length !== pathParts.length) {
+    return false;
+  }
+
+  const params: Record<string, string> = {};
+
+  for (let i = 0; i < routeParts.length; i++) {
+    const routePart = routeParts[i];
+    const pathPart = pathParts[i];
+
+    if (routePart.startsWith(':')) {
+      params[routePart.slice(1)] = pathPart;
+    } else if (routePart !== pathPart) {
+      return false;
+    }
+  }
+
+  return params;
+}
+
 export function createRouter(routes: Route[], appSelector: string = '#app') {
   async function router(): Promise<void> {
     const fullPath = location.pathname;
     const path = getRoutePath(fullPath);
-    const match = routes.find(route => route.path === path);
+    const match = routes.find(route => matchRoute(route.path, path));
 
     if (!match) {
       if (path !== '/') {
