@@ -105,6 +105,14 @@ export class UIInput extends LitElement {
     super.connectedCallback();
   }
 
+  updated(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.updated(changedProperties);
+    // Revalidate when type changes to ensure validity state is updated
+    if (changedProperties.has('type')) {
+      this.doValidate();
+    }
+  }
+
   private getIcon(): { svg: string; name: string } | null {
     if (!this.icon) return null;
     const svg = feather.icons[this.icon as keyof typeof feather.icons]?.toSvg() || '';
@@ -136,6 +144,7 @@ export class UIInput extends LitElement {
   }
 
   private doValidate(): boolean {
+    debugger;
     if (!this.inputEl) return true;
 
     if (this.validationRule) {
@@ -147,6 +156,8 @@ export class UIInput extends LitElement {
         this.valid = result.valid;
         if (!result.valid && result.message) {
           this.error = result.message;
+        } else {
+          this.error = '';
         }
         return this.valid;
       }
@@ -157,12 +168,17 @@ export class UIInput extends LitElement {
       this.valid = result.valid;
       if (!result.valid && result.message) {
         this.error = result.message;
+      } else {
+        this.error = '';
       }
     } else {
       const valid = this.inputEl.checkValidity();
+      this.inputEl.reportValidity();
       this.valid = valid;
       if (!valid && this.touched) {
-        this.error = this.inputEl.validationMessage || this.errorMessage || this.customError;
+        // Only show error if user provided a custom error message
+        // Don't rely on browser's validation message which may be localized unexpectedly
+        this.error = this.errorMessage || this.customError || '';
       }
       if (valid) {
         this.error = '';
@@ -275,9 +291,9 @@ export class UIInput extends LitElement {
             name="${this.name}"
             .value=${this.value}
             ?required=${this.required}
-            pattern="${this.pattern}"
-            minlength="${this.minlength !== null ? this.minlength : ''}"
-            maxlength="${this.maxlength !== null ? this.maxlength : ''}"
+            ?pattern="${this.pattern}"
+            ?minlength=${this.minlength !== null ? this.minlength : undefined}
+            ?maxlength=${this.maxlength !== null ? this.maxlength : undefined}
             min=${this.min}
             max=${this.max}
             ?disabled=${this.disabled}

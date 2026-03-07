@@ -51,3 +51,27 @@ export const Playground: Story = {
     ></ui-input>
   `
 };
+
+export const Basic: Story = {
+  args: {
+    label: 'Name',
+    placeholder: 'Enter your name',
+    type: 'text',
+    icon: '',
+    iconPosition: 'left',
+    required: false,
+    disabled: false
+  },
+  render: ({ label, placeholder, type, icon, iconPosition, required, disabled }) => html`
+    <ui-input
+      label=${label}
+      placeholder=${placeholder}
+      type=${type}
+      icon=${icon}
+      icon-position=${iconPosition}
+      ?required=${required}
+      ?disabled=${disabled}
+      name="basic-input"
+    ></ui-input>
+  `
+};
