@@ -1,6 +1,6 @@
 {
   "name": "@diniz/webcomponents",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Lightweight web components library",
   "type": "module",
   "main": "./dist/webcomponents.umd.js",
