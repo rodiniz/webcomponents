@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
 import '../src/shared/components/button';
+import { IconName, ICONS, ICON_ALIASES } from '../src/lib/icons';
 
 type ButtonArgs = {
   label: string;
@@ -59,4 +60,23 @@ export const IconOnly: Story = {
   render: ({ variant, size, icon, disabled }) => html`
     <ui-button variant=${variant} size=${size} icon=${icon} ?disabled=${disabled}></ui-button>
   `
+};
+
+export const WithIconEnum: Story = {
+  render: () => {
+    const icon: IconName = 'check';
+    const iconFromAlias: IconName = ICON_ALIASES.success;
+    
+    return html`
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <ui-button variant="primary" icon=${icon}>With Icon Enum</ui-button>
+        <ui-button variant="secondary" icon=${iconFromAlias}>Using Alias</ui-button>
+        <ui-button variant="ghost" icon="settings">Settings</ui-button>
+        <ui-button variant="danger" icon="trash-2">Delete</ui-button>
+      </div>
+      <p style="margin-top: 16px; font-size: 14px; color: #666;">
+        Available icons: ${ICONS.slice(0, 10).join(', ')}... (${ICONS.length} total)
+      </p>
+    `;
+  }
 };

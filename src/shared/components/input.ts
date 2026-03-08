@@ -3,6 +3,7 @@ import { customElement, property, state, query } from 'lit/decorators.js';
 import { unsafeHTML } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
 import feather from 'feather-icons';
+import { IconName } from '../../lib/icons';
 
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
 
@@ -98,7 +99,7 @@ export class UIInput extends LitElement {
   @property({ type: Boolean }) disabled: boolean = false;
   @property({ type: String }) name: string = '';
   @property({ type: String }) validationRule: string = '';
-  @property({ type: String }) icon: string = '';
+  @property({ type: String }) icon: IconName | '' = '';
   @property({ type: String }) iconPosition: 'left' | 'right' = 'left';
 
   @state() private value: string = '';

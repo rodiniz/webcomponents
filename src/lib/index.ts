@@ -55,3 +55,7 @@ export type { Route } from '../core/router-lib';
 // Theme Service
 export { applyTheme, getCurrentTheme, THEME_LIST } from '../core/theme-service';
 export type { Theme } from '../core/theme-service';
+
+// Icons
+export type { IconName } from './icons';
+export { ICONS, ICON_ALIASES } from './icons';

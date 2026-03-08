@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
 import '../src/shared/components/input';
+import { IconName, ICONS } from '../src/lib/icons';
 
 type InputArgs = {
   label: string;
@@ -149,4 +150,22 @@ export const CustomValidation: Story = {
       </div>
     </div>
   `
+};
+
+export const WithIconEnum: Story = {
+  render: () => {
+    const icon: IconName = 'mail';
+    const iconRight: IconName = 'search';
+    
+    return html`
+      <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 400px;">
+        <ui-input label="Email" placeholder="Enter your email" type="email" icon=${icon} icon-position="left"></ui-input>
+        <ui-input label="Search" placeholder="Search..." type="search" icon=${iconRight} icon-position="right"></ui-input>
+        <ui-input label="Password" placeholder="Enter password" type="password" icon="lock" icon-position="left"></ui-input>
+        <p style="font-size: 14px; color: #666;">
+          Available icons: ${ICONS.slice(0, 10).join(', ')}... (${ICONS.length} total)
+        </p>
+      </div>
+    `;
+  }
 };

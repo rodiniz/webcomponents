@@ -71,6 +71,8 @@ npm install @diniz/webcomponents
 
 ## What's Included
 
+> **Icons**: This library uses [Feather Icons](https://feathericons.com/) for all iconography.
+
 ### 📋 Form Components
 - **ui-input** — Text, email, password with validation, icons, custom rules
 - **ui-select** — Searchable dropdowns
