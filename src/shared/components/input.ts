@@ -70,6 +70,17 @@ export class UIInput extends LitElement {
       .input-wrapper:focus-within .input-icon {
         color: hsl(var(--ring));
       }
+
+      .input-error {
+        color: hsl(0, 84.2%, 60.2%);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+      }
+
+      .input-error.hidden {
+        display: none;
+      }
     `
   ];
 
@@ -121,6 +132,7 @@ export class UIInput extends LitElement {
 
   setCustomValidator(validator: CustomValidator): void {
     this.customValidator = validator;
+    this.touched = true;
     this.doValidate();
   }
 
@@ -173,12 +185,9 @@ export class UIInput extends LitElement {
       }
     } else {
       const valid = this.inputEl.checkValidity();
-      this.inputEl.reportValidity();
       this.valid = valid;
       if (!valid && this.touched) {
-        // Only show error if user provided a custom error message
-        // Don't rely on browser's validation message which may be localized unexpectedly
-        this.error = this.errorMessage || this.customError || '';
+        this.error = this.errorMessage || this.customError || this.inputEl.validationMessage || '';
       }
       if (valid) {
         this.error = '';
