@@ -2,9 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/npm/v/@diniz/webcomponents?style=flat&color=24ec71" alt="npm version">
-  <img src="https://img.shields.io/bundlejsize/minified/@diniz/webcomponents?color=24ec71" alt="bundle size">
-  <img src="https://img.shields.io/github/license/rodiniz/webcomponents?color=24ec71" alt="license">
-  <img src="https://img.shields.io/testng-cover/rodiniz/webcomponents?color=24ec71" alt="coverage">
+  
 </p>
 
 <p align="center">
