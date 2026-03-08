@@ -3,44 +3,8 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { classMap, styleMap } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
 import './button';
-
-export interface PagedData {
-  columns: TableColumn[];
-  rows: TableRow[];
-  total: number;
-}
-
-export interface TableColumn {
-  key: string;
-  label: string;
-  align?: 'left' | 'center' | 'right';
-  visible?: boolean;
-  sortable?: boolean;
-  sortType?: 'string' | 'number' | 'date';
-  sortFn?: (a: TableRow, b: TableRow) => number;
-  width?: number;
-  minWidth?: number;
-  maxWidth?: number;
-  resizable?: boolean;
-  template?: (row: TableRow, rowIndex: number) => unknown;
-  actions?: {
-    edit?: boolean;
-    delete?: boolean;
-  };
-}
-
-export interface TableRow {
-  [key: string]: any;
-  children?: TableRow[];
-  childColumns?: TableColumn[];
-  childRows?: TableRow[];
-}
-
-export interface SortChangeDetail {
-  key: string;
-  direction: 'asc' | 'desc';
-  column: TableColumn;
-}
+import type { PagedData, TableColumn, TableRow, SortChangeDetail } from './table.types';
+export type { PagedData, TableColumn, TableRow, SortChangeDetail } from './table.types';
 
 @customElement('ui-table')
 export class UITable extends LitElement {

@@ -21,8 +21,8 @@ Most web component libraries force you into a choice: **either** you get a polis
 |---------|---------------------|----------|--------------|----------------------|
 | **Routing with lazy loading** | ✅ Built-in | ❌ | ❌ | ❌ |
 | **State management** | ✅ Store + Signals | ❌ | ❌ | ❌ |
-| **Theme system** | ✅ CSS Variables | ✅ | ✅ | ✅ |
-| **Bundle size** | **~15KB gzipped** | ~84KB | ~50KB | ~100KB+ |
+| **Theme system** | ✅ CSS Variables + Custom | ✅ | ✅ | ✅ |
+| **Bundle size** | **~41KB gzipped** | ~84KB | ~50KB | ~100KB+ |
 | **Framework agnostic** | ✅ | ✅ | ✅ | ❌ Salesforce-only |
 | **TypeScript-first** | ✅ | ✅ | ✅ | ✅ |
 | **Storybook docs** | ✅ | ✅ | ✅ | ❌ |
@@ -126,6 +126,10 @@ setState('user', { name: 'John' });
 
 // Multiple themes
 applyTheme('shadcn'); // or 'zinc', 'rose', 'blue', 'green', 'orange', 'violet'
+
+// Custom themes
+registerCustomTheme({ name: 'my-app', url: '/themes/my-app.css' });
+await applyTheme('my-app');
 ```
 
 ---
@@ -138,7 +142,7 @@ applyTheme('shadcn'); // or 'zinc', 'rose', 'blue', 'green', 'orange', 'violet'
 |---|---------------------|----------|
 | **Routing** | ✅ Native | ❌ External |
 | **State management** | ✅ Native | ❌ External |
-| **Bundle size** | ~15KB | ~84KB |
+| **Bundle size** | ~41KB | ~84KB |
 | **Theming** | CSS variables | CSS variables |
 | **Dependencies** | None (lit only) | None (lit only) |
 
@@ -148,7 +152,7 @@ applyTheme('shadcn'); // or 'zinc', 'rose', 'blue', 'green', 'orange', 'violet'
 |---|---------------------|--------------|
 | **Routing** | ✅ Built-in | ❌ External |
 | **State management** | ✅ Native | ❌ External |
-| **Bundle size** | ~15KB | ~50KB |
+| **Bundle size** | ~41KB | ~50KB |
 | **Design** | Clean, modern | Material Design 3 |
 | **Customization** | Full CSS control | Limited theming |
 
@@ -158,7 +162,7 @@ applyTheme('shadcn'); // or 'zinc', 'rose', 'blue', 'green', 'orange', 'violet'
 |---|---------------------|-----|
 | **Routing** | ✅ Universal | ❌ Salesforce-only |
 | **State management** | ✅ Universal | ❌ Salesforce-only |
-| **Bundle size** | ~15KB | ~100KB+ |
+| **Bundle size** | ~41KB | ~100KB+ |
 | **Platform** | Any framework | Salesforce only |
 | **Open source** | ✅ MIT | ❌ Proprietary |
 

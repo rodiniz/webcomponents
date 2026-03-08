@@ -3,6 +3,7 @@ import { html } from 'lit';
 import type { TableColumn, TableRow } from '../src/shared/components/table';
 import { http } from '../src/lib/index';
 import '../src/shared/components/table';
+import '../src/shared/components/pagination';
 
 const columns: TableColumn[] = [
   { key: 'name', label: 'Name', sortable: true, resizable: true, minWidth: 140 },
@@ -344,5 +345,84 @@ export const APIWithCustomConfig: Story = {
     }
 
     return html`<post-table></post-table>`;
+  }
+};
+
+/**
+ * Example: Paging data with ui-pagination component
+ * Shows how to integrate pagination with the table using real API calls
+ */
+export const WithPagination: Story = {
+  render: () => {
+    class PaginatedTable extends HTMLElement {
+      private tableElement: any;
+      private paginationElement: any;
+      private totalItems = 0;
+      private currentPage = 1;
+      private pageSize = 5;
+
+      async connectedCallback() {
+        this.render();
+        await this.loadData(this.currentPage);
+      }
+
+      private render() {
+        this.innerHTML = `
+          <div style="padding: 20px;">
+            <h3 style="margin-bottom: 16px; color: #333;">Users List</h3>
+            <ui-table id="data-table" bordered zebra></ui-table>
+            <ui-pagination
+              id="pagination"
+              style="margin-top: 16px;"
+            ></ui-pagination>
+          </div>
+        `;
+        this.tableElement = this.querySelector('#data-table');
+        this.paginationElement = this.querySelector('#pagination');
+        
+        this.paginationElement.addEventListener('page-change', this.handlePageChange);
+      }
+
+      private handlePageChange = (e: CustomEvent) => {
+        this.currentPage = e.detail.page;
+        this.loadData(this.currentPage);
+      };
+
+      private async loadData(page: number) {
+        const columns: TableColumn[] = [
+          { key: 'id', label: 'ID', sortable: true, resizable: true, minWidth: 80 },
+          { key: 'name', label: 'Name', sortable: true, resizable: true, minWidth: 180 },
+          { key: 'email', label: 'Email', sortable: true, resizable: true, minWidth: 220 },
+          { key: 'status', label: 'Status', sortable: true, resizable: true, minWidth: 120 }
+        ];
+
+        try {
+          const response = await http.get<any>(`https://jsonplaceholder.typicode.com/users?_page=${page}&_limit=${this.pageSize}`);
+          
+          const rows: TableRow[] = response.map((user: any) => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            status: user.id % 2 === 0 ? 'Active' : 'Inactive'
+          }));
+
+          this.tableElement.columns = columns;
+          this.tableElement.rows = rows;
+
+          this.totalItems = 10;
+          this.paginationElement.total = this.totalItems;
+          this.paginationElement.pageSize = this.pageSize;
+          this.paginationElement.currentPage = page;
+        } catch (error) {
+          console.error('Error loading data:', error);
+        }
+      }
+    }
+
+    if (!customElements.get('paginated-table')) {
+      customElements.define('paginated-table', PaginatedTable);
+    }
+
+    return html`<paginated-table></paginated-table>`;
   }
 };

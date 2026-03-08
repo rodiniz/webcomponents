@@ -61,6 +61,8 @@ npm install @diniz/webcomponents
 - [SKILL.md](./SKILL.md) - Component API reference and validation patterns
 - [../docs/STYLING_GUIDE.md](../docs/STYLING_GUIDE.md) - **Complete styling guide for creating beautiful UIs**
 - [../docs/CARD.md](../docs/CARD.md) - Detailed card component documentation
+- **Theme System** - 7 built-in themes + custom theme support via CSS variables
+- **Router** - Built-in SPA router with lazy loading, guards, and path helpers
 
 ## Styling
 

@@ -74,6 +74,39 @@ pagination.total = 100;
 pagination.addEventListener('page-change', e => console.log(e.detail.page));
 ```
 
+## Theme System
+
+Built-in themes: shadcn, zinc, rose, blue, green, orange, violet
+
+```javascript
+import { applyTheme, registerCustomTheme, getThemeList } from '@diniz/webcomponents';
+
+// Apply built-in theme
+await applyTheme('shadcn');
+
+// Register and apply custom theme
+registerCustomTheme({ name: 'my-brand', url: '/themes/my-brand.css' });
+await applyTheme('my-brand');
+
+// Get all available themes
+console.log(getThemeList());
+```
+
+## Router Helpers
+
+```javascript
+import { createRouter, getPathParams, buildPath, getRoutePath } from '@diniz/webcomponents';
+
+// Parse route parameters
+const params = getPathParams('/users/:id', '/users/123'); // { id: '123' }
+
+// Build paths with base URL
+const fullPath = buildPath('/users'); // '/app/users' if BASE_URL=/app
+
+// Get route path from full URL
+const routePath = getRoutePath('/app/users'); // '/users'
+```
+
 ## HTTPClient Integration
 
 The library provides an HTTPClient for making API calls:

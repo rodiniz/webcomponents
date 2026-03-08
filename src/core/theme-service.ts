@@ -11,6 +11,31 @@
 
 export type Theme = 'shadcn' | 'zinc' | 'rose' | 'blue' | 'green' | 'orange' | 'violet';
 
+export type ThemeName = Theme | string;
+
+export interface CustomTheme {
+    name: string;
+    url: string;
+}
+
+const customThemes: Map<string, CustomTheme> = new Map();
+
+export function registerCustomTheme(theme: CustomTheme): void {
+    customThemes.set(theme.name, theme);
+}
+
+export function unregisterCustomTheme(name: string): void {
+    customThemes.delete(name);
+}
+
+export function getCustomTheme(name: string): CustomTheme | undefined {
+    return customThemes.get(name);
+}
+
+export function getCustomThemes(): CustomTheme[] {
+    return Array.from(customThemes.values());
+}
+
 const THEMES: Record<Theme, string> = {
     shadcn: `
     --primary-h: 222.2; --primary-s: 47.4%; --primary-l: 11.2%;
@@ -113,9 +138,34 @@ const THEMES: Record<Theme, string> = {
 };
 
 const STYLE_TAG_ID = 'ui-theme-vars';
+const CUSTOM_LINK_ID = 'ui-theme-custom-link';
+
+async function loadCustomTheme(url: string): Promise<string> {
+    const response = await fetch(url);
+    if (!response.ok) {
+        console.error(`Failed to load custom theme: ${url}`);
+        return '';
+    }
+    return response.text();
+}
 
 /** Apply a theme by writing CSS variables into :root via a <style> tag. */
-export function applyTheme(theme: Theme): void {
+export async function applyTheme(theme: ThemeName): Promise<void> {
+    const customTheme = customThemes.get(theme);
+
+    if (customTheme) {
+        const css = await loadCustomTheme(customTheme.url);
+        let tag = document.getElementById(STYLE_TAG_ID) as HTMLStyleElement | null;
+        if (!tag) {
+            tag = document.createElement('style');
+            tag.id = STYLE_TAG_ID;
+            document.head.appendChild(tag);
+        }
+        tag.textContent = css;
+        return;
+    }
+
+    const builtInTheme = theme in THEMES ? theme as Theme : 'shadcn';
     let tag = document.getElementById(STYLE_TAG_ID) as HTMLStyleElement | null;
     if (!tag) {
         tag = document.createElement('style');
@@ -123,9 +173,8 @@ export function applyTheme(theme: Theme): void {
         document.head.appendChild(tag);
     }
 
-    const vars = THEMES[theme] ?? THEMES.shadcn;
+    const vars = THEMES[builtInTheme] ?? THEMES.shadcn;
 
-    // Compute derived shim variables
     tag.textContent = `:root {
     ${vars}
     --primary: var(--primary-h) var(--primary-s) var(--primary-l);
@@ -145,13 +194,23 @@ export function applyTheme(theme: Theme): void {
   }`;
 }
 
-export function getCurrentTheme(): Theme {
+export function getCurrentTheme(): ThemeName {
+    const customLink = document.getElementById(CUSTOM_LINK_ID) as HTMLLinkElement | null;
+    if (customLink) {
+        const href = customLink.href;
+        for (const [name, theme] of customThemes) {
+            if (theme.url === href) {
+                return name;
+            }
+        }
+        return 'custom';
+    }
+
     const tag = document.getElementById(STYLE_TAG_ID) as HTMLStyleElement | null;
-  if (!tag) return 'shadcn';
-    // Parse the active theme by checking which h value is set
+    if (!tag) return 'shadcn';
     const text = tag.textContent ?? '';
     for (const [name] of Object.entries(THEMES)) {
-      if (text.includes(`--primary-h: ${parseHue(name as Theme)}`)) {
+        if (text.includes(`--primary-h: ${parseHue(name as Theme)}`)) {
             return name as Theme;
         }
     }
@@ -163,8 +222,22 @@ function parseHue(theme: Theme): string {
     return match ? match[1] : '240';
 }
 
-export const THEME_LIST: { value: Theme; label: string }[] = [
-  { value: 'shadcn', label: 'Shadcn' },
+export function getThemeList(): { value: ThemeName; label: string }[] {
+    const builtIn: { value: ThemeName; label: string }[] = [
+        { value: 'shadcn', label: 'Shadcn' },
+        { value: 'zinc', label: 'Zinc' },
+        { value: 'rose', label: 'Rose' },
+        { value: 'blue', label: 'Blue' },
+        { value: 'green', label: 'Green' },
+        { value: 'orange', label: 'Orange' },
+        { value: 'violet', label: 'Violet' },
+    ];
+    const custom = getCustomThemes().map(t => ({ value: t.name, label: t.name }));
+    return [...builtIn, ...custom];
+}
+
+export const THEME_LIST: { value: ThemeName; label: string }[] = [
+    { value: 'shadcn', label: 'Shadcn' },
     { value: 'zinc', label: 'Zinc' },
     { value: 'rose', label: 'Rose' },
     { value: 'blue', label: 'Blue' },

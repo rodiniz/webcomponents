@@ -1,4 +1,7 @@
-import { buildPath, getRoutePath } from './navigation';
+import { buildPath, getRoutePath, getPathParams } from './navigation';
+
+export { getPathParams };
+export { buildPath, getRoutePath } from './navigation';
 
 export type Route = {
   path: string;

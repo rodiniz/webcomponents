@@ -49,12 +49,12 @@ export { queryElement, queryElements, queryTable, queryPagination, queryModal, a
 export type { UITableElement, UIPaginationElement, UIModalElement, FormValue, GetFormValuesOptions, ValidationResult } from '../core/dom-helpers';
 
 // Router
-export { createRouter } from '../core/router-lib';
+export { createRouter, getPathParams, buildPath, getRoutePath } from '../core/router-lib';
 export type { Route } from '../core/router-lib';
 
 // Theme Service
-export { applyTheme, getCurrentTheme, THEME_LIST } from '../core/theme-service';
-export type { Theme } from '../core/theme-service';
+export { applyTheme, getCurrentTheme, THEME_LIST, getThemeList, registerCustomTheme, unregisterCustomTheme, getCustomTheme, getCustomThemes } from '../core/theme-service';
+export type { Theme, ThemeName, CustomTheme } from '../core/theme-service';
 
 // Icons
 export type { IconName } from './icons';

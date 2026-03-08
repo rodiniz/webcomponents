@@ -33,6 +33,25 @@ Successfully added a ui-select component to the topbar for theme switching, allo
 - Leverages `applyTheme()` function that writes CSS variables to :root
 - No changes needed to theme-service - it was already working correctly
 
+## Custom Themes (New!)
+
+You can now register custom themes from external CSS files:
+
+```javascript
+import { registerCustomTheme, applyTheme, getThemeList } from '@diniz/webcomponents';
+
+// Register a custom theme
+registerCustomTheme({ name: 'my-app', url: '/themes/my-app.css' });
+
+// Apply custom theme
+await applyTheme('my-app');
+
+// Get all themes including custom ones
+const themes = getThemeList();
+```
+
+Custom themes are loaded via fetch and injected as CSS variables into :root.
+
 ## Build Status
 ✅ **Build Successful** - No errors
 ✅ **Development Server Ready** - Theme switching demo is functional
