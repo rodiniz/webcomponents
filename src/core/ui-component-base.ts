@@ -11,14 +11,6 @@ import { LitElement } from 'lit';
  * Base class for UI components that extends LitElement.
  * Automatically sets data-ui attribute based on the component's tag name.
  * 
- * @example
- * ```ts
- * @customElement('ui-button')
- * export class UIButton extends UIComponentBase {
- *   // Component implementation
- * }
- * // Automatically adds data-ui="button" attribute
- * ```
  */
 export class UIComponentBase extends LitElement {
   /**
@@ -74,17 +66,7 @@ export class UIComponentBase extends LitElement {
  * 
  * Note: Requires theme styles to be imported in the component.
  * 
- * @example
- * ```ts
- * import styles from '../../styles/theme.css?inline';
- * 
- * @customElement('ui-card')
- * export class UICard extends UIThemedComponent {
- *   static styles = [UIThemedComponent.styles, unsafeCSS(styles), css`
- *     // Component-specific styles
- *   `];
- * }
- * ```
+
  */
 export abstract class UIThemedComponent extends UIComponentBase {
   // Components can extend this and add theme styles
