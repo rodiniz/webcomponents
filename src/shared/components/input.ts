@@ -1,8 +1,8 @@
-import { LitElement, html, css, unsafeCSS, nothing } from 'lit';
+import { html, css, unsafeCSS, nothing } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import { unsafeHTML } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { renderIcon } from '../../core/icon-helpers';
 import themeStyles from '../../styles/theme.css?inline';
-import feather from 'feather-icons';
 import { IconName } from '../../lib/icons';
 
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
@@ -22,7 +22,7 @@ export type ValidationRule =
   | { type: 'regex'; pattern: string };
 
 @customElement('ui-input')
-export class UIInput extends LitElement {
+export class UIInput extends UIComponentBase {
   static styles = [
     unsafeCSS(themeStyles),
     css`
@@ -112,23 +112,12 @@ export class UIInput extends LitElement {
   private customValidator: CustomValidator | null = null;
   private _validationRule: ValidationRule | null = null;
 
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'input');
-    super.connectedCallback();
-  }
-
   updated(changedProperties: Map<string | number | symbol, unknown>): void {
     super.updated(changedProperties);
     // Revalidate when type changes to ensure validity state is updated
     if (changedProperties.has('type')) {
       this.doValidate();
     }
-  }
-
-  private getIcon(): { svg: string; name: string } | null {
-    if (!this.icon) return null;
-    const svg = feather.icons[this.icon as keyof typeof feather.icons]?.toSvg() || '';
-    return { svg, name: this.icon };
   }
 
   setCustomValidator(validator: CustomValidator): void {
@@ -284,15 +273,14 @@ export class UIInput extends LitElement {
   render() {
     const isInvalid = !this.valid && this.touched;
     const hasLabel = this.label !== '';
-    const icon = this.getIcon();
-    const hasIcon = icon !== null;
+    const hasIcon = !!this.icon;
     const iconClass = hasIcon ? `has-icon-${this.iconPosition}` : '';
 
     return html`
       <div class="input-wrapper${isInvalid ? ' invalid' : ''}${this.disabled ? ' disabled' : ''}">
         ${hasLabel ? html`<label class="input-label">${this.label}${this.required ? ' *' : ''}</label>` : ''}
         <div class="input-container">
-          ${hasIcon && this.iconPosition === 'left' ? html`<span class="input-icon left">${unsafeHTML(icon!.svg)}</span>` : ''}
+          ${hasIcon && this.iconPosition === 'left' ? html`<span class="input-icon left">${renderIcon(this.icon, { width: 16, height: 16 })}</span>` : ''}
           <input
             part="input"
             class="input-field ${iconClass}"
@@ -312,7 +300,7 @@ export class UIInput extends LitElement {
             @input=${this.handleInput}
             @blur=${this.handleBlur}
           />
-          ${hasIcon && this.iconPosition === 'right' ? html`<span class="input-icon right">${unsafeHTML(icon!.svg)}</span>` : ''}
+          ${hasIcon && this.iconPosition === 'right' ? html`<span class="input-icon right">${renderIcon(this.icon, { width: 16, height: 16 })}</span>` : ''}
         </div>
         <span class="input-error${isInvalid && this.error ? '' : ' hidden'}" id="${this.name}-error" role="alert">${this.error}</span>
       </div>

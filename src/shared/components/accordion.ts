@@ -1,8 +1,10 @@
-import { LitElement, html, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
-import feather from 'feather-icons';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { buildStateClasses, combineClasses } from '../../core/class-builders';
+import { ariaExpanded, ariaControls } from '../../core/aria-helpers';
 
 export interface AccordionItem {
   id: string;
@@ -11,7 +13,7 @@ export interface AccordionItem {
 }
 
 @customElement('ui-accordion')
-export class UIAccordion extends LitElement {
+export class UIAccordion extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles)];
 
   @property({ type: Array }) items: AccordionItem[] = [];
@@ -20,7 +22,6 @@ export class UIAccordion extends LitElement {
   @state() private openItems: Set<string> = new Set();
 
   connectedCallback(): void {
-    this.setAttribute('data-ui', 'accordion');
     super.connectedCallback();
     if (this.openItemId) {
       this.openItems.add(this.openItemId);
@@ -47,14 +48,8 @@ export class UIAccordion extends LitElement {
     }
     this.openItems = new Set(this.openItems);
     
-    const detail = { openItems: Array.from(this.openItems) };
-    this.dispatchEvent(
-      new CustomEvent('accordion-change', {
-        detail,
-        bubbles: true,
-        composed: true
-      })
-    );
+    // Using emit() from UIComponentBase
+    this.emit('accordion-change', { openItems: Array.from(this.openItems) });
   }
 
   render() {
@@ -62,14 +57,19 @@ export class UIAccordion extends LitElement {
       <div class="accordion">
         ${this.items.map(item => {
           const isOpen = this.openItems.has(item.id);
-          const headerClasses = classMap({
-            'accordion-header': true,
-            'is-open': isOpen
-          });
-          const contentClasses = classMap({
-            'accordion-content': true,
-            'is-hidden': !isOpen
-          });
+          // Using class builder utilities
+          const headerClasses = classMap(
+            combineClasses(
+              { 'accordion-header': true },
+              buildStateClasses({ 'is-open': isOpen })
+            )
+          );
+          const contentClasses = classMap(
+            combineClasses(
+              { 'accordion-content': true },
+              buildStateClasses({ 'is-hidden': !isOpen })
+            )
+          );
 
           return html`
             <div class="accordion-item" data-item-id=${item.id}>

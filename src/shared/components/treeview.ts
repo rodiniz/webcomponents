@@ -1,6 +1,7 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap, unsafeHTML } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
 import themeStyles from '../../styles/theme.css?inline';
 import './spinner';
 
@@ -34,7 +35,7 @@ export interface TreeNodeSelectedDetail {
 }
 
 @customElement('ui-treeview')
-export class UITreeView extends LitElement {
+export class UITreeView extends UIComponentBase {
   static styles = [
     unsafeCSS(themeStyles),
     css`
@@ -220,11 +221,6 @@ export class UITreeView extends LitElement {
   @state() private loadingNodeIds: Set<string> = new Set();
   @state() private nodeChildrenCache: Map<string, TreeNode[]> = new Map();
 
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'treeview');
-    super.connectedCallback();
-  }
-
   private getChevronIcon() {
     return html`
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -265,16 +261,10 @@ export class UITreeView extends LitElement {
 
     this.expandedNodeIds = new Set(this.expandedNodeIds);
 
-    this.dispatchEvent(
-      new CustomEvent<TreeNodeChangedDetail>('node-expanded', {
-        detail: {
-          node,
-          expanded: this.expandedNodeIds.has(node.id)
-        },
-        bubbles: true,
-        composed: true
-      })
-    );
+    this.emit<TreeNodeChangedDetail>('node-expanded', {
+      node,
+      expanded: this.expandedNodeIds.has(node.id)
+    });
   }
 
   private async loadChildren(node: TreeNode): Promise<void> {
@@ -314,16 +304,10 @@ export class UITreeView extends LitElement {
 
     this.selectedNodeIds = new Set(this.selectedNodeIds);
 
-    this.dispatchEvent(
-      new CustomEvent<TreeNodeSelectedDetail>('node-selected', {
-        detail: {
-          node,
-          selected: this.selectedNodeIds.has(node.id)
-        },
-        bubbles: true,
-        composed: true
-      })
-    );
+    this.emit<TreeNodeSelectedDetail>('node-selected', {
+      node,
+      selected: this.selectedNodeIds.has(node.id)
+    });
 
     this.options.onNodeSelect?.(node);
   }

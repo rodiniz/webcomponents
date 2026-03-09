@@ -25,6 +25,87 @@ export { UILayout, UILayoutHeader, UILayoutFooter, UILayoutContent, UILayoutSide
 export { BaseComponent } from '../core/base-component';
 export type { Signal } from '../core/base-component';
 
+// UI Component Base (new utilities)
+export { UIComponentBase, UIThemedComponent } from '../core/ui-component-base';
+
+// Event Helpers (new utilities)
+export { dispatchCustomEvent, createCustomEvent, getEventDetail } from '../core/event-helpers';
+export type { CustomEventOptions } from '../core/event-helpers';
+
+// Icon Helpers (new utilities)
+export { renderIcon, getIconSvg, hasIcon, wrapIcon, getAvailableIcons } from '../core/icon-helpers';
+export type { FeatherIconOptions } from '../core/icon-helpers';
+// Note: IconName type from icon-helpers is aliased to avoid conflict with ./icons
+
+// Class Builders (new utilities)
+export { 
+  buildSizeClasses, 
+  buildStateClasses, 
+  buildVariantClasses, 
+  buildPositionClasses,
+  buildConditionalClasses,
+  combineClasses,
+  buildIconClasses 
+} from '../core/class-builders';
+export type { Size, Position, Variant } from '../core/class-builders';
+
+// Click Outside Detection (new utilities)
+export { 
+  useClickOutside, 
+  useClickOutsideMultiple, 
+  isEventInElement 
+} from '../core/click-outside';
+export type { ClickOutsideOptions } from '../core/click-outside';
+
+// Keyboard Helpers (new utilities)
+export { 
+  onEnterOrSpace,
+  onEscape,
+  onArrowKeys,
+  onKeys,
+  onHomeEnd,
+  preventKeys,
+  hasModifiers,
+  moveFocus,
+  Keys
+} from '../core/keyboard-helpers';
+export type { Key } from '../core/keyboard-helpers';
+
+// Validators (new utilities)
+export {
+  createSizeValidator,
+  createVariantValidator,
+  createEnumValidator,
+  createCustomValidator,
+  validateRange,
+  validatePositive,
+  validateNonEmpty,
+  validateArrayLength
+} from '../core/validators';
+
+// ARIA Helpers (new utilities)
+export {
+  ariaExpanded,
+  ariaChecked,
+  ariaSelected,
+  ariaDisabled,
+  ariaControls,
+  ariaLabelledBy,
+  ariaDescribedBy,
+  ariaLabel,
+  ariaHidden,
+  ariaCurrent,
+  ariaLive,
+  ariaInvalid,
+  ariaRequired,
+  ariaHasPopup,
+  ariaRole,
+  ariaValueRange,
+  ariaValueText,
+  combineAria
+} from '../core/aria-helpers';
+export type { AriaAttributes } from '../core/aria-helpers';
+
 export type { ButtonVariant, ButtonSize } from '../shared/components/button';
 export type { InputType, CustomValidator, ValidationRule } from '../shared/components/input';
 export type { TableColumn, TableRow } from '../shared/components/table';

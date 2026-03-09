@@ -1,10 +1,11 @@
-import { LitElement, html, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap, styleMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
 import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-card')
-export class UICard extends LitElement {
+export class UICard extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles)];
 
   @property({ type: Boolean, reflect: true }) shadow: boolean = false;
@@ -18,11 +19,6 @@ export class UICard extends LitElement {
 
   @state() private hasHeader: boolean = false;
   @state() private hasFooter: boolean = false;
-
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'card');
-    super.connectedCallback();
-  }
 
   private getShadowValue(): string {
     if (!this.shadow) return 'none';

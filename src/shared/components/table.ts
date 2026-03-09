@@ -1,6 +1,7 @@
-import { LitElement, html, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
 import themeStyles from '../../styles/theme.css?inline';
 import './button';
 import type { PagedData, TableColumn, TableRow, SortChangeDetail } from './table.types';
@@ -18,7 +19,7 @@ import { TableSorter } from './table-sorter';
 import { ColumnResizer } from './table-column-resizer';
 
 @customElement('ui-table')
-export class UITable extends LitElement {
+export class UITable extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles)];
 
   @property({ type: Array }) columns: TableColumn[] = [];
@@ -34,11 +35,6 @@ export class UITable extends LitElement {
 
   private sorter = new TableSorter(this.sortMode);
   private columnResizer = new ColumnResizer();
-
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'table');
-    super.connectedCallback();
-  }
 
   disconnectedCallback(): void {
     this.columnResizer.stopResize();
@@ -66,11 +62,7 @@ export class UITable extends LitElement {
 
   private handleAction(action: string, rowIndex: number): void {
     const row = this.rows[rowIndex];
-    this.dispatchEvent(new CustomEvent('action', {
-      detail: { action, row, rowIndex },
-      bubbles: true,
-      composed: true
-    }));
+    this.emit('action', { action, row, rowIndex });
   }
 
   private toggleExpand(rowIndex: number): void {
@@ -86,15 +78,11 @@ export class UITable extends LitElement {
     const sortState = this.tableState.toggleSort(column.key);
 
     if (this.sortMode === 'server') {
-      this.dispatchEvent(new CustomEvent<SortChangeDetail>('sort-change', {
-        detail: {
-          key: sortState.key,
-          direction: sortState.direction,
-          column
-        },
-        bubbles: true,
-        composed: true
-      }));
+      this.emit<SortChangeDetail>('sort-change', {
+        key: sortState.key,
+        direction: sortState.direction,
+        column
+      });
     }
   }
 

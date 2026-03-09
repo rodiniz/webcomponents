@@ -1,20 +1,16 @@
-import { LitElement, html, unsafeCSS, nothing } from 'lit';
+import { html, unsafeCSS, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
 import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-pagination')
-export class UIPagination extends LitElement {
+export class UIPagination extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles)];
 
   @property({ type: Number }) total: number = 0;
   @property({ type: Number, attribute: 'current-page' }) currentPage: number = 1;
   @property({ type: Number, attribute: 'page-size' }) pageSize: number = 10;
-
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'pagination');
-    super.connectedCallback();
-  }
 
   get totalPages(): number {
     return Math.ceil(this.total / this.pageSize);
@@ -27,18 +23,12 @@ export class UIPagination extends LitElement {
 
     this.currentPage = page;
 
-    this.dispatchEvent(
-      new CustomEvent('page-change', {
-        detail: {
-          page,
-          pageSize: this.pageSize,
-          total: this.total,
-          totalPages: this.totalPages
-        },
-        bubbles: true,
-        composed: true
-      })
-    );
+    this.emit('page-change', {
+      page,
+      pageSize: this.pageSize,
+      total: this.total,
+      totalPages: this.totalPages
+    });
   }
 
   private getPageNumbers(): (number | string)[] {

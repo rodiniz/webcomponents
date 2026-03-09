@@ -1,10 +1,14 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { html, css, unsafeCSS } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { createSizeValidator } from '../../core/validators';
+import { buildSizeClasses, combineClasses } from '../../core/class-builders';
+import { onEnterOrSpace } from '../../core/keyboard-helpers';
 import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-toggle-switch')
-export class UIToggleSwitch extends LitElement {
+export class UIToggleSwitch extends UIComponentBase {
   static styles = [
     unsafeCSS(themeStyles),
     css`
@@ -131,9 +135,16 @@ export class UIToggleSwitch extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
   @property({ type: String }) label: string = '';
   @property({ type: String }) name: string = '';
-  @property({ type: String }) size: 'sm' | 'md' | 'lg' = 'md';
+  private validateSize = createSizeValidator<'sm' | 'md' | 'lg'>(['sm', 'md', 'lg'], 'md', 'UIToggleSwitch');
+  private _size: 'sm' | 'md' | 'lg' = 'md';
 
-  private isUserInteraction: boolean = false;
+  @property({ type: String })
+  get size(): 'sm' | 'md' | 'lg' { return this._size; }
+  set size(value: 'sm' | 'md' | 'lg') {
+    const old = this._size;
+    this._size = this.validateSize(value);
+    this.requestUpdate('size', old);
+  }
 
   connectedCallback(): void {
     super.connectedCallback();
@@ -144,34 +155,27 @@ export class UIToggleSwitch extends LitElement {
   updated(changedProperties: Map<string, any>): void {
     if (changedProperties.has('checked')) {
       this.setAttribute('aria-checked', String(this.checked));
-      if (this.isUserInteraction) {
-        this.dispatchEvent(new CustomEvent('toggle-change', {
-          detail: { checked: this.checked },
-          bubbles: true,
-          composed: true
-        }));
-        this.isUserInteraction = false;
-      }
     }
+  }
+
+  private toggle(): void {
+    if (this.disabled) return;
+    this.checked = !this.checked;
+    this.emit('toggle-change', { checked: this.checked });
   }
 
   private handleToggle = (e: Event): void => {
     if (this.disabled) return;
     e.preventDefault();
     e.stopPropagation();
-    this.isUserInteraction = true;
-    this.checked = !this.checked;
+    this.toggle();
   };
 
-  private handleKeyDown = (e: KeyboardEvent): void => {
+  private handleKeyDown = onEnterOrSpace((e: KeyboardEvent) => {
     if (this.disabled) return;
-    if (e.key === ' ' || e.key === 'Enter') {
-      e.preventDefault();
-      e.stopPropagation();
-      this.isUserInteraction = true;
-      this.checked = !this.checked;
-    }
-  };
+    e.stopPropagation();
+    this.toggle();
+  }, { stopPropagation: false });
 
   get value(): boolean {
     return this.checked;
@@ -182,11 +186,10 @@ export class UIToggleSwitch extends LitElement {
   }
 
   render() {
-    const containerClasses = classMap({
-      'toggle-container': true,
-      'disabled': this.disabled,
-      [`size-${this.size}`]: true
-    });
+    const containerClasses = classMap(combineClasses(
+      { 'toggle-container': true, 'disabled': this.disabled },
+      buildSizeClasses(this.size)
+    ));
 
     const trackClasses = classMap({
       'toggle-track': true,

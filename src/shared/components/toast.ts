@@ -1,8 +1,9 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import themeStyles from '../../styles/theme.css?inline';
 import toastStyles from './toast.css?inline';
-import feather from 'feather-icons';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { getIconSvg } from '../../core/icon-helpers';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 export type ToastPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
@@ -22,7 +23,7 @@ interface ToastItem {
 }
 
 @customElement('ui-toast')
-export class UIToast extends LitElement {
+export class UIToast extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles), unsafeCSS(toastStyles)];
 
   @property({ type: String }) position: ToastPosition = 'top-right';
@@ -30,11 +31,9 @@ export class UIToast extends LitElement {
   @state() private toasts: ToastItem[] = [];
   private toastCounter = 0;
 
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'toast');
-    super.connectedCallback();
-  }
+  // connectedCallback handled by UIComponentBase
 
+  // Icon rendering now handled by getIconSvg utility
   private getIcon(type: ToastType): string {
     const iconMap = {
       success: 'check-circle',
@@ -43,8 +42,7 @@ export class UIToast extends LitElement {
       info: 'info'
     };
 
-    const iconName = iconMap[type];
-    return feather.icons[iconName as keyof typeof feather.icons]?.toSvg() || '';
+    return getIconSvg(iconMap[type]);
   }
 
   private escapeHtml(text: string): string {

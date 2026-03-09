@@ -1,7 +1,11 @@
-import { LitElement, html, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { buildSizeClasses, buildStateClasses, combineClasses } from '../../core/class-builders';
+import { useClickOutside } from '../../core/click-outside';
+import { ariaExpanded, ariaHasPopup } from '../../core/aria-helpers';
 
 export interface DropdownItem {
   id: string;
@@ -12,7 +16,7 @@ export interface DropdownItem {
 type DropdownSize = 'sm' | 'md' | 'lg';
 
 @customElement('ui-dropdown')
-export class UIDropdown extends LitElement {
+export class UIDropdown extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles)];
 
   @property({ type: String }) label: string = 'Menu';
@@ -22,19 +26,22 @@ export class UIDropdown extends LitElement {
   @state() private isOpen: boolean = false;
 
   private triggerButton: HTMLElement | null = null;
+  private clickOutsideHandler = useClickOutside(
+    this,
+    () => this.isOpen = false,
+    { enabled: () => this.isOpen }
+  );
+
+  // connectedCallback removed - now handled by UIComponentBase
 
   connectedCallback(): void {
-    this.setAttribute('data-ui', 'dropdown');
     super.connectedCallback();
+    this.clickOutsideHandler.attach();
   }
 
-  protected firstUpdated(): void {
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!this.contains(e.target as Node)) {
-        this.isOpen = false;
-      }
-    });
+  disconnectedCallback(): void {
+    this.clickOutsideHandler.detach();
+    super.disconnectedCallback();
   }
 
   private toggleDropdown = (): void => {
@@ -46,24 +53,24 @@ export class UIDropdown extends LitElement {
   private handleItemClick = (itemId: string): void => {
     const item = this.items.find(i => i.id === itemId);
     if (item && !item.disabled) {
-      this.dispatchEvent(
-        new CustomEvent('dropdown-select', {
-          detail: { id: itemId, label: item.label },
-          bubbles: true,
-          composed: true
-        })
-      );
+      // Using emit() from UIComponentBase instead of dispatchEvent
+      this.emit('dropdown-select', { id: itemId, label: item.label });
       this.isOpen = false;
     }
   };
 
   render() {
-    const buttonClasses = classMap({
-      'dropdown-trigger': true,
-      [this.size]: true,
-      'is-open': this.isOpen,
-      'disabled': this.disabled
-    });
+    // Using class builder utilities for cleaner class management
+    const buttonClasses = classMap(
+      combineClasses(
+        { 'dropdown-trigger': true },
+        buildSizeClasses(this.size, ''),
+        buildStateClasses({
+          'is-open': this.isOpen,
+          disabled: this.disabled
+        })
+      )
+    );
 
     return html`
       <div class="dropdown-container">
@@ -82,17 +89,21 @@ export class UIDropdown extends LitElement {
           </span>
         </button>
 
-        <div class=${classMap({
-          'dropdown-menu': true,
-          'is-visible': this.isOpen
-        })}>
+        <div class=${classMap(
+          combineClasses(
+            { 'dropdown-menu': true },
+            buildStateClasses({ 'is-visible': this.isOpen })
+          )
+        )}>
           ${this.items.length > 0
             ? this.items.map(item => html`
                 <button
-                  class=${classMap({
-                    'dropdown-item': true,
-                    'disabled': item.disabled
-                  })}
+                  class=${classMap(
+                    combineClasses(
+                      { 'dropdown-item': true },
+                      buildStateClasses({ disabled: item.disabled })
+                    )
+                  )}
                   @click=${() => this.handleItemClick(item.id)}
                   ?disabled=${item.disabled}
                 >

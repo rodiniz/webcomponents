@@ -1,10 +1,12 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { renderIcon } from '../../core/icon-helpers';
 import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-upload')
-export class UIUpload extends LitElement {
+export class UIUpload extends UIComponentBase {
   static styles = [
     unsafeCSS(themeStyles),
     css`
@@ -26,11 +28,6 @@ export class UIUpload extends LitElement {
   @state() private files: File[] = [];
   @state() private isDragging: boolean = false;
 
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'upload');
-    super.connectedCallback();
-  }
-
   get value(): string {
     return this.files.map(file => file.name).join(', ');
   }
@@ -49,11 +46,7 @@ export class UIUpload extends LitElement {
 
   private setFiles(newFiles: File[]): void {
     this.files = newFiles;
-    this.dispatchEvent(new CustomEvent('files-change', {
-      detail: { files: this.files },
-      bubbles: true,
-      composed: true
-    }));
+    this.emit('files-change', { files: this.files });
   }
 
   private handleDragOver = (e: DragEvent): void => {
@@ -96,21 +89,13 @@ export class UIUpload extends LitElement {
     }
     
     this.files = processedFiles;
-    
-    this.dispatchEvent(new CustomEvent('files-change', {
-      detail: { files: processedFiles },
-      bubbles: true,
-      composed: true
-    }));
+
+    this.emit('files-change', { files: processedFiles });
   }
 
   private removeFile(index: number): void {
     this.files = this.files.filter((_, i) => i !== index);
-    this.dispatchEvent(new CustomEvent('files-change', {
-      detail: { files: this.files },
-      bubbles: true,
-      composed: true
-    }));
+    this.emit('files-change', { files: this.files });
   }
 
   render() {
@@ -138,13 +123,7 @@ export class UIUpload extends LitElement {
           @change=${this.handleInputChange}
         />
         <div class="upload-content">
-          <div class="upload-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-          </div>
+          <div class="upload-icon">${renderIcon('upload', { width: 24, height: 24 })}</div>
           <div class="upload-label">${this.label}</div>
           ${this.helper ? html`<div class="upload-helper">${this.helper}</div>` : ''}
         </div>

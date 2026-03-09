@@ -1,25 +1,20 @@
-import { LitElement, html, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
 import themeStyles from '../../styles/theme.css?inline';
 import sidebarStyles from './sidebar.css?inline';
-import feather from 'feather-icons';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { renderIcon } from '../../core/icon-helpers';
 
 @customElement('ui-sidebar')
-export class UISidebar extends LitElement {
+export class UISidebar extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles), unsafeCSS(sidebarStyles)];
-
-  private readonly iconMap = feather.icons as Record<string, { toSvg: () => string }>;
 
   @property({ type: String }) brand: string = 'App';
   @property({ type: String }) version: string = 'v1.0';
   @property({ type: Array }) items: Array<{icon: string; label: string; href?: string}> = [];
   @property({ type: Array }) footerItems: Array<{icon: string; label: string; href?: string}> = [];
 
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'sidebar');
-    super.connectedCallback();
-  }
+  // connectedCallback handled by UIComponentBase
 
   private handleClick = (e: Event): void => {
     const target = e.target as HTMLElement;
@@ -29,9 +24,9 @@ export class UISidebar extends LitElement {
     const links = this.shadowRoot?.querySelectorAll('.sidebar-link') || [];
     links.forEach(el => el.classList.remove('is-active'));
     link.classList.add('is-active');
-    // Emit a navigation event so outer layouts can handle SPA routing
+    // Using emit() from UIComponentBase
     const href = link.getAttribute('href') || '';
-    this.dispatchEvent(new CustomEvent('nav', { detail: { href }, bubbles: true, composed: true }));
+    this.emit('nav', { href });
   };
 
   private handleFooterClick = (): void => {
@@ -57,7 +52,7 @@ export class UISidebar extends LitElement {
         <div class="nav-section" @click=${this.handleClick}>
           ${this.items.map(item => html`
             <a class="sidebar-link" href="${item.href || '#'}">
-              <span class="link-icon">${unsafeHTML(this.iconMap[item.icon]?.toSvg() || '')}</span>
+              <span class="link-icon">${renderIcon(item.icon)}</span>
               <span>${item.label}</span>
             </a>
           `)}
@@ -65,7 +60,7 @@ export class UISidebar extends LitElement {
         <div class="sidebar-footer" @click=${this.handleFooterClick}>
           ${this.footerItems.map(item => html`
             <a class="sidebar-link" href="${item.href || '#'}" target="${item.href?.startsWith('http') ? '_blank' : '_self'}">
-              <span class="link-icon">${unsafeHTML(this.iconMap[item.icon]?.toSvg() || '')}</span>
+              <span class="link-icon">${renderIcon(item.icon)}</span>
               <span>${item.label}</span>
             </a>
           `)}

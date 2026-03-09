@@ -1,6 +1,8 @@
-import { LitElement, html, css, nothing } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { createEnumValidator, createSizeValidator } from '../../core/validators';
 import './radio';
 
 export interface RadioOption {
@@ -11,7 +13,7 @@ export interface RadioOption {
 }
 
 @customElement('ui-radio-group')
-export class UIRadioGroup extends LitElement {
+export class UIRadioGroup extends UIComponentBase {
     static styles = css`
     :host {
       display: block;
@@ -69,25 +71,54 @@ export class UIRadioGroup extends LitElement {
     @property({ type: String }) name: string = 'radio-group';
     @property({ type: String }) value: string = '';
     @property({ type: Array }) options: RadioOption[] = [];
-    @property({ type: String }) orientation: 'vertical' | 'horizontal' = 'vertical';
-    @property({ type: String }) variant: 'default' | 'card' = 'default';
-    @property({ type: String }) size: 'sm' | 'md' | 'lg' = 'md';
-    @property({ type: Boolean }) disabled: boolean = false;
+    private validateOrientation = createEnumValidator<'vertical' | 'horizontal'>(
+      ['vertical', 'horizontal'],
+      'vertical',
+      'orientation',
+      'UIRadioGroup'
+    );
+    private validateVariant = createEnumValidator<'default' | 'card'>(
+      ['default', 'card'],
+      'default',
+      'variant',
+      'UIRadioGroup'
+    );
+    private validateSize = createSizeValidator<'sm' | 'md' | 'lg'>(['sm', 'md', 'lg'], 'md', 'UIRadioGroup');
+    private _orientation: 'vertical' | 'horizontal' = 'vertical';
+    private _variant: 'default' | 'card' = 'default';
+    private _size: 'sm' | 'md' | 'lg' = 'md';
 
-    connectedCallback(): void {
-        this.setAttribute('data-ui', 'radio-group');
-        super.connectedCallback();
+    @property({ type: String })
+    get orientation(): 'vertical' | 'horizontal' { return this._orientation; }
+    set orientation(value: 'vertical' | 'horizontal') {
+      const old = this._orientation;
+      this._orientation = this.validateOrientation(value);
+      this.requestUpdate('orientation', old);
     }
+
+    @property({ type: String })
+    get variant(): 'default' | 'card' { return this._variant; }
+    set variant(value: 'default' | 'card') {
+      const old = this._variant;
+      this._variant = this.validateVariant(value);
+      this.requestUpdate('variant', old);
+    }
+
+    @property({ type: String })
+    get size(): 'sm' | 'md' | 'lg' { return this._size; }
+    set size(value: 'sm' | 'md' | 'lg') {
+      const old = this._size;
+      this._size = this.validateSize(value);
+      this.requestUpdate('size', old);
+    }
+
+    @property({ type: Boolean }) disabled: boolean = false;
 
     private handleRadioChange = (e: CustomEvent): void => {
         const selected = e.detail.value as string;
         this.value = selected;
 
-        this.dispatchEvent(new CustomEvent('group-change', {
-            bubbles: true,
-            composed: true,
-            detail: { value: selected, name: this.name }
-        }));
+        this.emit('group-change', { value: selected, name: this.name });
     };
 
     render() {

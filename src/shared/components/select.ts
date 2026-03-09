@@ -1,7 +1,9 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
-import { customElement, property, state, query } from 'lit/decorators.js';
+import { html, css, unsafeCSS } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import { nothing } from 'lit';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { useClickOutside } from '../../core/click-outside';
 import themeStyles from '../../styles/theme.css?inline';
 
 export interface SelectOption {
@@ -10,7 +12,7 @@ export interface SelectOption {
 }
 
 @customElement('ui-select')
-export class UISelect extends LitElement {
+export class UISelect extends UIComponentBase {
   static styles = [
     unsafeCSS(themeStyles),
     css`
@@ -190,23 +192,21 @@ export class UISelect extends LitElement {
   @state() private isOpen: boolean = false;
   @state() private searchTerm: string = '';
 
+  private clickOutsideHandler = useClickOutside(this, () => {
+    if (this.isOpen) {
+      this.isOpen = false;
+    }
+  });
+
   connectedCallback(): void {
-    this.setAttribute('data-ui', 'select');
     super.connectedCallback();
-    document.addEventListener('click', this.handleClickOutside);
+    this.clickOutsideHandler.attach();
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    document.removeEventListener('click', this.handleClickOutside);
+    this.clickOutsideHandler.detach();
   }
-
-  private handleClickOutside = (e: Event): void => {
-    const path = e.composedPath();
-    if (!path.includes(this) && this.isOpen) {
-      this.isOpen = false;
-    }
-  };
 
   private getSelectedLabel(): string {
     const selected = this.options.find(opt => opt.value === this.value);
@@ -228,11 +228,7 @@ export class UISelect extends LitElement {
   private selectOption(opt: SelectOption): void {
     this.value = opt.value;
     this.isOpen = false;
-    this.dispatchEvent(new CustomEvent('select-change', {
-      detail: { value: opt.value, option: opt },
-      bubbles: true,
-      composed: true
-    }));
+    this.emit('select-change', { value: opt.value, option: opt });
   }
 
   render() {

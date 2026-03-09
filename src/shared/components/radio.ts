@@ -1,6 +1,10 @@
-import { LitElement, html, css, nothing } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { classMap } from '../../core/template';
+import { classMap, combineClasses } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { createSizeValidator } from '../../core/validators';
+import { buildSizeClasses } from '../../core/class-builders';
+import { onEnterOrSpace } from '../../core/keyboard-helpers';
 
 export interface RadioChangeDetail {
     value: string;
@@ -8,7 +12,7 @@ export interface RadioChangeDetail {
 }
 
 @customElement('ui-radio')
-export class UIRadio extends LitElement {
+export class UIRadio extends UIComponentBase {
     static styles = css`
     :host {
       display: inline-block;
@@ -120,61 +124,44 @@ export class UIRadio extends LitElement {
     @property({ type: Boolean, reflect: true }) checked: boolean = false;
     @property({ type: Boolean, reflect: true }) disabled: boolean = false;
 
+    private validateSize = createSizeValidator<'sm' | 'md' | 'lg'>(['sm', 'md', 'lg'], 'md');
+
     private _size: 'sm' | 'md' | 'lg' = 'md';
 
     @property({ type: String })
     get size(): 'sm' | 'md' | 'lg' { return this._size; }
     set size(v: 'sm' | 'md' | 'lg') {
-        const valid: Array<'sm' | 'md' | 'lg'> = ['sm', 'md', 'lg'];
         const old = this._size;
-        this._size = valid.includes(v) ? v : 'md';
+        this._size = this.validateSize(v);
         this.requestUpdate('size', old);
-    }
-
-    connectedCallback(): void {
-        this.setAttribute('data-ui', 'radio');
-        super.connectedCallback();
     }
 
     private handleChange = (e: Event): void => {
         if (this.disabled) return;
         const input = e.target as HTMLInputElement;
         this.checked = input.checked;
-
-        this.dispatchEvent(new CustomEvent<RadioChangeDetail>('radio-change', {
-            bubbles: true,
-            composed: true,
-            detail: { value: this.value, name: this.name }
-        }));
+        this.emit<RadioChangeDetail>('radio-change', { value: this.value, name: this.name });
     };
 
-    private handleKeyDown = (e: KeyboardEvent): void => {
+    private handleKeyDown = onEnterOrSpace((e: KeyboardEvent) => {
         if (this.disabled) return;
-        if (e.key === ' ' || e.key === 'Enter') {
-            e.preventDefault();
-            if (!this.checked) {
-                this.checked = true;
-                this.dispatchEvent(new CustomEvent<RadioChangeDetail>('radio-change', {
-                    bubbles: true,
-                    composed: true,
-                    detail: { value: this.value, name: this.name }
-                }));
-            }
+        e.preventDefault();
+        if (!this.checked) {
+            this.checked = true;
+            this.emit<RadioChangeDetail>('radio-change', { value: this.value, name: this.name });
         }
-    };
+    });
 
     render() {
-        const containerClass = classMap({
-            'radio-container': true,
-            [`size-${this.size}`]: true,
-            'disabled': this.disabled,
-        });
+        const containerClass = classMap(combineClasses(
+            { 'radio-container': true, 'disabled': this.disabled },
+            buildSizeClasses(this.size)
+        ));
 
-        const ringClass = classMap({
-            'radio-ring': true,
-            [`size-${this.size}`]: true,
-            'checked': this.checked,
-        });
+        const ringClass = classMap(combineClasses(
+            { 'radio-ring': true, 'checked': this.checked },
+            buildSizeClasses(this.size)
+        ));
 
         return html`
       <label

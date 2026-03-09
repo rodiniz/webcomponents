@@ -1,10 +1,12 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { html, css, unsafeCSS } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { onEscape } from '../../core/keyboard-helpers';
 import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-modal')
-export class UIModal extends LitElement {
+export class UIModal extends UIComponentBase {
   static styles = [
     unsafeCSS(themeStyles),
     css`
@@ -31,18 +33,22 @@ export class UIModal extends LitElement {
   @property({ type: Boolean, attribute: 'no-close-on-escape' }) noCloseOnEscape: boolean = false;
   @property({ type: Boolean, attribute: 'no-close-on-backdrop' }) noCloseOnBackdrop: boolean = false;
 
+  private escapeCleanup?: () => void;
+
   connectedCallback(): void {
-    // move element into document.body so backdrops and fixed positioning
-    // are not confined by an ancestor with overflow/scrolling. this keeps
-    // the modal demo from appearing "cut off" inside the layout container.
-    this.setAttribute('data-ui', 'modal');
     super.connectedCallback();
-    document.addEventListener('keydown', this.handleKeydown);
+    const handler = onEscape(() => {
+      if (this.isOpen && !this.noCloseOnEscape) {
+        this.close();
+      }
+    });
+    document.addEventListener('keydown', handler);
+    this.escapeCleanup = () => document.removeEventListener('keydown', handler);
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    document.removeEventListener('keydown', this.handleKeydown);
+    this.escapeCleanup?.();
   }
 
   willUpdate(changedProperties: Map<string, unknown>): void {
@@ -55,11 +61,7 @@ export class UIModal extends LitElement {
     }
   }
 
-  private handleKeydown = (e: KeyboardEvent): void => {
-    if (e.key === 'Escape' && this.isOpen && !this.noCloseOnEscape) {
-      this.close();
-    }
-  };
+
 
   public open(): void {
     // Portal to body at open time so the modal isn't clipped by layout
@@ -73,12 +75,12 @@ export class UIModal extends LitElement {
     }
 
     this.isOpen = true;
-    this.dispatchEvent(new CustomEvent('modal-open', { bubbles: true, composed: true }));
+    this.emit('modal-open');
   }
 
   public close(): void {
     this.isOpen = false;
-    this.dispatchEvent(new CustomEvent('modal-close', { bubbles: true, composed: true }));
+    this.emit('modal-close');
 
     // restore to original location if we moved it
     if (this._originalParent) {

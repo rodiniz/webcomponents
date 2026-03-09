@@ -1,24 +1,40 @@
-import { LitElement, html, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { createEnumValidator } from '../../core/validators';
 import themeStyles from '../../styles/theme.css?inline';
 
 type SpinnerSize = 'sm' | 'md' | 'lg';
 type SpinnerVariant = 'primary' | 'secondary' | 'success' | 'danger';
 
 @customElement('ui-spinner')
-export class UISpinner extends LitElement {
+export class UISpinner extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles)];
 
-  @property({ type: String, reflect: true }) size: SpinnerSize = 'md';
-  @property({ type: String, reflect: true }) variant: SpinnerVariant = 'primary';
+  private validateSize = createEnumValidator<SpinnerSize>(['sm', 'md', 'lg'], 'md', 'size', 'UISpinner');
+  private validateVariant = createEnumValidator<SpinnerVariant>(['primary', 'secondary', 'success', 'danger'], 'primary', 'variant', 'UISpinner');
+  private _size: SpinnerSize = 'md';
+  private _variant: SpinnerVariant = 'primary';
+
+  @property({ type: String, reflect: true })
+  get size(): SpinnerSize { return this._size; }
+  set size(value: SpinnerSize) {
+    const old = this._size;
+    this._size = this.validateSize(value);
+    this.requestUpdate('size', old);
+  }
+
+  @property({ type: String, reflect: true })
+  get variant(): SpinnerVariant { return this._variant; }
+  set variant(value: SpinnerVariant) {
+    const old = this._variant;
+    this._variant = this.validateVariant(value);
+    this.requestUpdate('variant', old);
+  }
+
   @property({ type: String }) label: string = 'Loading...';
   @property({ type: Boolean, reflect: true }) showLabel: boolean = true;
-
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'spinner');
-    super.connectedCallback();
-  }
 
   render() {
     const classes = classMap({

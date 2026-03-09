@@ -1,9 +1,13 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { html, css } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { buildSizeClasses, buildStateClasses, combineClasses } from '../../core/class-builders';
+import { createSizeValidator } from '../../core/validators';
+import { ariaChecked } from '../../core/aria-helpers';
 
 @customElement('ui-checkbox')
-export class UICheckbox extends LitElement {
+export class UICheckbox extends UIComponentBase {
   static styles = css`
     :host {
       display: inline-block;
@@ -95,32 +99,22 @@ export class UICheckbox extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
   @property({ type: Boolean, reflect: true }) indeterminate: boolean = false;
   @property({ type: String }) label: string = '';
-  // size is validated through the accessor so external invalid values don't break layout
+  
+  // Size validation using validator utility
   private _size: 'sm' | 'md' | 'lg' = 'md';
+  private validateSize = createSizeValidator(['sm', 'md', 'lg'] as const, 'md', 'UICheckbox');
 
   @property({ type: String })
   get size() {
     return this._size;
   }
   set size(value: 'sm' | 'md' | 'lg') {
-    const valid = ['sm', 'md', 'lg'];
-    const newVal = valid.includes(value) ? value : 'md';
-    if (value && !valid.includes(value)) {
-      console.warn(`ui-checkbox received invalid size "${value}"; falling back to \"md\"`);
-    }
     const old = this._size;
-    this._size = newVal as 'sm' | 'md' | 'lg';
+    this._size = this.validateSize(value);
     this.requestUpdate('size', old);
   }
 
-
-
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'checkbox');
-    super.connectedCallback();
-  }
-
-
+  // connectedCallback handled by UIComponentBase
 
   private handleChange = (e: Event): void => {
     if (this.disabled) return;
@@ -134,11 +128,8 @@ export class UICheckbox extends LitElement {
 
     this.checked = isChecked;
 
-    this.dispatchEvent(new CustomEvent('checkbox-change', {
-      bubbles: true,
-      composed: true,
-      detail: { checked: isChecked }
-    }));
+    // Using emit() from UIComponentBase
+    this.emit('checkbox-change', { checked: isChecked });
   };
 
   public setChecked(checked: boolean): void {
@@ -151,26 +142,36 @@ export class UICheckbox extends LitElement {
   }
 
   render() {
-    const containerClasses = classMap({
-      'checkbox-container': true,
-      'size-sm': this.size === 'sm',
-      'size-md': this.size === 'md',
-      'size-lg': this.size === 'lg'
-    });
+    // Using class builder utilities for cleaner class management
+    const containerClasses = classMap(
+      combineClasses(
+        { 'checkbox-container': true },
+        buildSizeClasses(this.size, 'size-')
+      )
+    );
 
-    const boxClasses = classMap({
-      'checkbox-box': true,
-      'size-sm': this.size === 'sm',
-      'size-md': this.size === 'md',
-      'size-lg': this.size === 'lg',
-      'checked': this.checked,
-      'indeterminate': this.indeterminate,
-      'disabled': this.disabled
-    });
+    const boxClasses = classMap(
+      combineClasses(
+        { 'checkbox-box': true },
+        buildSizeClasses(this.size, 'size-'),
+        buildStateClasses({
+          checked: this.checked,
+          indeterminate: this.indeterminate,
+          disabled: this.disabled
+        })
+      )
+    );
 
     return html`
       <label class=${containerClasses}>
-        <input type="checkbox" .checked=${this.checked} .indeterminate=${this.indeterminate} ?disabled=${this.disabled} @change=${this.handleChange}>
+        <input 
+          type="checkbox" 
+          .checked=${this.checked} 
+          .indeterminate=${this.indeterminate} 
+          ?disabled=${this.disabled} 
+          @change=${this.handleChange}
+          ...${ariaChecked(this.indeterminate ? 'mixed' : this.checked)}
+        >
         <div class=${boxClasses}>
           <svg class="checkbox-icon check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
             <polyline points="20 6 9 17 4 12"></polyline>

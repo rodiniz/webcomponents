@@ -1,13 +1,15 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
-import { customElement, property, state, query } from 'lit/decorators.js';
+import { html, css, unsafeCSS } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import { nothing } from 'lit';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { useClickOutside } from '../../core/click-outside';
 import themeStyles from '../../styles/theme.css?inline';
 
 export type DateFormat = 'YYYY-MM-DD' | 'DD/MM/YYYY' | 'MM/DD/YYYY' | 'DD-MM-YYYY' | 'MM-DD-YYYY';
 
 @customElement('ui-date-picker')
-export class UIDatePicker extends LitElement {
+export class UIDatePicker extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles)];
 
   @property({ type: String }) value: string = '';
@@ -22,14 +24,19 @@ export class UIDatePicker extends LitElement {
   @state() private selectedDate: string = '';
   @state() private isOpen: boolean = false;
 
+  private clickOutsideHandler = useClickOutside(this, () => {
+    if (this.isOpen) {
+      this.isOpen = false;
+    }
+  });
+
   connectedCallback(): void {
-    this.setAttribute('data-ui', 'date-picker');
     super.connectedCallback();
     if (this.value) {
       this.selectedDate = this.value;
       this.currentMonth = new Date(this.value);
     }
-    document.addEventListener('click', this.handleOutsideClick);
+    this.clickOutsideHandler.attach();
   }
 
   willUpdate(changedProperties: Map<string, unknown>): void {
@@ -43,14 +50,8 @@ export class UIDatePicker extends LitElement {
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
-    document.removeEventListener('click', this.handleOutsideClick);
+    this.clickOutsideHandler.detach();
   }
-
-  private handleOutsideClick = (e: MouseEvent): void => {
-    if (this.isOpen && !e.composedPath().includes(this)) {
-      this.isOpen = false;
-    }
-  };
 
   private toggleDropdown = (): void => {
     if (this.disabled) return;
@@ -83,11 +84,7 @@ export class UIDatePicker extends LitElement {
     this.value = newVal;
     this.isOpen = false;
 
-    this.dispatchEvent(new CustomEvent('change', {
-      detail: { value: newVal },
-      bubbles: true,
-      composed: true
-    }));
+    this.emit('change', { value: newVal });
   }
 
   private formatDateDisplay(dateStr: string): string {

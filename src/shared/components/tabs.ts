@@ -1,6 +1,6 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
-import { unsafeHTML } from 'lit/directives/unsafe-html.js';
+import { UIComponentBase } from '../../core/ui-component-base';
 import themeStyles from '../../styles/theme.css?inline';
 import tabsStyles from './tabs.css?inline';
 
@@ -9,17 +9,12 @@ export interface TabChangeDetail {
 }
 
 @customElement('ui-tabs')
-export class UITabs extends LitElement {
+export class UITabs extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles), unsafeCSS(tabsStyles)];
 
   @property({ type: String, reflect: true }) active: string = '';
   @state() private activeId: string | null = null;
   @query('.tab-indicator') indicator!: HTMLElement;
-
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'tabs');
-    super.connectedCallback();
-  }
 
   firstUpdated(): void {
     const tabsSlot = this.shadowRoot?.querySelector('slot[name="tab"]') as HTMLSlotElement | null;
@@ -50,11 +45,7 @@ export class UITabs extends LitElement {
     this.activeId = id;
     this.active = id;
     this.syncTabs();
-    this.dispatchEvent(new CustomEvent<TabChangeDetail>('tab-change', {
-      bubbles: true,
-      composed: true,
-      detail: { id }
-    }));
+    this.emit<TabChangeDetail>('tab-change', { id });
   }
 
   private getTabs(): HTMLElement[] {

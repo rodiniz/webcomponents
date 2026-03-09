@@ -1,6 +1,8 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { createEnumValidator, createSizeValidator } from '../../core/validators';
 import themeStyles from '../../styles/theme.css?inline';
 
 export type StepperOrientation = 'horizontal' | 'vertical';
@@ -21,7 +23,7 @@ export interface StepChangeDetail {
 }
 
 @customElement('ui-stepper')
-export class UIStepper extends LitElement {
+export class UIStepper extends UIComponentBase {
   static styles = [
     unsafeCSS(themeStyles),
     css`
@@ -210,12 +212,31 @@ export class UIStepper extends LitElement {
 
   @property({ type: Array }) steps: StepperStep[] = [];
   @property({ type: Number }) active: number = 1;
-  @property({ type: String }) orientation: StepperOrientation = 'horizontal';
-  @property({ type: String }) size: StepperSize = 'md';
+  private validateOrientation = createEnumValidator<StepperOrientation>(
+    ['horizontal', 'vertical'],
+    'horizontal',
+    'orientation',
+    'UIStepper'
+  );
+  private validateSize = createSizeValidator<StepperSize>(['sm', 'md', 'lg'], 'md', 'UIStepper');
 
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'stepper');
-    super.connectedCallback();
+  private _orientation: StepperOrientation = 'horizontal';
+  private _size: StepperSize = 'md';
+
+  @property({ type: String })
+  get orientation(): StepperOrientation { return this._orientation; }
+  set orientation(value: StepperOrientation) {
+    const old = this._orientation;
+    this._orientation = this.validateOrientation(value);
+    this.requestUpdate('orientation', old);
+  }
+
+  @property({ type: String })
+  get size(): StepperSize { return this._size; }
+  set size(value: StepperSize) {
+    const old = this._size;
+    this._size = this.validateSize(value);
+    this.requestUpdate('size', old);
   }
 
   private getActiveIndex(): number {
@@ -241,11 +262,7 @@ export class UIStepper extends LitElement {
     this.active = index + 1;
     const state = this.getStepState(step, index);
 
-    this.dispatchEvent(new CustomEvent<StepChangeDetail>('step-change', {
-      bubbles: true,
-      composed: true,
-      detail: { index: index + 1, step, state }
-    }));
+    this.emit<StepChangeDetail>('step-change', { index: index + 1, step, state });
   }
 
   render() {

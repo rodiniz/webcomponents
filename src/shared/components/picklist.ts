@@ -1,6 +1,6 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { classMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
 import styles from '../../styles/theme.css?inline';
 import './button';
 
@@ -15,7 +15,7 @@ type PicklistItem = {
 };
 
 @customElement('ui-picklist')
-export class UIPicklist extends LitElement {
+export class UIPicklist extends UIComponentBase {
 	static styles = [
 		css`:host { display: block; }`,
 		unsafeCSS(styles),
@@ -178,7 +178,6 @@ export class UIPicklist extends LitElement {
 	@state() private selectedSelected: Set<string> = new Set();
 
 	connectedCallback(): void {
-		this.setAttribute('data-ui', 'picklist');
 		super.connectedCallback();
 		this.parseAttributes();
 	}
@@ -265,14 +264,10 @@ export class UIPicklist extends LitElement {
 	}
 
 	private dispatchChange(): void {
-		this.dispatchEvent(new CustomEvent<PicklistChangeDetail>('picklist-change', {
-			bubbles: true,
-			composed: true,
-			detail: {
-				available: this.available.map(i => i.value),
-				selected: this.selected.map(i => i.value)
-			}
-		}));
+		this.emit<PicklistChangeDetail>('picklist-change', {
+			available: this.available.map(i => i.value),
+			selected: this.selected.map(i => i.value)
+		});
 	}
 
 	private renderCheckbox(isSelected: boolean): unknown {

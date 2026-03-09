@@ -1,17 +1,28 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from '../../core/template';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { createEnumValidator } from '../../core/validators';
 import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-layout')
-export class UILayout extends LitElement {
+export class UILayout extends UIComponentBase {
   static styles = [unsafeCSS(themeStyles)];
 
-  @property({ type: String }) direction: 'horizontal' | 'vertical' | 'auto' = 'auto';
+  private validateDirection = createEnumValidator<'horizontal' | 'vertical' | 'auto'>(
+    ['horizontal', 'vertical', 'auto'],
+    'auto',
+    'direction',
+    'UILayout'
+  );
+  private _direction: 'horizontal' | 'vertical' | 'auto' = 'auto';
 
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'layout');
-    super.connectedCallback();
+  @property({ type: String })
+  get direction(): 'horizontal' | 'vertical' | 'auto' { return this._direction; }
+  set direction(value: 'horizontal' | 'vertical' | 'auto') {
+    const old = this._direction;
+    this._direction = this.validateDirection(value);
+    this.requestUpdate('direction', old);
   }
 
   private detectDirection(): 'horizontal' | 'vertical' {
@@ -39,7 +50,7 @@ export class UILayout extends LitElement {
 }
 
 @customElement('ui-layout-header')
-export class UILayoutHeader extends LitElement {
+export class UILayoutHeader extends UIComponentBase {
   static styles = css`
     :host {
       display: block;
@@ -54,7 +65,7 @@ export class UILayoutHeader extends LitElement {
 }
 
 @customElement('ui-layout-main')
-export class UILayoutMain extends LitElement {
+export class UILayoutMain extends UIComponentBase {
   static styles = css`
     :host { display: block; flex: 1; }
   `;
@@ -65,7 +76,7 @@ export class UILayoutMain extends LitElement {
 export { UILayoutMain as UILayoutContent };
 
 @customElement('ui-layout-sidebar')
-export class UILayoutSidebar extends LitElement {
+export class UILayoutSidebar extends UIComponentBase {
   static styles = css`
     :host {
       display: block;
@@ -108,7 +119,7 @@ export class UILayoutSidebar extends LitElement {
 }
 
 @customElement('ui-layout-footer')
-export class UILayoutFooter extends LitElement {
+export class UILayoutFooter extends UIComponentBase {
   static styles = css`
     :host {
       display: block;

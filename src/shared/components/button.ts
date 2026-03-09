@@ -1,14 +1,16 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { classMap, unsafeHTML } from '../../core/template';
+import { classMap } from '../../core/template';
 import styles from '../../styles/theme.css?inline';
-import feather from 'feather-icons';
+import { UIComponentBase } from '../../core/ui-component-base';
+import { renderIcon } from '../../core/icon-helpers';
+import { buildSizeClasses, buildVariantClasses, buildIconClasses, combineClasses } from '../../core/class-builders';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 @customElement('ui-button')
-export class UIButton extends LitElement {
+export class UIButton extends UIComponentBase {
   static styles = [css`:host { display: inline-block; }`, unsafeCSS(styles)];
 
   @property({ type: String, reflect: true }) variant: ButtonVariant = 'primary';
@@ -21,10 +23,7 @@ export class UIButton extends LitElement {
   private buttonEl: HTMLButtonElement | null = null;
   @state() private hasLabelContent: boolean = false;
 
-  connectedCallback(): void {
-    this.setAttribute('data-ui', 'button');
-    super.connectedCallback();
-  }
+  // connectedCallback handled by UIComponentBase
 
   private handleSlotChange = (e: Event): void => {
     const slot = e.target as HTMLSlotElement;
@@ -37,11 +36,7 @@ export class UIButton extends LitElement {
     }
   };
 
-  private getIcon(): { svg: string; name: string } | null {
-    if (!this.icon) return null;
-    const svg = feather.icons[this.icon as keyof typeof feather.icons]?.toSvg() || '';
-    return { svg, name: this.icon };
-  }
+  // Icon rendering now handled by renderIcon utility
 
   private handleClick = (e: Event): void => {
     if (this.disabled) {
@@ -78,28 +73,29 @@ export class UIButton extends LitElement {
   };
 
   render() {
-    const icon = this.getIcon();
-    const hasIcon = icon !== null;
+    const hasIcon = !!this.icon;
     const isIconOnly = hasIcon && !this.hasLabelContent;
 
-    const classes = classMap({
-      'btn': true,
-      [this.variant]: true,
-      [this.size]: true,
-      'has-icon': hasIcon,
-      'icon-only': isIconOnly
-    });
+    // Using class builder utilities for cleaner class management
+    const classes = classMap(
+      combineClasses(
+        { 'btn': true },
+        buildVariantClasses(this.variant),
+        buildSizeClasses(this.size),
+        buildIconClasses(hasIcon, this.iconPosition, this.hasLabelContent)
+      )
+    );
 
     const slotEl = html`<slot @slotchange=${this.handleSlotChange}></slot>`;
 
     const renderContent = () => {
       if (hasIcon && this.hasLabelContent) {
-        const iconEl = html`<span class="btn-icon">${unsafeHTML(icon!.svg)}</span>`;
+        const iconEl = html`<span class="btn-icon">${renderIcon(this.icon)}</span>`;
         return this.iconPosition === 'left' 
           ? html`${iconEl}${slotEl}`
           : html`${slotEl}${iconEl}`;
       } else if (hasIcon) {
-        return html`<span class="btn-icon">${unsafeHTML(icon!.svg)}</span>`;
+        return html`<span class="btn-icon">${renderIcon(this.icon)}</span>`;
       }
       return slotEl;
     };
