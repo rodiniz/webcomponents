@@ -1,215 +1,33 @@
-import { html, css, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { classMap, unsafeHTML } from '../../core/template';
+import { classMap } from '../../core/template';
 import { UIComponentBase } from '../../core/ui-component-base';
 import themeStyles from '../../styles/theme.css?inline';
+import {
+  renderChevronIcon,
+  renderNodeIcon
+} from './treeview-icons';
+import { treeViewStyles } from './treeview.styles';
+import type {
+  TreeNode,
+  TreeViewOptions,
+  TreeNodeChangedDetail,
+  TreeNodeSelectedDetail
+} from './treeview.types';
 import './spinner';
 
-export interface TreeNode {
-  id: string;
-  label: string;
-  icon?: string;
-  children?: TreeNode[];
-  isLeaf?: boolean;
-  lazy?: boolean;
-  data?: any;
-  [key: string]: any;
-}
-
-export interface TreeViewOptions {
-  nodeTemplate?: (node: TreeNode) => string | HTMLElement;
-  onLoadChildren?: (node: TreeNode) => Promise<TreeNode[]>;
-  onNodeSelect?: (node: TreeNode) => void;
-  multiSelect?: boolean;
-  autoExpand?: boolean;
-}
-
-export interface TreeNodeChangedDetail {
-  node: TreeNode;
-  expanded: boolean;
-}
-
-export interface TreeNodeSelectedDetail {
-  node: TreeNode;
-  selected: boolean;
-}
+export type {
+  TreeNode,
+  TreeViewOptions,
+  TreeNodeChangedDetail,
+  TreeNodeSelectedDetail
+} from './treeview.types';
 
 @customElement('ui-treeview')
 export class UITreeView extends UIComponentBase {
   static styles = [
     unsafeCSS(themeStyles),
-    css`
-      :host {
-        display: block;
-        --tree-indent: 20px;
-        --tree-node-height: 36px;
-        --tree-transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-        --tree-bg: #ffffff;
-        --tree-hover-bg: #f5f5f5;
-        --tree-text: #333333;
-        --tree-text-secondary: #666666;
-        --tree-border: #e0e0e0;
-        --tree-accent: #2196f3;
-        --tree-accent-light: rgba(33, 150, 243, 0.08);
-      }
-
-      .tree-container {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-        color: var(--tree-text);
-        background: var(--tree-bg);
-        border-radius: 8px;
-        overflow: hidden;
-      }
-
-      .tree-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .tree-node {
-        display: block;
-        margin: 0;
-        padding: 0;
-      }
-
-      .node-item {
-        display: flex;
-        align-items: center;
-        height: var(--tree-node-height);
-        padding: 0 8px;
-        cursor: pointer;
-        border-radius: 6px;
-        transition: background-color var(--tree-transition),
-                    color var(--tree-transition);
-        position: relative;
-        gap: 4px;
-      }
-
-      .node-item:hover {
-        background-color: var(--tree-hover-bg);
-      }
-
-      .node-item.selected {
-        background-color: var(--tree-accent-light);
-        color: var(--tree-accent);
-      }
-
-      .node-item.selected .node-label {
-        font-weight: 600;
-      }
-
-      .expand-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        padding: 0;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--tree-text-secondary);
-        transition: transform var(--tree-transition), color var(--tree-transition);
-        flex-shrink: 0;
-      }
-
-      .expand-toggle:hover {
-        color: var(--tree-accent);
-      }
-
-      .expand-toggle.expanded {
-        transform: rotate(90deg);
-      }
-
-      .expand-toggle svg {
-        width: 16px;
-        height: 16px;
-        stroke: currentColor;
-        stroke-width: 2;
-        fill: none;
-      }
-
-      .node-icon {
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-
-      .node-icon svg {
-        width: 16px;
-        height: 16px;
-        stroke: currentColor;
-        stroke-width: 2;
-        fill: none;
-      }
-
-      .node-label {
-        flex: 1;
-        font-size: 14px;
-        line-height: 1.4;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        transition: color var(--tree-transition);
-      }
-
-      .loading-spinner {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-      }
-
-      .children {
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height var(--tree-transition) ease-in-out;
-      }
-
-      .children.expanded {
-        max-height: 10000px;
-      }
-
-      .children-wrapper {
-        padding-left: var(--tree-indent);
-        border-left: 1px solid var(--tree-border);
-        margin-left: 8px;
-      }
-
-      .placeholder {
-        padding: 16px 8px;
-        color: var(--tree-text-secondary);
-        font-size: 13px;
-        text-align: center;
-      }
-
-      .empty-state {
-        padding: 32px 16px;
-        text-align: center;
-        color: var(--tree-text-secondary);
-        font-size: 14px;
-      }
-
-      .empty-state svg {
-        width: 48px;
-        height: 48px;
-        margin-bottom: 12px;
-        opacity: 0.3;
-        stroke: currentColor;
-        stroke-width: 1.5;
-        fill: none;
-      }
-
-      .loader-item {
-        display: flex;
-        align-items: center;
-        height: var(--tree-node-height);
-        padding: 0 8px;
-      }
-    `
+    treeViewStyles
   ];
 
   @property({ type: Array }) items: TreeNode[] = [];
@@ -220,30 +38,6 @@ export class UITreeView extends UIComponentBase {
   @state() private selectedNodeIds: Set<string> = new Set();
   @state() private loadingNodeIds: Set<string> = new Set();
   @state() private nodeChildrenCache: Map<string, TreeNode[]> = new Map();
-
-  private getChevronIcon() {
-    return html`
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <polyline points="9 18 15 12 9 6"></polyline>
-      </svg>
-    `;
-  }
-
-  private getDefaultIcon() {
-    return html`
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-      </svg>
-    `;
-  }
-
-  private renderNodeIcon(node: TreeNode) {
-    if (!node.icon) return this.getDefaultIcon();
-    if (typeof node.icon === 'string' && node.icon.trim().startsWith('<')) {
-      return unsafeHTML(node.icon);
-    }
-    return node.icon;
-  }
 
   private toggleNode(node: TreeNode, e: MouseEvent): void {
     e.stopPropagation();
@@ -342,12 +136,12 @@ export class UITreeView extends UIComponentBase {
                   @click=${(e: MouseEvent) => this.toggleNode(node, e)}
                   aria-label=${isExpanded ? 'Collapse' : 'Expand'}
                 >
-                  ${this.getChevronIcon()}
+                  ${renderChevronIcon()}
                 </button>
               `
             : html`<div class="expand-toggle" style="visibility: hidden;"></div>`}
 
-          <div class="node-icon">${this.renderNodeIcon(node)}</div>
+          <div class="node-icon">${renderNodeIcon(node)}</div>
 
           ${this.options.nodeTemplate
             ? html`<span class="node-label">${this.options.nodeTemplate(node)}</span>`

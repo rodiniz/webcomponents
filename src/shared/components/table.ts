@@ -8,15 +8,14 @@ import type { PagedData, TableColumn, TableRow, SortChangeDetail } from './table
 export type { PagedData, TableColumn, TableRow, SortChangeDetail } from './table.types';
 import {
   getVisibleColumns,
-  hasChildren,
-  getChildConfig,
   initializeColumnWidths
 } from './table-utils';
 import { TableState } from './table-state';
-import { TableCellRenderer } from './table-cell-renderer';
 import { TableHeaderRenderer } from './table-header-renderer';
 import { TableSorter } from './table-sorter';
 import { ColumnResizer } from './table-column-resizer';
+import { renderTableRows } from './table-row-renderer';
+import { renderTableHead } from './table-head-renderer';
 
 @customElement('ui-table')
 export class UITable extends UIComponentBase {
@@ -103,95 +102,9 @@ export class UITable extends UIComponentBase {
     });
   }
 
-  private renderExpandIcon(row: TableRow, rowIndex: number) {
-    if (!this.collapsible || !hasChildren(row)) return null;
-    
-    const isExpanded = this.tableState.isExpanded(rowIndex);
-    return html`
-      <ui-button 
-        variant="ghost" 
-        size="sm" 
-        icon="${isExpanded ? 'chevron-down' : 'chevron-right'}"
-        @click=${() => this.toggleExpand(rowIndex)}
-      ></ui-button>
-    `;
-  }  
-
-  private renderRows() {
-    const rows: unknown[] = [];
-    const visibleColumns = getVisibleColumns(this.columns);
-
-    const sourceRows = this.getSortedRows();
-
-    if (sourceRows.length === 0) {
-      return [html`
-        <tr class="table-empty">
-          <td colspan=${Math.max(visibleColumns.length, 1)}>
-            <div class="table-empty-content">
-              <div class="table-empty-title">${this.emptyMessage}</div>
-              <div class="table-empty-hint">${this.emptyHint}</div>
-            </div>
-          </td>
-        </tr>
-      `];
-    }
-
-    sourceRows.forEach((row, rowIndex) => {
-      const isExpanded = this.tableState.isExpanded(rowIndex);
-      const rowHasChildren = hasChildren(row);
-      
-      rows.push(html`
-          <tr class="${rowHasChildren ? 'has-children' : ''} ${isExpanded ? 'expanded' : ''}" data-row-index="${rowIndex}">
-            ${visibleColumns.map((column, colIndex) => TableCellRenderer.renderCell(
-              row,
-              column,
-              rowIndex,
-              colIndex,
-              {
-                columnWidths: this.tableState.columnWidths,
-                renderExpandIcon: (targetRow, targetRowIndex) => this.renderExpandIcon(targetRow, targetRowIndex),
-                onAction: (action, targetRowIndex) => this.handleAction(action, targetRowIndex),
-                includeActionDataAttrs: true
-              }
-            ))}
-          </tr>
-        `);
-      
-      if (isExpanded && rowHasChildren) {
-        const childConfig = getChildConfig(row, this.columns);
-        if (childConfig) {
-          rows.push(html`
-            <tr class="child-row" data-parent-row="${rowIndex}">
-              <td colspan=${visibleColumns.length}>
-                <div class="child-table-wrap">
-                  <table class="nested-table">
-                    <thead>
-                      <tr>
-                        ${childConfig.columns.map(column =>
-                          TableHeaderRenderer.renderBasicHeader(column, this.tableState.columnWidths)
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${TableCellRenderer.renderFlatRows(childConfig.rows, childConfig.columns, {
-                        columnWidths: this.tableState.columnWidths,
-                        onAction: (action, targetRowIndex) => this.handleAction(action, targetRowIndex)
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </td>
-            </tr>
-          `);
-        }
-      }
-    });
-    
-    return rows;
-  }
-
   render() {
     const visibleColumns = getVisibleColumns(this.columns);
+    const sortedRows = this.getSortedRows();
 
     const wrapClasses = classMap({
       'table-wrap': true,
@@ -202,19 +115,26 @@ export class UITable extends UIComponentBase {
     return html`
       <div class=${wrapClasses}>
         <table>
-          <thead>
-            <tr>
-              ${visibleColumns.map(column => TableHeaderRenderer.renderHeader(column, {
-                isSorted: this.tableState.isSorted(column.key),
-                sortDirection: this.tableState.sortDirection,
-                onHeaderClick: () => this.handleHeaderClick(column),
-                onResizeStart: (event: MouseEvent) => this.handleResizeStart(event, column),
-                columnWidths: this.tableState.columnWidths
-              }))}
-            </tr>
-          </thead>
+          ${renderTableHead({
+            visibleColumns,
+            isSorted: (key: string) => this.tableState.isSorted(key),
+            sortDirection: this.tableState.sortDirection,
+            onHeaderClick: (column) => this.handleHeaderClick(column),
+            onResizeStart: (event, column) => this.handleResizeStart(event, column),
+            columnWidths: this.tableState.columnWidths
+          })}
           <tbody>
-            ${this.renderRows()}
+            ${renderTableRows({
+              columns: this.columns,
+              rows: sortedRows,
+              collapsible: this.collapsible,
+              emptyMessage: this.emptyMessage,
+              emptyHint: this.emptyHint,
+              columnWidths: this.tableState.columnWidths,
+              isExpanded: (rowIndex: number) => this.tableState.isExpanded(rowIndex),
+              onToggleExpand: (rowIndex: number) => this.toggleExpand(rowIndex),
+              onAction: (action: string, rowIndex: number) => this.handleAction(action, rowIndex)
+            })}
           </tbody>
         </table>
       </div>
