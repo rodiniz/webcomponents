@@ -1,9 +1,9 @@
 import { html, css, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { classMap, combineClasses } from '../../core/template';
+import { classMap } from '../../core/template';
 import { UIComponentBase } from '../../core/ui-component-base';
 import { createSizeValidator } from '../../core/validators';
-import { buildSizeClasses } from '../../core/class-builders';
+import { buildSizeClasses, combineClasses } from '../../core/class-builders';
 import { onEnterOrSpace } from '../../core/keyboard-helpers';
 
 export interface RadioChangeDetail {

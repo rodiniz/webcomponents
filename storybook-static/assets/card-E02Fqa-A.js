@@ -1,0 +1,13 @@
+import{r as c,b as u}from"./iframe-Ck3e-F9w.js";import{n as r,U as g,t as f}from"./ui-component-base-BJ0AM59x.js";import{r as p}from"./state-CVS5rq8K.js";import{c as d,s as m}from"./template-1VJuhrPW.js";import{t as v}from"./theme-DBvyg58T.js";var w=Object.defineProperty,y=Object.getOwnPropertyDescriptor,e=(o,s,h,i)=>{for(var a=i>1?void 0:i?y(s,h):s,n=o.length-1,l;n>=0;n--)(l=o[n])&&(a=(i?l(s,h,a):l(a))||a);return i&&a&&w(s,h,a),a};let t=class extends g{constructor(){super(...arguments),this.shadow=!1,this.shadowColor="0, 0, 0",this.rounded=!0,this.variant="default",this.elevation="sm",this.interactive=!1,this.animated=!1,this.bg="default",this.hasHeader=!1,this.hasFooter=!1,this.handleHeaderSlotChange=o=>{const s=o.target;this.hasHeader=s.assignedNodes({flatten:!0}).length>0},this.handleFooterSlotChange=o=>{const s=o.target;this.hasFooter=s.assignedNodes({flatten:!0}).length>0}}getShadowValue(){if(!this.shadow)return"none";switch(this.elevation){case"sm":return`0 1px 2px rgba(${this.shadowColor}, 0.05), 0 1px 3px rgba(${this.shadowColor}, 0.1)`;case"md":return`0 4px 6px rgba(${this.shadowColor}, 0.07), 0 2px 4px rgba(${this.shadowColor}, 0.06)`;case"lg":return`0 10px 15px rgba(${this.shadowColor}, 0.1), 0 4px 6px rgba(${this.shadowColor}, 0.05)`;case"xl":return`0 20px 25px rgba(${this.shadowColor}, 0.15), 0 10px 10px rgba(${this.shadowColor}, 0.04)`;default:return"none"}}render(){const o=d({card:!0,[this.variant]:!0,rounded:this.rounded,square:!this.rounded,"custom-shadow":this.shadow,"no-shadow":!this.shadow,interactive:this.interactive,animated:this.animated,[`bg-${this.bg}`]:!0}),s=d({"card-header":!0,"is-empty":!this.hasHeader}),h=d({"card-footer":!0,"is-empty":!this.hasFooter});return u`
+      <div class=${o} style=${m({"box-shadow":this.shadow?this.getShadowValue():"none"})}>
+        <div class=${s}>
+          <slot name="header" @slotchange=${this.handleHeaderSlotChange}></slot>
+        </div>
+        <div class="card-content">
+          <slot name="content"><slot></slot></slot>
+        </div>
+        <div class=${h}>
+          <slot name="footer" @slotchange=${this.handleFooterSlotChange}></slot>
+        </div>
+      </div>
+    `}};t.styles=[c(v)];e([r({type:Boolean,reflect:!0})],t.prototype,"shadow",2);e([r({type:String})],t.prototype,"shadowColor",2);e([r({type:Boolean,reflect:!0})],t.prototype,"rounded",2);e([r({type:String,reflect:!0})],t.prototype,"variant",2);e([r({type:String})],t.prototype,"elevation",2);e([r({type:Boolean,reflect:!0})],t.prototype,"interactive",2);e([r({type:Boolean,reflect:!0})],t.prototype,"animated",2);e([r({type:String,attribute:"bg"})],t.prototype,"bg",2);e([p()],t.prototype,"hasHeader",2);e([p()],t.prototype,"hasFooter",2);t=e([f("ui-card")],t);

@@ -1,0 +1,1 @@
+function r(s,o,d={}){const{enabled:e=!0,eventType:t="click",capture:n=!1}=d,c=a=>{if(!(typeof e=="function"?e():e))return;a.composedPath().includes(s)||o(a)};return{attach:()=>{document.addEventListener(t,c,n)},detach:()=>{document.removeEventListener(t,c,n)}}}export{r as u};

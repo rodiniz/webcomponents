@@ -1,0 +1,1 @@
+function c(o,n,i){return r=>r?o.includes(r)?r:(console.warn(`${i||"Component"}: Invalid size "${r}". Valid sizes are: ${o.join(", ")}. Falling back to "${n}".`),n):n}function a(o,n,i="value",r){return t=>t?o.includes(t)?t:(console.warn(`${r||"Component"}: Invalid ${i} "${t}". Valid values are: ${o.join(", ")}. Falling back to "${n}".`),n):n}export{c as a,a as c};

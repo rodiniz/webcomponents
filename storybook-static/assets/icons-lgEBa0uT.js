@@ -1,0 +1,1 @@
+import{f as e}from"./icon-helpers-uywyl4Wq.js";const s=Object.keys(e.icons),r={close:"x",delete:"trash-2",edit:"edit",error:"alert-circle",info:"info",settings:"settings",success:"check-circle",warning:"alert-triangle"};export{r as I,s as a};
