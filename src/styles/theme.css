@@ -292,6 +292,10 @@ tr:last-child td {
   background: hsl(var(--muted) / 0.2);
 }
 
+:host([zebra]) .table-wrap tbody tr:nth-child(even) td {
+  background: hsl(var(--muted) / 0.2);
+}
+
 .table-wrap tbody tr:hover td {
   background: hsl(var(--muted) / 0.25);
 }
@@ -352,6 +356,10 @@ tr:last-child td {
 }
 
 .table-wrap.zebra .nested-table tbody tr:nth-child(even) td {
+  background: hsl(var(--muted) / 0.2);
+}
+
+:host([zebra]) .table-wrap .nested-table tbody tr:nth-child(even) td {
   background: hsl(var(--muted) / 0.2);
 }
 

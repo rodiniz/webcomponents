@@ -1,10 +1,21 @@
 import { LitElement, html, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { classMap, styleMap } from '../../core/template';
+import { classMap } from '../../core/template';
 import themeStyles from '../../styles/theme.css?inline';
 import './button';
 import type { PagedData, TableColumn, TableRow, SortChangeDetail } from './table.types';
 export type { PagedData, TableColumn, TableRow, SortChangeDetail } from './table.types';
+import {
+  getVisibleColumns,
+  hasChildren,
+  getChildConfig,
+  initializeColumnWidths
+} from './table-utils';
+import { TableState } from './table-state';
+import { TableCellRenderer } from './table-cell-renderer';
+import { TableHeaderRenderer } from './table-header-renderer';
+import { TableSorter } from './table-sorter';
+import { ColumnResizer } from './table-column-resizer';
 
 @customElement('ui-table')
 export class UITable extends LitElement {
@@ -17,29 +28,28 @@ export class UITable extends LitElement {
   @property({ type: Boolean, reflect: true }) collapsible: boolean = true;
   @property({ type: String, reflect: true }) sortMode: 'client' | 'server' = 'client';
 
-  @state() private expandedRows: Set<number> = new Set();
-  @state() private sortKey: string | null = null;
-  @state() private sortDirection: 'asc' | 'desc' = 'asc';
-  @state() private columnWidths: Record<string, number> = {};
+  @state() private tableState = new TableState();
 
-  private resizingKey: string | null = null;
-  private resizeStartX: number = 0;
-  private resizeStartWidth: number = 0;
+  private sorter = new TableSorter(this.sortMode);
+  private columnResizer = new ColumnResizer();
 
   connectedCallback(): void {
     this.setAttribute('data-ui', 'table');
     super.connectedCallback();
   }
 
+  disconnectedCallback(): void {
+    this.columnResizer.stopResize();
+    super.disconnectedCallback();
+  }
+
   protected updated(changedProperties: Map<string, unknown>): void {
     if (changedProperties.has('columns')) {
-      const nextWidths: Record<string, number> = { ...this.columnWidths };
-      this.columns.forEach(column => {
-        if (column.width && !nextWidths[column.key]) {
-          nextWidths[column.key] = column.width;
-        }
-      });
-      this.columnWidths = nextWidths;
+      this.tableState.columnWidths = initializeColumnWidths(this.columns, this.tableState.columnWidths);
+    }
+
+    if (changedProperties.has('sortMode')) {
+      this.sorter.setMode(this.sortMode);
     }
   }
 
@@ -62,71 +72,22 @@ export class UITable extends LitElement {
   }
 
   private toggleExpand(rowIndex: number): void {
-    if (this.expandedRows.has(rowIndex)) {
-      this.expandedRows.delete(rowIndex);
-    } else {
-      this.expandedRows.add(rowIndex);
-    }
-    this.expandedRows = new Set(this.expandedRows);
+    this.tableState.toggleExpand(rowIndex);
+    this.requestUpdate();
   }
 
-  private hasChildren(row: TableRow): boolean {
-    const legacyChildren = Array.isArray(row.children) && row.children.length > 0;
-    const nestedChildren = Array.isArray(row.childRows) && row.childRows.length > 0;
-    return legacyChildren || nestedChildren;
-  }
 
-  private getChildConfig(row: TableRow): { columns: TableColumn[]; rows: TableRow[] } | null {
-    const childRows = row.childRows ?? row.children ?? [];
-    if (!Array.isArray(childRows) || childRows.length === 0) return null;
-
-    const columns = row.childColumns ?? this.columns;
-    return {
-      columns: columns.filter(col => col.visible !== false),
-      rows: childRows
-    };
-  }
-
-  private renderFlatRows(rows: TableRow[], columns: TableColumn[]) {
-    return rows.map((row, rowIndex) => html`
-      <tr data-row-index="${rowIndex}">
-        ${columns.map(column => {
-          if (column.template) {
-            return html`<td class="align-${column.align ?? 'left'}" style=${this.getColumnStyle(column)}>${column.template(row, rowIndex)}</td>`;
-          }
-          if (column.actions) {
-            return html`
-              <td class="align-center actions-cell" style=${this.getColumnStyle(column)}>
-                ${column.actions.edit ? html`
-                  <ui-button variant="primary" class="action-btn" icon="edit" size="sm" @click=${() => this.handleAction('edit', rowIndex)}></ui-button>
-                ` : ''}
-                ${column.actions.delete ? html`
-                  <ui-button variant="danger" class="action-btn" icon="trash" size="sm" @click=${() => this.handleAction('delete', rowIndex)}></ui-button>
-                ` : ''}
-              </td>
-            `;
-          }
-          return html`<td class="align-${column.align ?? 'left'}" style=${this.getColumnStyle(column)}>${String(row[column.key] ?? '')}</td>`;
-        })}
-      </tr>
-    `);
-  }
 
   private handleHeaderClick(column: TableColumn): void {
     if (!column.sortable) return;
 
-    if (this.sortKey === column.key) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortKey = column.key;
-      this.sortDirection = 'asc';
-    }
+    const sortState = this.tableState.toggleSort(column.key);
 
     if (this.sortMode === 'server') {
       this.dispatchEvent(new CustomEvent<SortChangeDetail>('sort-change', {
         detail: {
-          key: this.sortKey,
-          direction: this.sortDirection,
+          key: sortState.key,
+          direction: sortState.direction,
           column
         },
         bubbles: true,
@@ -135,98 +96,27 @@ export class UITable extends LitElement {
     }
   }
 
-  private compareValues(a: unknown, b: unknown, sortType?: 'string' | 'number' | 'date'): number {
-    if (a == null && b == null) return 0;
-    if (a == null) return 1;
-    if (b == null) return -1;
 
-    if (sortType === 'number') {
-      return Number(a) - Number(b);
-    }
-
-    if (sortType === 'date') {
-      return new Date(String(a)).getTime() - new Date(String(b)).getTime();
-    }
-
-    if (typeof a === 'number' && typeof b === 'number') {
-      return a - b;
-    }
-
-    return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
-  }
 
   private getSortedRows(): TableRow[] {
-    if (!this.sortKey) return this.rows;
-
-    if (this.sortMode === 'server') return this.rows;
-
-    const column = this.columns.find(col => col.key === this.sortKey);
-    if (!column || !column.sortable) return this.rows;
-
-    const rows = [...this.rows];
-    rows.sort((rowA, rowB) => {
-      const valueA = rowA[this.sortKey as string];
-      const valueB = rowB[this.sortKey as string];
-      const base = column.sortFn
-        ? column.sortFn(rowA, rowB)
-        : this.compareValues(valueA, valueB, column.sortType);
-
-      return this.sortDirection === 'asc' ? base : -base;
-    });
-
-    return rows;
-  }
-
-  private getColumnStyle(column: TableColumn): string {
-    const width = this.columnWidths[column.key] ?? column.width;
-    return styleMap({
-      width: width ? `${width}px` : '',
-      'min-width': column.minWidth ? `${column.minWidth}px` : '',
-      'max-width': column.maxWidth ? `${column.maxWidth}px` : ''
-    });
+    return this.sorter.getSortedRows(
+      this.rows,
+      this.columns,
+      this.tableState.sortKey,
+      this.tableState.sortDirection
+    );
   }
 
   private handleResizeStart(event: MouseEvent, column: TableColumn): void {
-    if (!column.resizable) return;
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    const target = event.currentTarget as HTMLElement | null;
-    const header = target?.closest('th') as HTMLElement | null;
-    if (!header) return;
-
-    const currentWidth = header.getBoundingClientRect().width;
-    this.resizingKey = column.key;
-    this.resizeStartX = event.clientX;
-    this.resizeStartWidth = currentWidth;
-
-    const handleMove = (moveEvent: MouseEvent) => {
-      if (!this.resizingKey) return;
-      const delta = moveEvent.clientX - this.resizeStartX;
-      const minWidth = column.minWidth ?? 80;
-      const maxWidth = column.maxWidth ?? 600;
-      const nextWidth = Math.min(maxWidth, Math.max(minWidth, this.resizeStartWidth + delta));
-      this.columnWidths = {
-        ...this.columnWidths,
-        [this.resizingKey]: nextWidth
-      };
-    };
-
-    const handleUp = () => {
-      this.resizingKey = null;
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('mouseup', handleUp);
-    };
-
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('mouseup', handleUp);
+    this.columnResizer.startResize(event, column, (key, width) => {
+      this.tableState.setColumnWidth(key, width);
+    });
   }
 
   private renderExpandIcon(row: TableRow, rowIndex: number) {
-    if (!this.collapsible || !this.hasChildren(row)) return null;
+    if (!this.collapsible || !hasChildren(row)) return null;
     
-    const isExpanded = this.expandedRows.has(rowIndex);
+    const isExpanded = this.tableState.isExpanded(rowIndex);
     return html`
       <ui-button 
         variant="ghost" 
@@ -239,52 +129,33 @@ export class UITable extends LitElement {
 
   private renderRows() {
     const rows: unknown[] = [];
-    const visibleColumns = this.columns.filter(col => col.visible !== false);
+    const visibleColumns = getVisibleColumns(this.columns);
 
     const sourceRows = this.getSortedRows();
 
     sourceRows.forEach((row, rowIndex) => {
-      const isExpanded = this.expandedRows.has(rowIndex);
-      const hasChildren = this.hasChildren(row);
+      const isExpanded = this.tableState.isExpanded(rowIndex);
+      const rowHasChildren = hasChildren(row);
       
       rows.push(html`
-        <tr class="${hasChildren ? 'has-children' : ''} ${isExpanded ? 'expanded' : ''}" data-row-index="${rowIndex}">
-          ${visibleColumns.map((column, colIndex) => {
-            if (column.template) {
-              return html`
-                <td class="align-${column.align ?? 'left'}" style=${this.getColumnStyle(column)}>
-                  ${colIndex === 0 ? this.renderExpandIcon(row, rowIndex) : ''}
-                  ${column.template(row, rowIndex)}
-                </td>
-              `;
-            }
-            if (column.actions) {
-              return html`
-                <td class="align-center actions-cell" style=${this.getColumnStyle(column)}>
-                  ${column.actions.edit ? html`
-                    <ui-button variant="primary" class="action-btn" icon="edit" size="sm" data-action="edit" data-row-index="${rowIndex}" @click=${() => this.handleAction('edit', rowIndex)}></ui-button>
-                  ` : ''}
-                  ${column.actions.delete ? html`
-                    <ui-button variant="danger" class="action-btn" icon="trash" size="sm" data-action="delete" data-row-index="${rowIndex}" @click=${() => this.handleAction('delete', rowIndex)}></ui-button>
-                  ` : ''}
-                </td>
-              `;
-            }
-            if (colIndex === 0) {
-              return html`
-                <td class="align-${column.align ?? 'left'}" style=${this.getColumnStyle(column)}>
-                  ${this.renderExpandIcon(row, rowIndex)}
-                  ${String(row[column.key] ?? '')}
-                </td>
-              `;
-            }
-            return html`<td class="align-${column.align ?? 'left'}" style=${this.getColumnStyle(column)}>${String(row[column.key] ?? '')}</td>`;
-          })}
-        </tr>
-      `);
+          <tr class="${rowHasChildren ? 'has-children' : ''} ${isExpanded ? 'expanded' : ''}" data-row-index="${rowIndex}">
+            ${visibleColumns.map((column, colIndex) => TableCellRenderer.renderCell(
+              row,
+              column,
+              rowIndex,
+              colIndex,
+              {
+                columnWidths: this.tableState.columnWidths,
+                renderExpandIcon: (targetRow, targetRowIndex) => this.renderExpandIcon(targetRow, targetRowIndex),
+                onAction: (action, targetRowIndex) => this.handleAction(action, targetRowIndex),
+                includeActionDataAttrs: true
+              }
+            ))}
+          </tr>
+        `);
       
-      if (isExpanded && hasChildren) {
-        const childConfig = this.getChildConfig(row);
+      if (isExpanded && rowHasChildren) {
+        const childConfig = getChildConfig(row, this.columns);
         if (childConfig) {
           rows.push(html`
             <tr class="child-row" data-parent-row="${rowIndex}">
@@ -293,13 +164,16 @@ export class UITable extends LitElement {
                   <table class="nested-table">
                     <thead>
                       <tr>
-                        ${childConfig.columns.map(column => html`
-                          <th class="align-${column.align ?? 'left'}" style=${this.getColumnStyle(column)}>${column.label}</th>
-                        `)}
+                        ${childConfig.columns.map(column =>
+                          TableHeaderRenderer.renderBasicHeader(column, this.tableState.columnWidths)
+                        )}
                       </tr>
                     </thead>
                     <tbody>
-                      ${this.renderFlatRows(childConfig.rows, childConfig.columns)}
+                      ${TableCellRenderer.renderFlatRows(childConfig.rows, childConfig.columns, {
+                        columnWidths: this.tableState.columnWidths,
+                        onAction: (action, targetRowIndex) => this.handleAction(action, targetRowIndex)
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -314,7 +188,7 @@ export class UITable extends LitElement {
   }
 
   render() {
-    const visibleColumns = this.columns.filter(col => col.visible !== false);
+    const visibleColumns = getVisibleColumns(this.columns);
 
     const wrapClasses = classMap({
       'table-wrap': true,
@@ -327,33 +201,13 @@ export class UITable extends LitElement {
         <table>
           <thead>
             <tr>
-              ${visibleColumns.map(column => {
-                const isSortable = Boolean(column.sortable);
-                const isSorted = this.sortKey === column.key;
-                const headerClasses = classMap({
-                  [`align-${column.align ?? 'left'}`]: true,
-                  'sortable': isSortable,
-                  'sorted': isSorted
-                });
-                const sortIndicator = isSortable
-                  ? html`<span class="sort-indicator ${isSorted ? this.sortDirection : ''}"></span>`
-                  : '';
-                const resizer = column.resizable
-                  ? html`<span class="column-resizer" @mousedown=${(event: MouseEvent) => this.handleResizeStart(event, column)}></span>`
-                  : '';
-
-                return html`
-                  <th
-                    class=${headerClasses}
-                    style=${this.getColumnStyle(column)}
-                    @click=${() => this.handleHeaderClick(column)}
-                  >
-                    <span class="th-label">${column.label}</span>
-                    ${sortIndicator}
-                    ${resizer}
-                  </th>
-                `;
-              })}
+              ${visibleColumns.map(column => TableHeaderRenderer.renderHeader(column, {
+                isSorted: this.tableState.isSorted(column.key),
+                sortDirection: this.tableState.sortDirection,
+                onHeaderClick: () => this.handleHeaderClick(column),
+                onResizeStart: (event: MouseEvent) => this.handleResizeStart(event, column),
+                columnWidths: this.tableState.columnWidths
+              }))}
             </tr>
           </thead>
           <tbody>
