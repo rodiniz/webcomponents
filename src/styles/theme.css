@@ -288,6 +288,29 @@ tr:last-child td {
   border-bottom: none;
 }
 
+.table-empty td {
+  border-bottom: none;
+  background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted) / 0.18) 100%);
+}
+
+.table-empty-content {
+  display: grid;
+  gap: 0.35rem;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.table-empty-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: hsl(var(--foreground));
+}
+
+.table-empty-hint {
+  font-size: 0.82rem;
+  color: hsl(var(--muted-foreground));
+}
+
 .table-wrap.zebra tbody tr:nth-child(even) td {
   background: hsl(var(--muted) / 0.2);
 }

@@ -27,6 +27,8 @@ export class UITable extends LitElement {
   @property({ type: Boolean, reflect: true }) zebra: boolean = false;
   @property({ type: Boolean, reflect: true }) collapsible: boolean = true;
   @property({ type: String, reflect: true }) sortMode: 'client' | 'server' = 'client';
+  @property({ type: String, attribute: 'empty-message' }) emptyMessage: string = 'No rows to display';
+  @property({ type: String, attribute: 'empty-hint' }) emptyHint: string = 'Add data to populate this table.';
 
   @state() private tableState = new TableState();
 
@@ -132,6 +134,19 @@ export class UITable extends LitElement {
     const visibleColumns = getVisibleColumns(this.columns);
 
     const sourceRows = this.getSortedRows();
+
+    if (sourceRows.length === 0) {
+      return [html`
+        <tr class="table-empty">
+          <td colspan=${Math.max(visibleColumns.length, 1)}>
+            <div class="table-empty-content">
+              <div class="table-empty-title">${this.emptyMessage}</div>
+              <div class="table-empty-hint">${this.emptyHint}</div>
+            </div>
+          </td>
+        </tr>
+      `];
+    }
 
     sourceRows.forEach((row, rowIndex) => {
       const isExpanded = this.tableState.isExpanded(rowIndex);

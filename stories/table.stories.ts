@@ -85,6 +85,36 @@ export const WithChildRow: Story = {
 };
 
 /**
+ * Empty State - Default
+ * Shows the default empty state when no rows are provided
+ */
+export const EmptyStateDefault: Story = {
+  render: () => html`
+    <ui-table
+      .columns=${columns}
+      .rows=${[]}
+      bordered
+    ></ui-table>
+  `
+};
+
+/**
+ * Empty State - Custom Message
+ * Shows how to customize the empty state message and hint
+ */
+export const EmptyStateCustom: Story = {
+  render: () => html`
+    <ui-table
+      .columns=${columns}
+      .rows=${[]}
+      bordered
+      empty-message="No team members found"
+      empty-hint="Click 'Add Member' to invite someone to your team."
+    ></ui-table>
+  `
+};
+
+/**
  * Example: Loading table data from a mock API using HTTPClient
  * This demonstrates the basic pattern for fetching and displaying data
  */
