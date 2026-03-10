@@ -1,3 +1,45 @@
+/**
+ * UI Sidebar Component Styles
+ *
+ * CSS Custom Properties for Theming:
+ *
+ * --sidebar-bg
+ *   Background color or gradient for the sidebar
+ *   Default: linear-gradient(180deg, #1f2937 0%, #111827 100%)
+ *   Usage: ui-sidebar { --sidebar-bg: #2d3748; }
+ *
+ * --sidebar-text
+ *   Text color for all sidebar text
+ *   Default: #ffffff
+ *   Usage: ui-sidebar { --sidebar-text: #1a202c; }
+ *
+ * --sidebar-border
+ *   Border color used in dividers
+ *   Default: rgba(255, 255, 255, 0.08)
+ *   Usage: ui-sidebar { --sidebar-border: #e2e8f0; }
+ *
+ * --sidebar-hover
+ *   Background color on hover for navigation links
+ *   Default: rgba(255, 255, 255, 0.06)
+ *   Usage: ui-sidebar { --sidebar-hover: rgba(0, 0, 0, 0.1); }
+ *
+ * Example: Light Theme
+ *   ui-sidebar {
+ *     --sidebar-bg: #f8fafc;
+ *     --sidebar-text: #1e293b;
+ *     --sidebar-border: #e2e8f0;
+ *     --sidebar-hover: #f1f5f9;
+ *   }
+ *
+ * Example: Gradient Theme
+ *   ui-sidebar {
+ *     --sidebar-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+ *     --sidebar-text: #ffffff;
+ *     --sidebar-border: rgba(255, 255, 255, 0.15);
+ *     --sidebar-hover: rgba(255, 255, 255, 0.1);
+ *   }
+ */
+
 :host {
   display: block;
   width: 280px;
