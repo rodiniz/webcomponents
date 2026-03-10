@@ -162,6 +162,8 @@ export class UICheckbox extends UIComponentBase {
       )
     );
 
+    const ariaCheckedValue = this.indeterminate ? 'mixed' : String(this.checked);
+
     return html`
       <label class=${containerClasses}>
         <input 
@@ -170,7 +172,7 @@ export class UICheckbox extends UIComponentBase {
           .indeterminate=${this.indeterminate} 
           ?disabled=${this.disabled} 
           @change=${this.handleChange}
-          ...${ariaChecked(this.indeterminate ? 'mixed' : this.checked)}
+          aria-checked=${ariaCheckedValue}
         >
         <div class=${boxClasses}>
           <svg class="checkbox-icon check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
