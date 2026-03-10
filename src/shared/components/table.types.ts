@@ -25,7 +25,6 @@ export interface TableColumn {
 
 export interface TableRow {
   [key: string]: any;
-  children?: TableRow[];
   childColumns?: TableColumn[];
   childRows?: TableRow[];
 }

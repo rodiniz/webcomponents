@@ -98,9 +98,7 @@ export function getColumnStyle(
  * @returns True if row has children
  */
 export function hasChildren(row: TableRow): boolean {
-  const legacyChildren = Array.isArray(row.children) && row.children.length > 0;
-  const nestedChildren = Array.isArray(row.childRows) && row.childRows.length > 0;
-  return legacyChildren || nestedChildren;
+  return Array.isArray(row.childRows) && row.childRows.length > 0;
 }
 
 /**
@@ -113,7 +111,7 @@ export function getChildConfig(
   row: TableRow,
   defaultColumns: TableColumn[]
 ): { columns: TableColumn[]; rows: TableRow[] } | null {
-  const childRows = row.childRows ?? row.children ?? [];
+  const childRows = row.childRows ?? [];
   
   if (!Array.isArray(childRows) || childRows.length === 0) {
     return null;

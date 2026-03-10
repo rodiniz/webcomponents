@@ -373,7 +373,7 @@ interface TableColumn {
 
 interface TableRow {
   [key: string]: any;
-  children?: TableRow[];
+  // Nested rows should be defined here for expandable parent rows
   childColumns?: TableColumn[];
   childRows?: TableRow[];
 }

@@ -55,7 +55,7 @@ export const Playground: Story = {
   `
 };
 
-export const WithChildRow: Story = {
+export const WithChildRows: Story = {
   render: () => html`
     <ui-table
       .columns=${columns}
@@ -64,15 +64,9 @@ export const WithChildRow: Story = {
           name: 'Ava Johnson',
           role: 'Frontend Engineer',
           status: 'Active',
-          childColumns: [
-            { key: 'title', label: 'Title' },
-            { key: 'date', label: 'Date' },
-            { key: 'duration', label: 'Duration' },
-            { key: 'status', label: 'Status' }
-          ],
           childRows: [
-            { title: 'iBabs Debrief', date: '19/02/2026, 10:40 - 11:40', duration: '01:00:00', status: 'Exported' },
-            { title: 'iBabs Debrief - test', date: '12/02/2026, 13:45 - 13:49', duration: '00:03:57', status: 'Ready' }
+            { name: 'Liam Brooks', role: 'Frontend Engineer II', status: 'Active' },
+            { name: 'Sophia Reed', role: 'UI Engineer', status: 'Away' }
           ]
         },
         { name: 'Noah Silva', role: 'Product Designer', status: 'Active' }

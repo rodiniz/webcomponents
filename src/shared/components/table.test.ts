@@ -88,4 +88,35 @@ describe('UITable', () => {
     (actionBtn as HTMLElement).click();
     expect(eventFired).toBe(true);
   });
+
+  it('should expand row when childRows are provided', async () => {
+    const el = table as any;
+    el.columns = [
+      { key: 'name', label: 'Name' },
+      { key: 'role', label: 'Role' }
+    ];
+    el.rows = [
+      {
+        name: 'Parent Row',
+        role: 'Lead',
+        childRows: [
+          { name: 'Child A', role: 'Engineer' },
+          { name: 'Child B', role: 'Designer' }
+        ]
+      }
+    ];
+    await el.updateComplete;
+
+    const expandBtn = table.shadowRoot?.querySelector('tbody tr.has-children ui-button') as HTMLElement;
+    expect(expandBtn).toBeTruthy();
+
+    expandBtn.click();
+    await el.updateComplete;
+
+    const childWrapperRow = table.shadowRoot?.querySelector('tbody tr.child-row');
+    const nestedRows = table.shadowRoot?.querySelectorAll('tbody tr.child-row .nested-table tbody tr');
+
+    expect(childWrapperRow).toBeTruthy();
+    expect(nestedRows?.length).toBe(2);
+  });
 });
