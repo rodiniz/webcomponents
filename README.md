@@ -35,6 +35,8 @@ Most web component libraries force you into a choice: **either** you get a polis
 npm install @diniz/webcomponents
 ```
 
+### Component Usage
+
 ```html
 <script type="module">
   import '@diniz/webcomponents';
@@ -66,6 +68,230 @@ npm install @diniz/webcomponents
   ];
 </script>
 ```
+
+### Router & SPA Setup
+
+Build a single-page application with built-in routing and lazy loading:
+
+#### 1. Create HTML Entry Point
+
+Create `index.html`:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My App</title>
+  <link rel="stylesheet" href="/src/styles/theme.css">
+</head>
+<body>
+  <nav>
+    <a href="/" data-link>Home</a>
+    <a href="/about" data-link>About</a>
+    <a href="/users" data-link>Users</a>
+  </nav>
+
+  <!-- Router outlet - components render here -->
+  <div id="app"></div>
+
+  <!-- Vite module entry point -->
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
+```
+
+#### 2. Create Main TypeScript Module
+
+Create `src/main.ts`:
+
+```typescript
+import '@diniz/webcomponents';
+import { createRouter, applyTheme } from '@diniz/webcomponents';
+
+// Define routes with lazy-loaded components
+const routes = [
+  {
+    path: '/',
+    component: 'home-page',
+    load: () => import('./pages/home')
+  },
+  {
+    path: '/about',
+    component: 'about-page',
+    load: () => import('./pages/about')
+  },
+  {
+    path: '/users',
+    component: 'users-page',
+    load: () => import('./pages/users')
+  },
+  {
+    path: '/users/:id',
+    component: 'user-detail-page',
+    load: () => import('./pages/user-detail')
+  }
+];
+
+// Create router
+const router = createRouter(routes);
+
+// Apply theme
+applyTheme('shadcn');
+
+// Initialize router on page load
+document.addEventListener('DOMContentLoaded', () => router());
+```
+
+#### 3. Create Page Components
+
+Create `src/pages/home.ts`:
+
+```typescript
+import { LitComponent } from '@diniz/webcomponents';
+import { html } from 'lit';
+
+export class HomePage extends LitComponent {
+  render() {
+    return html`
+      <div class="page">
+        <h1>Welcome Home</h1>
+        <p>This is the home page.</p>
+        <ui-button @click=${() => this.navigate('/about')}>
+          Go to About
+        </ui-button>
+      </div>
+    `;
+  }
+
+  private navigate(path: string) {
+    history.pushState(null, '', path);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  }
+}
+
+customElements.define('home-page', HomePage);
+```
+
+Create `src/pages/users.ts`:
+
+```typescript
+import { LitComponent } from '@diniz/webcomponents';
+import { html } from 'lit';
+
+export class UsersPage extends LitComponent {
+  private users = [
+    { id: 1, name: 'John Doe', email: 'john@example.com' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com' }
+  ];
+
+  render() {
+    return html`
+      <div class="page">
+        <h1>Users</h1>
+        <ui-table
+          .columns=${[
+            { key: 'name', label: 'Name', sortable: true },
+            { key: 'email', label: 'Email' }
+          ]}
+          .rows=${this.users}
+        ></ui-table>
+      </div>
+    `;
+  }
+}
+
+customElements.define('users-page', UsersPage);
+```
+
+Create `src/pages/user-detail.ts`:
+
+```typescript
+import { LitComponent } from '@diniz/webcomponents';
+import { html } from 'lit';
+import { getPathParams } from '@diniz/webcomponents';
+
+export class UserDetailPage extends LitComponent {
+  private userId: string | null = null;
+
+  connectedCallback() {
+    super.connectedCallback();
+    const params = getPathParams('/users/:id', location.pathname);
+    this.userId = params?.id ?? null;
+  }
+
+  render() {
+    return html`
+      <div class="page">
+        <h1>User Details</h1>
+        <p>User ID: ${this.userId}</p>
+        <ui-button @click=${() => history.back()}>
+          Go Back
+        </ui-button>
+      </div>
+    `;
+  }
+}
+
+customElements.define('user-detail-page', UserDetailPage);
+```
+
+#### 4. Vite Configuration
+
+Update `vite.config.ts`:
+
+```typescript
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  server: {
+    port: 5173,
+    open: true
+  },
+  build: {
+    target: 'esnext',
+    outDir: 'dist'
+  }
+});
+```
+
+#### 5. Run Development Server
+
+```bash
+npm run dev
+```
+
+The Vite dev server will:
+- Serve `index.html` as entry point
+- Handle TypeScript compilation automatically
+- Lazy load page modules on navigation
+- Support hot module replacement
+
+#### Key Features
+
+- **Lazy Loading** — Pages load only when navigated to
+- **No Build Step for Components** — Components render dynamically
+- **Type Safety** — Full TypeScript support
+- **Real-time HMR** — See changes instantly during development
+- **Automatic Bundling** — Vite handles optimization
+
+#### Complete Example Structure
+
+```
+src/
+├── main.ts           # Router setup
+├── pages/
+│   ├── home.ts       # HomePage component
+│   ├── about.ts      # AboutPage component
+│   ├── users.ts      # UsersPage component
+│   └── user-detail.ts # UserDetailPage component
+└── styles/
+    └── theme.css     # Global theme
+index.html           # Entry point
+```
+
+See **[Router Documentation](./docs/ROUTER.md)** for advanced features like route guards, path parameters, and base path configuration.
 
 ---
 

@@ -81,7 +81,7 @@ export class UIButton extends UIComponentBase {
       combineClasses(
         { 'btn': true },
         buildVariantClasses(this.variant),
-        buildSizeClasses(this.size),
+        buildSizeClasses(this.size, ''),
         buildIconClasses(hasIcon, this.iconPosition, this.hasLabelContent)
       )
     );
