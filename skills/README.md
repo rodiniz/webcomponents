@@ -1,17 +1,21 @@
 # Web Components Skills
 
-AI agent skills for the @diniz/webcomponents library.
+AI agent skills for the **@diniz/webcomponents** library.
 
 ## Overview
 
-This skill provides comprehensive guidance for AI agents and developers working with the web components library. It includes:
+This skill provides comprehensive guidance for developers and AI agents working with the web components library. It includes:
 
-- Component API reference and usage examples
-- Form validation patterns
-- Data table configuration
-- **Styling guide with beautiful UI patterns and design best practices**
-- TypeScript support
-- Responsive design patterns
+- **Component API reference** — All 25+ components with properties, events, examples
+- **Form validation patterns** — Native validation, custom validators, error handling  
+- **Data table configuration** — Sorting, pagination, server-side operations, child rows
+- **Styling guide** — Beautiful UI patterns, theme system, CSS customization
+- **HTTP client** — Lightweight fetch wrapper with interceptors and error handling
+- **State management** — Built-in store and signals for state handling
+- **Routing patterns** — SPA navigation with lazy loading and guards
+- **TypeScript support** — Full type definitions and examples
+- **Responsive design patterns** — Mobile-first layouts and responsive components
+- **Best practices** — Accessibility, performance, common patterns
 
 ## Installation
 
@@ -37,17 +41,200 @@ npm install @diniz/webcomponents
 </body>
 ```
 
-## Available Components
+## Using This Skill with AI Agents
 
-- **ui-button** - Button with variants (primary, secondary, ghost), sizes, and icon support
-- **ui-input** - Input with native and custom validation, multiple types, and icon support
-- **ui-toggle-switch** - Modern on/off switch for boolean settings with keyboard support
-- **ui-card** - Card container with elevation, variants, and customizable shadows
-- **ui-table** - Data table with columns, rows, and row actions
-- **ui-treeview** - Hierarchical tree view with lazy loading and HTTP integration
-- **ui-date-picker** - Date picker with format and range support
-- **ui-pagination** - Pagination control with page change events
-- **ui-toast** - Toast notifications with auto-dismiss and stacking
+### VS Code Copilot
+
+The skill is automatically available when this workspace is open. Ask questions about:
+
+```
+"How do I create a table that loads data from an API?"
+"Show me form validation examples"
+"How do I customize the sidebar theme?"
+"What's the best way to handle errors?"
+"How do I use the HTTP client?"
+```
+
+### Integration with Other AI Agents
+
+The skill YAML frontmatter includes:
+
+```yaml
+---
+name: webcomponents
+description: Comprehensive skill for working with @diniz/webcomponents library
+keywords: [web-components, ui-library, components, validation, theming, styling, frontend]
+---
+```
+
+This allows AI agents to discover and utilize the skill through metadata.
+
+## Skill Content Structure
+
+The main [SKILL.md](./SKILL.md) file is organized into sections:
+
+1. **Quick Links** — References to detailed documentation
+2. **Installation** — Setup and import methods
+3. **Available Components** — Organized by category:
+   - Form Components (button, input, checkbox, etc.)
+   - Layout Components (card, accordion, tabs, modal, sidebar, etc.)
+   - Data Components (table, treeview, pagination, etc.)
+   - Feedback Components (toast, spinner, tooltip, stepper)
+   - Utility Components (date-picker, upload, link, dropdown)
+4. **Styling & Theming** — Theme system and customization
+5. **Advanced Usage** — HTTP client, validation, state management, routing
+6. **Common Patterns** — Real-world examples
+7. **Best Practices** — Design patterns and optimization
+8. **Resources** — Links to detailed documentation
+
+## Learning Paths
+
+### For New Users
+
+1. Start with **Quick Start** section
+2. Explore **Form Components** for basic UI
+3. Try **Common Patterns** for real-world examples
+4. Reference component docs for details
+
+### For Advanced Users
+
+1. Review **Advanced Usage** section
+2. Study **Best Practices**
+3. Check individual component documentation files
+4. Examine test suite for implementation patterns
+
+### For AI Agent Integration
+
+1. Use skill frontmatter for capability discovery
+2. Reference **Available Components** for API reference
+3. Use **Common Patterns** for code generation
+4. Apply **Best Practices** for quality control
+
+## Documentation Files
+
+### Main References
+
+- **[SKILL.md](./SKILL.md)** — This skill (AI-focused guide)
+- **[README.md](./README.md)** — Skills overview (this file)
+
+### Component Documentation
+
+Detailed guides for components:
+
+- **[TABLE.md](../docs/TABLE.md)** — Data tables with examples
+- **[SIDEBAR.md](../docs/SIDEBAR.md)** — Navigation and theming
+- **[TREEVIEW.md](../docs/TREEVIEW.md)** — Hierarchical data
+- **[DATE_PICKER.md](../docs/DATE_PICKER.md)** — Calendar selection
+- **[TOAST.md](../docs/TOAST.md)** — Notifications
+- **[HTTP_CLIENT.md](../docs/HTTP_CLIENT.md)** — API client
+- **[STYLING_GUIDE.md](../docs/STYLING_GUIDE.md)** — Design patterns
+
+## Example Usage Scenarios
+
+### Scenario 1: Build a Data Management Dashboard
+
+```
+User query: "I need a dashboard with a data table, sidebar navigation, 
+and ability to edit/delete items from an API"
+
+Skill provides:
+✅ Table configuration example
+✅ Sidebar setup code
+✅ API integration pattern
+✅ Row action handling
+✅ Form validation
+✅ Error handling
+```
+
+### Scenario 2: Create a Multi-Form Wizard
+
+```
+User query: "How do I create a multi-step form with validation?"
+
+Skill provides:
+✅ Form component examples
+✅ Input validation patterns
+✅ Stepper component usage
+✅ Form state management
+✅ Submit handling
+✅ Error display
+```
+
+### Scenario 3: Implement Custom Theme
+
+```
+User query: "I need to customize the component theme colors"
+
+Skill provides:
+✅ Theme system explanation
+✅ CSS custom properties reference
+✅ Component-specific theming
+✅ Complete theme examples
+✅ Sidebar/card customization
+```
+
+## Extending the Skill
+
+To add new content or improve the skill:
+
+1. Update **[SKILL.md](./SKILL.md)** for component/pattern additions
+2. Update **[README.md](./README.md)** for meta information
+3. Maintain YAML frontmatter with keywords
+4. Ensure examples are copy-paste ready
+5. Include TypeScript types when relevant
+6. Add cross-references to related documentation
+
+## Available Components Summary
+
+### Form Controls
+- ui-button — Button with variants and icons
+- ui-input — Text input with validation
+- ui-checkbox — Custom checkboxes
+- ui-radio — Radio buttons
+- ui-toggle-switch — On/off toggles
+- ui-select — Dropdown selection
+- ui-date-picker — Calendar picker
+- ui-upload — File uploads
+
+### Layout
+- ui-card — Container with elevation
+- ui-accordion — Collapsible sections
+- ui-tabs — Tab navigation
+- ui-modal — Dialogs/modals
+- ui-sidebar — Navigation sidebar
+- ui-top-bar — Header bar
+
+### Data Display
+- ui-table — Data table with sorting
+- ui-treeview — Hierarchical tree
+- ui-pagination — Page navigation
+- ui-picklist — Dual-list selection
+
+### Feedback
+- ui-toast — Notifications
+- ui-spinner — Loading indicators
+- ui-tooltip — Help text
+- ui-stepper — Multi-step indicator
+
+## Performance Notes
+
+The skill is designed to be:
+- **Lightweight** — Pure content with no external dependencies
+- **Searchable** — Well-organized with clear sections
+- **Referenceable** — Comprehensive with cross-links
+- **Copy-Paste Ready** — All examples are production-ready
+- **AI-Friendly** — Organized for easy parsing and understanding
+
+## Support & Resources
+
+- **Storybook** — Interactive components: https://rodiniz.github.io/webcomponents/
+- **GitHub** — Source and issues: https://github.com/rodiniz/webcomponents
+- **Issues** — Report problems or suggest improvements
+- **Documentation** — Check individual `.md` files in `docs/` folder
+
+## License
+
+MIT — Use this skill freely in your projects and tools.
 - **ui-checkbox** - Checkbox with label support
 - **ui-select** - Select dropdown with options
 - **ui-modal** - Modal dialog with open/close API

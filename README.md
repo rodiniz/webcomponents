@@ -209,6 +209,15 @@ Most web component libraries are just **component collections**. They give you b
 ## Documentation & Demo
 
 - **[Storybook](https://rodiniz.github.io/webcomponents/)** — Interactive component playground with live demos and theme switching
+- **[Component Documentation](./docs/)** — Detailed guides:
+  - [TABLE.md](./docs/TABLE.md) — Data table with sorting, pagination, and child rows
+  - [SIDEBAR.md](./docs/SIDEBAR.md) — Navigation sidebar with theming
+  - [DATE_PICKER.md](./docs/DATE_PICKER.md) — Calendar date selection
+  - [TOAST.md](./docs/TOAST.md) — Toast notifications
+  - [TREEVIEW.md](./docs/TREEVIEW.md) — Hierarchical tree with lazy loading
+  - [HTTP_CLIENT.md](./docs/HTTP_CLIENT.md) — Lightweight fetch wrapper
+  - [STYLING_GUIDE.md](./docs/STYLING_GUIDE.md) — Design patterns and styling
+- **[Skills Documentation](./skills/SKILL.md)** — Comprehensive AI agent skill guide with examples
 - **TypeScript** — Full type definitions included
 - **Tests** — 260+ tests covering all components
 
@@ -233,6 +242,56 @@ import '@diniz/webcomponents';
 // Svelte
 import '@diniz/webcomponents';
 <ui-button>Click me</ui-button>;
+```
+
+---
+
+## AI Agent Skills
+
+The library includes comprehensive **[AI agent skills](./skills/SKILL.md)** for developers and AI assistants working with the components.
+
+### Using Skills with VS Code Copilot
+
+The skills are available for use with VS Code's GitHub Copilot:
+
+1. **Install the skill** — It's automatically available when this project is open
+2. **Ask questions** — Use natural language queries like:
+   - "How do I create a table with sorting and pagination?"
+   - "Show me how to validate form inputs"
+   - "Create a sidebar with custom theme colors"
+   - "How do I use the HTTP client?"
+
+3. **Get guidance** — The skill provides:
+   - Component usage examples
+   - Validation patterns
+   - Theming and styling guidance
+   - API integration patterns
+   - Best practices
+   - Type definitions
+
+### Skill Features
+
+- **Component Reference** — Complete API for 25+ components
+- **Code Examples** — Copy-paste ready examples for all components
+- **Patterns** — Common patterns for forms, tables, navigation, etc.
+- **Validation** — Form validation and error handling patterns
+- **Theming** — Theme system and customization guide
+- **HTTP Integration** — API client usage and patterns
+- **State Management** — Built-in store and signals guide
+- **Routing** — Navigation and page management patterns
+
+### Example Usage
+
+```bash
+# Ask Copilot to help with a component
+# "I need a data table that loads from an API with pagination and sorting"
+
+# The skill provides:
+# ✅ Complete HTML/JS example
+# ✅ API integration code
+# ✅ Event handling
+# ✅ Error handling patterns
+# ✅ TypeScript types
 ```
 
 ---
