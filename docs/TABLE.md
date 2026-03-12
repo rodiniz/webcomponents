@@ -24,6 +24,7 @@ table.rows = [
 | `bordered` | boolean | `true` | Show table borders |
 | `zebra` | boolean | `false` | Alternate row background colors |
 | `collapsible` | boolean | `true` | Allow rows with children to be expanded/collapsed |
+| `child-rows-key` | string | `'childRows'` | Row property name that contains nested children (for example `exports`) |
 | `sortMode` | 'client' \| 'server' | `'client'` | Sorting mode: 'client' for local sorting, 'server' for API-driven sorting |
 
 ## Column Options
@@ -198,6 +199,32 @@ table.rows = [
   }
 ];
 ```
+
+You can also render nested rows from another field (e.g. API payloads that use `exports`) without mapping data first:
+
+```javascript
+const table = document.querySelector('ui-table');
+table.setAttribute('child-rows-key', 'exports');
+
+table.rows = [
+  {
+    recordingId: '4d028e70-da81-46f6-bd29-037e174f2fc6',
+    title: 'iBabs Debrief',
+    status: 4,
+    exports: [
+      {
+        id: '75f7bb01-c32e-41cb-b024-09ac27b9212f',
+        exportType: 0,
+        exportedDate: '2026-02-19T10:40:11.614057Z',
+        size: 0,
+        status: 3
+      }
+    ]
+  }
+];
+```
+
+When `childColumns` is not provided, the nested table columns are inferred from the first child row keys.
 
 ## Loading Data From API
 

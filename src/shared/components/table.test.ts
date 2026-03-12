@@ -144,4 +144,46 @@ describe('UITable', () => {
     expect(childWrapperRow).toBeTruthy();
     expect(nestedRows?.length).toBe(2);
   });
+
+  it('should expand row when nested children are in exports field', async () => {
+    const el = table as any;
+    el.columns = [
+      { key: 'title', label: 'Title' },
+      { key: 'duration', label: 'Duration' },
+      { key: 'status', label: 'Status' }
+    ];
+    el.rows = [
+      {
+        recordingId: '4d028e70-da81-46f6-bd29-037e174f2fc6',
+        title: 'iBabs Debrief',
+        duration: null,
+        status: 4,
+        exports: [
+          {
+            id: '75f7bb01-c32e-41cb-b024-09ac27b9212f',
+            exportType: 0,
+            exportedDate: '2026-02-19T10:40:11.614057Z',
+            size: 0,
+            status: 3
+          }
+        ]
+      }
+    ];
+
+    await el.updateComplete;
+
+    const expandBtn = table.shadowRoot?.querySelector('tbody tr.has-children ui-button') as HTMLElement;
+    expect(expandBtn).toBeTruthy();
+
+    expandBtn.click();
+    await el.updateComplete;
+
+    const childWrapperRow = table.shadowRoot?.querySelector('tbody tr.child-row');
+    const nestedHeaders = table.shadowRoot?.querySelectorAll('tbody tr.child-row .nested-table thead th');
+    const nestedRows = table.shadowRoot?.querySelectorAll('tbody tr.child-row .nested-table tbody tr');
+
+    expect(childWrapperRow).toBeTruthy();
+    expect(nestedHeaders?.length).toBe(5);
+    expect(nestedRows?.length).toBe(1);
+  });
 });

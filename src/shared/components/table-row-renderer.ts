@@ -8,6 +8,8 @@ export interface TableRowsRenderContext {
   columns: TableColumn[];
   rows: TableRow[];
   collapsible: boolean;
+  childRowsKey: string;
+  childColumns: TableColumn[];
   emptyMessage: string;
   emptyHint: string;
   columnWidths: Record<string, number>;
@@ -17,7 +19,7 @@ export interface TableRowsRenderContext {
 }
 
 function renderExpandIcon(row: TableRow, rowIndex: number, context: TableRowsRenderContext) {
-  if (!context.collapsible || !hasChildren(row)) return null;
+  if (!context.collapsible || !hasChildren(row, context.childRowsKey)) return null;
 
   const isExpanded = context.isExpanded(rowIndex);
   return html`
@@ -49,7 +51,7 @@ export function renderTableRows(context: TableRowsRenderContext): unknown[] {
 
   context.rows.forEach((row, rowIndex) => {
     const isExpanded = context.isExpanded(rowIndex);
-    const rowHasChildren = hasChildren(row);
+    const rowHasChildren = hasChildren(row, context.childRowsKey);
 
     rows.push(html`
       <tr class="${rowHasChildren ? 'has-children' : ''} ${isExpanded ? 'expanded' : ''}" data-row-index="${rowIndex}">
@@ -65,7 +67,10 @@ export function renderTableRows(context: TableRowsRenderContext): unknown[] {
     `);
 
     if (isExpanded && rowHasChildren) {
-      const childConfig = getChildConfig(row, context.columns);
+      const childConfig = getChildConfig(row, context.columns, {
+        childRowsKey: context.childRowsKey,
+        childColumns: context.childColumns
+      });
       if (childConfig) {
         rows.push(html`
           <tr class="child-row" data-parent-row="${rowIndex}">

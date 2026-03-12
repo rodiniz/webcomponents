@@ -26,9 +26,11 @@ export class UITable extends UIComponentBase {
   @property({ type: Boolean, reflect: true }) bordered: boolean = true;
   @property({ type: Boolean, reflect: true }) zebra: boolean = false;
   @property({ type: Boolean, reflect: true }) collapsible: boolean = true;
+  @property({ type: String, attribute: 'child-rows-key' }) childRowsKey: string = 'childRows';
   @property({ type: String, reflect: true }) sortMode: 'client' | 'server' = 'client';
   @property({ type: String, attribute: 'empty-message' }) emptyMessage: string = 'No rows to display';
   @property({ type: String, attribute: 'empty-hint' }) emptyHint: string = 'Add data to populate this table.';
+  @property({ attribute: false }) childColumns: TableColumn[] = [];
 
   @state() private tableState = new TableState();
 
@@ -128,6 +130,8 @@ export class UITable extends UIComponentBase {
               columns: this.columns,
               rows: sortedRows,
               collapsible: this.collapsible,
+              childRowsKey: this.childRowsKey,
+              childColumns: this.childColumns,
               emptyMessage: this.emptyMessage,
               emptyHint: this.emptyHint,
               columnWidths: this.tableState.columnWidths,

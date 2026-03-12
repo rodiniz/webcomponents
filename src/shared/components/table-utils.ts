@@ -97,8 +97,42 @@ export function getColumnStyle(
  * @param row Table row to check
  * @returns True if row has children
  */
-export function hasChildren(row: TableRow): boolean {
-  return Array.isArray(row.childRows) && row.childRows.length > 0;
+export function hasChildren(row: TableRow, childRowsKey: string = 'childRows'): boolean {
+  return hasChildrenByKey(row, childRowsKey) || hasChildrenByKey(row, 'childRows') || hasChildrenByKey(row, 'exports');
+}
+
+function hasChildrenByKey(row: TableRow, childRowsKey: string): boolean {
+  const candidate = row[childRowsKey];
+  return Array.isArray(candidate) && candidate.length > 0;
+}
+
+function resolveChildRows(row: TableRow, childRowsKey: string): TableRow[] {
+  if (Array.isArray(row.childRows) && row.childRows.length > 0) {
+    return row.childRows;
+  }
+
+  const configured = row[childRowsKey];
+  if (Array.isArray(configured) && configured.length > 0) {
+    return configured;
+  }
+
+  if (childRowsKey !== 'exports' && Array.isArray(row.exports) && row.exports.length > 0) {
+    return row.exports;
+  }
+
+  return [];
+}
+
+function inferChildColumns(childRows: TableRow[]): TableColumn[] {
+  const firstChildRow = childRows.find(
+    childRow => childRow && typeof childRow === 'object' && !Array.isArray(childRow)
+  );
+
+  if (!firstChildRow) {
+    return [];
+  }
+
+  return Object.keys(firstChildRow).map(key => ({ key, label: key }));
 }
 
 /**
@@ -109,15 +143,23 @@ export function hasChildren(row: TableRow): boolean {
  */
 export function getChildConfig(
   row: TableRow,
-  defaultColumns: TableColumn[]
+  defaultColumns: TableColumn[],
+  options?: {
+    childRowsKey?: string;
+    childColumns?: TableColumn[];
+  }
 ): { columns: TableColumn[]; rows: TableRow[] } | null {
-  const childRows = row.childRows ?? [];
+  const childRows = resolveChildRows(row, options?.childRowsKey ?? 'childRows');
   
   if (!Array.isArray(childRows) || childRows.length === 0) {
     return null;
   }
 
-  const columns = row.childColumns ?? defaultColumns;
+  const inferredColumns = inferChildColumns(childRows);
+  const columns =
+    row.childColumns ??
+    (options?.childColumns && options.childColumns.length > 0 ? options.childColumns : undefined) ??
+    (inferredColumns.length > 0 ? inferredColumns : defaultColumns);
   
   return {
     columns: getVisibleColumns(columns),
