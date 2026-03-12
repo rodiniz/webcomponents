@@ -7,10 +7,31 @@ export type Route = {
   path: string;
   load: () => Promise<unknown>;
   component: string;
-  guard?: () => boolean | Promise<boolean>;
+  guard?: () => boolean | Promise<boolean>; 
+};
+
+export type RouterOptions = {
+  /** CSS selector for the router outlet element. Default: '#app' */
+  outlet?: string;
+  /**
+   * Base path prefix this router is responsible for.
+   * Routes are matched relative to this base, enabling nested routers.
+   * Example: basePath '/dashboard' makes route '/overview' match '/dashboard/overview'.
+   * Default: '' (root router)
+   */
+  basePath?: string;
 };
 
 function matchRoute(routePath: string, path: string): boolean | Record<string, string> {
+  // Wildcard suffix: '/section/*' matches '/section' and '/section/anything/deep'
+  if (routePath.endsWith('/*')) {
+    const base = routePath.slice(0, -2);
+    if (path === base || path.startsWith(base + '/')) {
+      return {};
+    }
+    return false;
+  }
+
   const routeParts = routePath.split('/');
   const pathParts = path.split('/');
 
@@ -34,15 +55,31 @@ function matchRoute(routePath: string, path: string): boolean | Record<string, s
   return params;
 }
 
-export function createRouter(routes: Route[], appSelector: string = '#app') {
+export function createRouter(routes: Route[], appSelectorOrOptions: string | RouterOptions = '#app') {
+  const options: RouterOptions = typeof appSelectorOrOptions === 'string'
+    ? { outlet: appSelectorOrOptions }
+    : appSelectorOrOptions;
+
+  const appSelector = options.outlet ?? '#app';
+  const rawBase = options.basePath ?? '';
+  // Normalize: remove trailing slash
+  const basePath = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
+
   async function router(): Promise<void> {
     const fullPath = location.pathname;
     const path = getRoutePath(fullPath);
-    const match = routes.find(route => matchRoute(route.path, path));
+
+    // Nested router: only handle paths under its basePath
+    if (basePath && path !== basePath && !path.startsWith(basePath + '/')) return;
+
+    // Strip basePath prefix so routes are declared relative to the base
+    const relativePath = basePath ? (path.slice(basePath.length) || '/') : path;
+
+    const match = routes.find(route => matchRoute(route.path, relativePath));
 
     if (!match) {
-      if (path !== '/') {
-        const fullHomePath = buildPath('/');
+      if (relativePath !== '/') {
+        const fullHomePath = buildPath(basePath + '/');
         history.replaceState(null, '', fullHomePath);
         await router();
       }
@@ -54,7 +91,7 @@ export function createRouter(routes: Route[], appSelector: string = '#app') {
     if (match.guard) {
       const allowed = await match.guard();
       if (!allowed) {
-        const fullHomePath = buildPath('/');
+        const fullHomePath = buildPath(basePath + '/');
         history.replaceState(null, '', fullHomePath);
         await router();
         return;
@@ -71,7 +108,14 @@ export function createRouter(routes: Route[], appSelector: string = '#app') {
   }
 
   window.addEventListener('popstate', router);
-  window.addEventListener('DOMContentLoaded', router);
+
+  // Run immediately if the DOM is already ready (e.g. router created inside a component),
+  // otherwise wait for DOMContentLoaded.
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', router);
+  } else {
+    router();
+  }
 
   document.addEventListener('click', event => {
     const path = event.composedPath();
@@ -80,8 +124,16 @@ export function createRouter(routes: Route[], appSelector: string = '#app') {
     ) as Element | undefined;
 
     if (linkElement) {
-      event.preventDefault();
       const href = linkElement.getAttribute('href') ?? '/';
+
+      // Nested routers only intercept links that belong to their basePath scope,
+      // leaving root-level navigation to the outer router.
+      if (basePath) {
+        const routePath = getRoutePath(href);
+        if (routePath !== basePath && !routePath.startsWith(basePath + '/')) return;
+      }
+
+      event.preventDefault();
       const fullPath = buildPath(href);
       history.pushState(null, '', fullPath);
       router();

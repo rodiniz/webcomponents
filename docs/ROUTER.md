@@ -56,10 +56,31 @@ const router = createRouter(routes);
 
 ### Parameters
 
-**createRouter(routes, appSelector)**
+**createRouter(routes, appSelectorOrOptions)**
 
-- `routes` - Array of Route objects
-- `appSelector` - CSS selector for the app outlet (default: `'#app'`)
+- `routes` — Array of `Route` objects
+- `appSelectorOrOptions` — Either a CSS selector string (default: `'#app'`) or a `RouterOptions` object
+
+### RouterOptions
+
+```typescript
+type RouterOptions = {
+  /** CSS selector for the router outlet element. Default: '#app' */
+  outlet?: string;
+  /**
+   * Base path prefix this router is responsible for.
+   * Routes are matched relative to this base, enabling nested routers.
+   * Example: basePath '/dashboard' makes route '/overview' match '/dashboard/overview'.
+   * Default: '' (root router)
+   */
+  basePath?: string;
+};
+```
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `outlet` | `string` | `'#app'` | CSS selector for the element where components are rendered |
+| `basePath` | `string` | `''` | Path prefix this router owns. Used to create nested (child) routers |
 
 ## Route Configuration
 
@@ -73,6 +94,26 @@ type Route = {
   guard?: () => boolean | Promise<boolean>;
 };
 ```
+
+## Wildcard Routes
+
+Use `/*` as a suffix to match a path and all its descendants. This is required to hand off nested paths to a child router.
+
+```typescript
+{
+  path: '/dashboard/*',
+  component: 'page-dashboard',
+  load: () => import('./pages/dashboard')
+}
+```
+
+**Matching Examples:**
+- ✅ `/dashboard` matches
+- ✅ `/dashboard/overview` matches
+- ✅ `/dashboard/reports/monthly` matches
+- ❌ `/settings` does not match
+
+---
 
 ## Static Routes
 
@@ -136,6 +177,114 @@ Use `:paramName` syntax to define dynamic segments in routes.
 **Matching Examples:**
 - ✅ `/dashboard/sales/analytics` matches with `{ section: 'sales' }`
 - ✅ `/dashboard/users/analytics` matches with `{ section: 'users' }`
+
+## Nested Routers
+
+You can create a second router inside a component — for example, inside a layout that has its own navigation area (tabs, sidebar sections). This is the typical pattern when using `ui-layout`.
+
+### How It Works
+
+1. The **outer router** uses a wildcard route (`/section/*`) to match the entry component.
+2. The entry component creates an **inner router** with `basePath` set to that prefix.
+3. The inner router only processes paths that start with its `basePath`; the outer router ignores them.
+4. Each router renders into its own outlet element.
+
+### Outer Router (app entry point)
+
+```typescript
+// main.ts
+import { createRouter } from '@/core/router-lib';
+
+createRouter([
+  { path: '/',            component: 'page-home',      load: () => import('./pages/home') },
+  { path: '/about',       component: 'page-about',     load: () => import('./pages/about') },
+  // Wildcard: hand off anything under /dashboard to the inner router
+  { path: '/dashboard/*', component: 'page-dashboard', load: () => import('./pages/dashboard') },
+]);
+```
+
+### Inner Router (inside a Web Component with ui-layout)
+
+```typescript
+// pages/dashboard.ts
+import { LitComponent } from '@/core/lit-component';
+import { customElement } from 'lit/decorators.js';
+import { html } from 'lit';
+import { createRouter } from '@/core/router-lib';
+
+@customElement('page-dashboard')
+export class PageDashboard extends LitComponent {
+
+  firstUpdated() {
+    // Create the inner router AFTER the component is in the DOM
+    createRouter([
+      { path: '/',        component: 'dash-overview', load: () => import('./dash/overview') },
+      { path: '/reports', component: 'dash-reports',  load: () => import('./dash/reports') },
+      { path: '/users',   component: 'dash-users',    load: () => import('./dash/users') },
+    ], {
+      outlet:   '#dashboard-outlet', // outlet inside this component's shadow/light DOM
+      basePath: '/dashboard',        // only handles paths starting with /dashboard
+    });
+  }
+
+  render() {
+    return html`
+      <ui-layout>
+        <ui-layout-sidebar>
+          <nav>
+            <a href="/dashboard"         data-link>Overview</a>
+            <a href="/dashboard/reports" data-link>Reports</a>
+            <a href="/dashboard/users"   data-link>Users</a>
+          </nav>
+        </ui-layout-sidebar>
+        <ui-layout-main>
+          <div id="dashboard-outlet"></div>
+        </ui-layout-main>
+      </ui-layout>
+    `;
+  }
+}
+```
+
+### Navigation Scoping
+
+Click events on `[data-link]` elements are automatically scoped:
+
+- A link to `/about` is handled **only** by the outer router.
+- A link to `/dashboard/reports` is handled **only** by the inner router (whose `basePath` is `/dashboard`).
+
+This means both routers can coexist on the same page without interfering with each other.
+
+### Initialisation Timing
+
+A nested router created inside a component (long after `DOMContentLoaded`) will run immediately because `createRouter` checks `document.readyState` at call time:
+
+- If the DOM is still loading → waits for `DOMContentLoaded`.
+- If the DOM is already ready → runs the router function immediately.
+
+Always create the inner router in `connectedCallback`, `firstUpdated`, or equivalent lifecycle hooks to ensure the outlet element exists before the router tries to render into it.
+
+### Guards in Nested Routers
+
+Guards work the same way inside a nested router:
+
+```typescript
+createRouter([
+  {
+    path: '/admin',
+    component: 'dash-admin',
+    load: () => import('./dash/admin'),
+    guard: async () => {
+      const user = await getUser();
+      return user.role === 'admin';
+    }
+  }
+], { outlet: '#dashboard-outlet', basePath: '/dashboard' });
+```
+
+When the guard returns `false`, the user is redirected to the nested root (`basePath + '/'`).
+
+---
 
 ## Route Guards
 
@@ -276,10 +425,11 @@ Routes continue to be defined relative to the root:
 
 ## Complete Example
 
+### Single Router
+
 ```typescript
 import { createRouter } from '@/core/router-lib';
 
-// Define routes
 const routes = [
   {
     path: '/',
@@ -309,19 +459,57 @@ const routes = [
   }
 ];
 
-// Create router
-const router = createRouter(routes, '#app');
+createRouter(routes, '#app');
+```
 
-// HTML markup
-const html = `
-  <nav>
-    <a href="/" data-link>Home</a>
-    <a href="/about" data-link>About</a>
-    <a href="/recording/42" data-link>Recording</a>
-    <a href="/admin" data-link>Admin</a>
-  </nav>
-  <div id="app"></div>
-`;
+### Nested Routers (two-level routing)
+
+```typescript
+// main.ts — outer router
+import { createRouter } from '@/core/router-lib';
+
+createRouter([
+  { path: '/',            component: 'page-home',      load: () => import('./pages/home') },
+  { path: '/about',       component: 'page-about',     load: () => import('./pages/about') },
+  { path: '/dashboard/*', component: 'page-dashboard', load: () => import('./pages/dashboard') },
+]);
+```
+
+```typescript
+// pages/dashboard.ts — inner router inside ui-layout
+import { LitComponent } from '@/core/lit-component';
+import { customElement } from 'lit/decorators.js';
+import { html } from 'lit';
+import { createRouter } from '@/core/router-lib';
+
+@customElement('page-dashboard')
+export class PageDashboard extends LitComponent {
+
+  firstUpdated() {
+    createRouter([
+      { path: '/',        component: 'dash-overview', load: () => import('./dash/overview') },
+      { path: '/reports', component: 'dash-reports',  load: () => import('./dash/reports') },
+    ], {
+      outlet:   '#dash-outlet',
+      basePath: '/dashboard',
+    });
+  }
+
+  render() {
+    return html`
+      <ui-layout>
+        <ui-layout-sidebar>
+          <a href="/dashboard"         data-link>Overview</a>
+          <a href="/dashboard/reports" data-link>Reports</a>
+          <a href="/about"             data-link>About (outer)</a>
+        </ui-layout-sidebar>
+        <ui-layout-main>
+          <div id="dash-outlet"></div>
+        </ui-layout-main>
+      </ui-layout>
+    `;
+  }
+}
 ```
 
 ## Component Template
@@ -389,15 +577,35 @@ If the `load()` function throws an error, the navigation will not complete. Cons
 
 ## API Reference
 
-### createRouter(routes, appSelector?)
+### createRouter(routes, appSelectorOrOptions?)
 
 Creates and initializes the router.
 
 **Parameters:**
-- `routes: Route[]` - Array of route definitions
-- `appSelector?: string` - CSS selector for the outlet (default: `'#app'`)
+- `routes: Route[]` — Array of route definitions
+- `appSelectorOrOptions?: string | RouterOptions` — Outlet selector string **or** a `RouterOptions` object (default: `'#app'`)
 
-**Returns:** `() => Promise<void>` - The router function (handles navigation)
+**Returns:** `() => Promise<void>` — The router function (handles navigation)
+
+### RouterOptions
+
+```typescript
+type RouterOptions = {
+  outlet?: string;   // Default: '#app'
+  basePath?: string; // Default: '' (root)
+};
+```
+
+### Route (type)
+
+```typescript
+type Route = {
+  path: string;
+  load: () => Promise<unknown>;
+  component: string;
+  guard?: () => boolean | Promise<boolean>;
+};
+```
 
 ### getPathParams(routePath, path)
 
@@ -468,3 +676,21 @@ Supported in all modern browsers (Chrome, Firefox, Safari, Edge).
 - Confirm the component is registered with `customElements.define()`
 - Verify the `load()` function imports and exports the component
 - Check browser console for import errors
+
+### Nested Router Not Activating
+
+- Ensure the outer router has a wildcard route (`/section/*`) for the section, not an exact path
+- Verify `basePath` matches the prefix used in the wildcard route (`/dashboard` for `/dashboard/*`)
+- Create the inner router inside `firstUpdated` or `connectedCallback`, **not** in the constructor — the outlet element must exist in the DOM first
+- Double-check the `outlet` selector matches an element that's actually rendered by the component
+
+### Both Routers React to the Same Link
+
+- A nested router with a `basePath` will only intercept `[data-link]` clicks whose `href` starts with that base path
+- If a link inside a nested component points to a root-level path (e.g., `/about`), the inner router will ignore it and the outer router will handle it normally
+- If you see duplicate navigation, check that the `basePath` option is set on the inner router
+
+### Inner Router Redirects to Wrong Path
+
+- When a nested router finds no matching route, it redirects to `basePath + '/'` (e.g., `/dashboard/`)
+- Ensure your routes array includes a `'/'` entry for the default view within the section
