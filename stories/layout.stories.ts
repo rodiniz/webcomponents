@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { html } from 'lit';
 import '../src/shared/components/layout';
+import { renderIcon } from '../src/core/icon-helpers';
 
 type LayoutArgs = {
   direction: 'auto' | 'horizontal' | 'vertical';
@@ -51,59 +52,30 @@ export const AppShell: Story = {
           <div class="sidebar-label">Workspace</div>
           <div class="sidebar-section">
             <div class="sidebar-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 12l8-8 8 8" />
-                <path d="M6 10v10h12V10" />
-              </svg>
+              ${renderIcon('home', { width: 16, height: 16 })}
               Overview
             </div>
             <div class="sidebar-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="3" y="4" width="7" height="7" rx="1.5" />
-                <rect x="14" y="4" width="7" height="7" rx="1.5" />
-                <rect x="3" y="13" width="7" height="7" rx="1.5" />
-                <rect x="14" y="13" width="7" height="7" rx="1.5" />
-              </svg>
+              ${renderIcon('grid', { width: 16, height: 16 })}
               Inventory
             </div>
             <div class="sidebar-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 19V5" />
-                <path d="M4 19h16" />
-                <path d="M8 15V9" />
-                <path d="M12 19V7" />
-                <path d="M16 15v-4" />
-              </svg>
+              ${renderIcon('bar-chart-2', { width: 16, height: 16 })}
               Reports
             </div>
           </div>
           <div class="sidebar-label">Operations</div>
           <div class="sidebar-section">
             <div class="sidebar-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 2v4" />
-                <path d="M12 18v4" />
-                <path d="M4.93 4.93l2.83 2.83" />
-                <path d="M16.24 16.24l2.83 2.83" />
-                <path d="M2 12h4" />
-                <path d="M18 12h4" />
-                <path d="M4.93 19.07l2.83-2.83" />
-                <path d="M16.24 7.76l2.83-2.83" />
-              </svg>
+              ${renderIcon('activity', { width: 16, height: 16 })}
               Automations
             </div>
             <div class="sidebar-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 3l7 3v6c0 4.5-3.1 7.6-7 9-3.9-1.4-7-4.5-7-9V6l7-3z" />
-                <path d="M9 12l2 2 4-4" />
-              </svg>
+              ${renderIcon('shield', { width: 16, height: 16 })}
               Health
             </div>
             <div class="sidebar-item">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.7 1.7 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .3 1.7 1.7 0 0 0-.84 1.47V21a2 2 0 1 1-4 0v-.08a1.7 1.7 0 0 0-.84-1.47 1.7 1.7 0 0 0-1-.3 1.7 1.7 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.3-1 1.7 1.7 0 0 0-1.47-.84H3a2 2 0 1 1 0-4h.08a1.7 1.7 0 0 0 1.47-.84 1.7 1.7 0 0 0 .3-1 1.7 1.7 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6c.33 0 .66-.1 1-.3A1.7 1.7 0 0 0 10.84 2.8V2a2 2 0 1 1 4 0v.08c0 .62.33 1.2.84 1.47.34.2.67.3 1 .3a1.7 1.7 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c0 .33.1.66.3 1 .2.33.3.66.3 1s-.1.66-.3 1-.3.67-.3 1z" />
-              </svg>
+              ${renderIcon('settings', { width: 16, height: 16 })}
               Settings
             </div>
           </div>
