@@ -19,7 +19,6 @@ export { UISpinner } from '../shared/components/spinner';
 export { UITooltip } from '../shared/components/tooltip';
 export { UIDropdown } from '../shared/components/dropdown';
 export { UITreeView } from '../shared/components/treeview';
-export { UIRouteOutlet } from '../shared/components/route-outlet';
 export { UILayout, UILayoutHeader, UILayoutFooter, UILayoutContent, UILayoutSidebar } from '../shared/components/layout';
 
 // Base Component
@@ -121,7 +120,6 @@ export type { SpinnerSize, SpinnerVariant } from '../shared/components/spinner';
 export type { TooltipPosition, TooltipTrigger } from '../shared/components/tooltip';
 export type { DropdownItem, DropdownSize } from '../shared/components/dropdown';
 export type { TreeNode, TreeViewOptions, TreeNodeChangedDetail, TreeNodeSelectedDetail } from '../shared/components/treeview';
-export type { UIRouteOutletConfig } from '../shared/components/route-outlet';
 
 // HTTP Client
 export { http, HTTPClient } from '../core/http';
