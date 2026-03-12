@@ -219,11 +219,7 @@ table.columns = [
 async function loadUsers() {
   try {
     const users = await http.get('https://jsonplaceholder.typicode.com/users?_limit=8');
-    table.rows = users.map((user) => ({
-      id: user.id,
-      name: user.name,
-      email: user.email
-    }));
+    table.rows = users;
   } catch (error) {
     console.error('Failed to load users:', error);
     table.rows = [];
@@ -245,11 +241,7 @@ http.setDefaultTimeout(5000);
 
 async function loadPosts() {
   const posts = await http.get('/posts?_limit=5');
-  table.rows = posts.map((post) => ({
-    id: post.id,
-    title: post.title,
-    userId: post.userId
-  }));
+  table.rows = posts;
 }
 
 table.columns = [

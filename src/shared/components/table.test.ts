@@ -48,6 +48,31 @@ describe('UITable', () => {
     expect(rows?.length).toBe(2);
   });
 
+  it('should render values by column keys from rows with extra fields', async () => {
+    const el = table as any;
+    el.columns = [
+      { key: 'id', label: 'Post ID' },
+      { key: 'title', label: 'Title' },
+      { key: 'userId', label: 'Author ID' }
+    ];
+    el.rows = [
+      {
+        id: 1,
+        userId: 10,
+        title: 'Post title',
+        body: 'Extra field should not require manual row mapping'
+      }
+    ];
+
+    await el.updateComplete;
+
+    const cells = Array.from(table.shadowRoot?.querySelectorAll('tbody tr td') ?? []);
+    expect(cells.length).toBe(3);
+    expect(cells[0]?.textContent?.trim()).toContain('1');
+    expect(cells[1]?.textContent?.trim()).toContain('Post title');
+    expect(cells[2]?.textContent?.trim()).toContain('10');
+  });
+
   it('should apply bordered class by default', () => {
     const wrap = table.shadowRoot?.querySelector('.table-wrap');
     expect(wrap?.classList.contains('no-border')).toBe(false);
