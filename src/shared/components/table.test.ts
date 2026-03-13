@@ -186,4 +186,42 @@ describe('UITable', () => {
     expect(nestedHeaders?.length).toBe(5);
     expect(nestedRows?.length).toBe(1);
   });
+
+  it('should update header width when resizing a resizable column', async () => {
+    const el = table as any;
+    el.columns = [
+      { key: 'name', label: 'Name', resizable: true, minWidth: 80 }
+    ];
+    el.rows = [{ name: 'John' }];
+    await el.updateComplete;
+
+    const header = table.shadowRoot?.querySelector('th') as HTMLElement;
+    const resizer = table.shadowRoot?.querySelector('.column-resizer') as HTMLElement;
+
+    expect(header).toBeTruthy();
+    expect(resizer).toBeTruthy();
+
+    Object.defineProperty(header, 'getBoundingClientRect', {
+      value: () => ({
+        width: 150,
+        height: 40,
+        top: 0,
+        left: 0,
+        right: 150,
+        bottom: 40,
+        x: 0,
+        y: 0,
+        toJSON: () => ({})
+      }),
+      configurable: true
+    });
+
+    resizer.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 100 }));
+    window.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 160 }));
+    await el.updateComplete;
+    window.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+
+    const resizedHeader = table.shadowRoot?.querySelector('th') as HTMLElement;
+    expect(resizedHeader.getAttribute('style')).toContain('210px');
+  });
 });

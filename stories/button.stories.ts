@@ -32,6 +32,9 @@ const meta: Meta<ButtonArgs> = {
   }
 };
 
+const BUTTON_VARIANTS: ButtonArgs['variant'][] = ['primary', 'secondary', 'ghost', 'danger'];
+const BUTTON_SIZES: ButtonArgs['size'][] = ['sm', 'md', 'lg'];
+
 export default meta;
 
 type Story = StoryObj<ButtonArgs>;
@@ -45,6 +48,25 @@ export const Playground: Story = {
       icon-position=${iconPosition}
       ?disabled=${disabled}
     >${label}</ui-button>
+  `
+};
+
+export const AllVariantsAndSizes: Story = {
+  render: () => html`
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      ${BUTTON_VARIANTS.map(
+        (variant) => html`
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <span style="min-width: 100px; font-size: 12px; text-transform: capitalize;">${variant}</span>
+            ${BUTTON_SIZES.map(
+              (size) => html`
+                <ui-button variant=${variant} size=${size}>${size.toUpperCase()}</ui-button>
+              `
+            )}
+          </div>
+        `
+      )}
+    </div>
   `
 };
 

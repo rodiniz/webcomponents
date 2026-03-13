@@ -101,6 +101,7 @@ export class UITable extends UIComponentBase {
   private handleResizeStart(event: MouseEvent, column: TableColumn): void {
     this.columnResizer.startResize(event, column, (key, width) => {
       this.tableState.setColumnWidth(key, width);
+      this.requestUpdate();
     });
   }
 
