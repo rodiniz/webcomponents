@@ -52,7 +52,7 @@ http.setDefaultTimeout(8000);
 
 ## Request Options
 
-You can pass a `RequestConfig` to any request:
+You can pass a `RequestConfig` to each request:
 
 ```javascript
 await http.get('/api/users', {

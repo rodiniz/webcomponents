@@ -36,7 +36,7 @@ There are two primary ways to trigger navigation:
 ### Basic Setup
 
 ```typescript
-import { createRouter } from '@/core/router-lib';
+import { initUI } from '@diniz/webcomponents';
 
 const routes = [
   {
@@ -51,8 +51,14 @@ const routes = [
   }
 ];
 
-const router = createRouter(routes);
+initUI({
+  theme: 'shadcn',
+  routes,
+  outlet: '#app'
+});
 ```
+
+> Helper reference: `docs/VITE_HELPERS.md`
 
 ### Parameters
 
@@ -89,7 +95,7 @@ type RouterOptions = {
 ```typescript
 type Route = {
   path: string;
-  load: () => Promise<unknown>;
+  load: () => Promise<object>;
   component: string;
   guard?: () => boolean | Promise<boolean>;
 };
@@ -193,7 +199,7 @@ You can create a second router inside a component — for example, inside a layo
 
 ```typescript
 // main.ts
-import { createRouter } from '@/core/router-lib';
+import { createRouter } from '@diniz/webcomponents';
 
 createRouter([
   { path: '/',            component: 'page-home',      load: () => import('./pages/home') },
@@ -210,7 +216,7 @@ createRouter([
 import { LitComponent } from '@/core/lit-component';
 import { customElement } from 'lit/decorators.js';
 import { html } from 'lit';
-import { createRouter } from '@/core/router-lib';
+import { createRouter } from '@diniz/webcomponents';
 
 @customElement('page-dashboard')
 export class PageDashboard extends LitComponent {
@@ -326,7 +332,7 @@ When a guard returns `false`:
 
 ### Using data-link Attribute
 
-Add `data-link` attribute to any clickable element to enable client-side navigation:
+Add `data-link` attribute to clickable elements to enable client-side navigation:
 
 ```html
 <a href="/home" data-link>Home</a>
@@ -347,7 +353,7 @@ The router automatically listens to browser back/forward button clicks through t
 While not directly exposed by the router, you can use the History API:
 
 ```typescript
-import { buildPath } from '@/core/router-lib';
+import { buildPath } from '@diniz/webcomponents';
 
 const fullPath = buildPath('/recording/123');
 history.pushState(null, '', fullPath);
@@ -359,7 +365,7 @@ router(); // Manually trigger router
 Extract path parameters using the `getPathParams` function:
 
 ```typescript
-import { getPathParams } from '@/core/router-lib';
+import { getPathParams } from '@diniz/webcomponents';
 
 export class PageRecording extends BaseComponent {
   connectedCallback() {
@@ -376,7 +382,7 @@ export class PageRecording extends BaseComponent {
 Extracts the route path, accounting for a base path configuration.
 
 ```typescript
-import { getRoutePath } from '@/core/router-lib';
+import { getRoutePath } from '@diniz/webcomponents';
 
 // With BASE_URL = '/'
 getRoutePath('/home'); // Returns '/home'
@@ -390,7 +396,7 @@ getRoutePath('/app/home'); // Returns '/home'
 Constructs a full path by prepending the base path.
 
 ```typescript
-import { buildPath } from '@/core/router-lib';
+import { buildPath } from '@diniz/webcomponents';
 
 // With BASE_URL = '/'
 buildPath('/home'); // Returns '/home'
@@ -428,7 +434,7 @@ Routes continue to be defined relative to the root:
 ### Single Router
 
 ```typescript
-import { createRouter } from '@/core/router-lib';
+import { createRouter } from '@diniz/webcomponents';
 
 const routes = [
   {
@@ -466,7 +472,7 @@ createRouter(routes, '#app');
 
 ```typescript
 // main.ts — outer router
-import { createRouter } from '@/core/router-lib';
+import { createRouter } from '@diniz/webcomponents';
 
 createRouter([
   { path: '/',            component: 'page-home',      load: () => import('./pages/home') },
@@ -480,7 +486,7 @@ createRouter([
 import { LitComponent } from '@/core/lit-component';
 import { customElement } from 'lit/decorators.js';
 import { html } from 'lit';
-import { createRouter } from '@/core/router-lib';
+import { createRouter } from '@diniz/webcomponents';
 
 @customElement('page-dashboard')
 export class PageDashboard extends LitComponent {
@@ -518,7 +524,7 @@ Web Components rendered by the router can access path parameters:
 
 ```typescript
 import { LitComponent } from '@/core/lit-component';
-import { getPathParams } from '@/core/router-lib';
+import { getPathParams } from '@diniz/webcomponents';
 import { html } from 'lit';
 
 export class PageRecording extends LitComponent {
@@ -601,7 +607,7 @@ type RouterOptions = {
 ```typescript
 type Route = {
   path: string;
-  load: () => Promise<unknown>;
+  load: () => Promise<object>;
   component: string;
   guard?: () => boolean | Promise<boolean>;
 };

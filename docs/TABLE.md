@@ -17,6 +17,43 @@ table.rows = [
 ];
 ```
 
+## Basic Usage with Helpers (Vite Recommended)
+
+Use helpers from `@diniz/webcomponents` (see `docs/VITE_HELPERS.md`) to reduce setup code:
+
+```typescript
+import { bindProps, getEl, onCE } from '@diniz/webcomponents';
+
+type UserRow = {
+  name: string;
+  email: string;
+  status: 'Active' | 'Inactive';
+};
+
+type UsersTableElement = HTMLElement & {
+  columns: Array<{ key: string; label: string; sortable?: boolean }>;
+  rows: UserRow[];
+};
+
+const table = getEl<UsersTableElement>('ui-table#users');
+
+bindProps(table, {
+  columns: [
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'email', label: 'Email' },
+    { key: 'status', label: 'Status' }
+  ],
+  rows: [
+    { name: 'Alice', email: 'alice@example.com', status: 'Active' },
+    { name: 'Bob', email: 'bob@example.com', status: 'Inactive' }
+  ]
+});
+
+onCE(table, 'action', ({ action, rowIndex }) => {
+  console.log(action, rowIndex);
+});
+```
+
 ## Table Attributes
 
 | Attribute | Type | Default | Description |
@@ -944,7 +981,7 @@ interface TableColumn {
   minWidth?: number;
   maxWidth?: number;
   resizable?: boolean;
-  template?: (row: TableRow, rowIndex: number) => unknown;
+  template?: (row: TableRow, rowIndex: number) => string | HTMLElement;
   actions?: {
     edit?: boolean;
     delete?: boolean;
@@ -952,7 +989,7 @@ interface TableColumn {
 }
 
 interface TableRow {
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined | TableColumn[] | TableRow[];
   // Nested rows should be defined here for expandable parent rows
   childColumns?: TableColumn[];
   childRows?: TableRow[];

@@ -90,6 +90,31 @@ const values = getFormValues(form, {
 });
 ```
 
+## Helper-First Pattern (Vite)
+
+To reduce repeated form wiring code, use built-in helpers (see `docs/VITE_HELPERS.md`) and `createFormBridge()`:
+
+```typescript
+import { createFormBridge, getEl } from '@diniz/webcomponents';
+
+const form = getEl<HTMLFormElement>('#login-form');
+const bridge = createFormBridge(form);
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const result = bridge.validate();
+  if (!result.isValid) return;
+
+  const { email, password } = bridge.values();
+  await fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+});
+```
+
 ## Validate Forms
 
 Use `validateForm()` to validate all form fields and get error messages:

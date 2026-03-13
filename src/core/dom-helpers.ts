@@ -2,6 +2,9 @@
  * DOM Helper utilities for working with custom elements
  */
 
+import { createRouter, type Route } from './router-lib';
+import { applyTheme, type ThemeName } from './theme-service';
+
 /**
  * Query and cast a custom element with specific properties
  * @param root - The root element to query from (Document, ShadowRoot, or Element)
@@ -175,6 +178,89 @@ export type GetFormValuesOptions = {
   includeDisabled?: boolean;
   includeEmpty?: boolean;
 };
+
+export type InitUIOptions = {
+  theme?: ThemeName;
+  routes?: Route[];
+  outlet?: string;
+};
+
+export type FormBridge = {
+  values: (options?: GetFormValuesOptions) => Record<string, FormValue>;
+  validate: () => ValidationResult;
+  reset: () => void;
+};
+
+/**
+ * Initialize theme and optional router for Vite/SPA projects.
+ */
+export function initUI(options: InitUIOptions = {}): void {
+  const { theme = 'shadcn', routes, outlet = '#app' } = options;
+
+  void applyTheme(theme);
+
+  if (!routes) return;
+
+  const router = createRouter(routes, outlet);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => router(), { once: true });
+    return;
+  }
+
+  router();
+}
+
+/**
+ * Get an element by selector and throw when it's missing.
+ */
+export function getEl<T extends Element>(selector: string, root: ParentNode = document): T {
+  const element = root.querySelector(selector);
+  if (!element) {
+    throw new Error(`Element not found: ${selector}`);
+  }
+
+  return element as T;
+}
+
+/**
+ * Assign multiple properties to a custom element.
+ */
+export function bindProps<T extends object>(el: Element, props: T): void {
+  Object.assign(el as unknown as Record<string, unknown>, props);
+}
+
+/**
+ * Subscribe to a CustomEvent with typed detail.
+ * Returns an unsubscribe function.
+ */
+export function onCE<TDetail>(
+  target: EventTarget,
+  eventName: string,
+  handler: (detail: TDetail, event: CustomEvent<TDetail>) => void
+): () => void {
+  const listener = (event: Event) => {
+    const customEvent = event as CustomEvent<TDetail>;
+    handler(customEvent.detail, customEvent);
+  };
+
+  target.addEventListener(eventName, listener as EventListener);
+
+  return () => {
+    target.removeEventListener(eventName, listener as EventListener);
+  };
+}
+
+/**
+ * Create a form helper bridge around getFormValues and validateForm.
+ */
+export function createFormBridge(form: HTMLFormElement): FormBridge {
+  return {
+    values: (options?: GetFormValuesOptions) => getFormValues(form, options),
+    validate: () => validateForm(form),
+    reset: () => form.reset()
+  };
+}
 
 const FORM_FIELD_SELECTOR = 'input, select, textarea, ui-input, ui-textarea, ui-select, ui-date-picker, ui-checkbox, ui-upload';
 

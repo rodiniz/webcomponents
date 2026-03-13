@@ -35,6 +35,13 @@ Most web component libraries force you into a choice: **either** you get a polis
 npm install @diniz/webcomponents
 ```
 
+### Vite Helper-First Setup (Recommended)
+
+For DRY app code, use reusable helper functions in your Vite app project:
+
+- **Guide:** [docs/VITE_HELPERS.md](./docs/VITE_HELPERS.md)
+- Includes `initUI`, `bindProps`, `onCE`, `createFormBridge`, and `getEl`
+
 ### Component Usage
 
 ```html
@@ -56,16 +63,21 @@ npm install @diniz/webcomponents
 <ui-table id="users"></ui-table>
 
 <script type="module">
-  const table = document.getElementById('users');
-  table.columns = [
-    { key: 'name', label: 'Name', sortable: true },
-    { key: 'email', label: 'Email' },
-    { key: 'actions', label: 'Actions', actions: { edit: true, delete: true } }
-  ];
-  table.rows = [
-    { name: 'John Doe', email: 'john@example.com' },
-    { name: 'Jane Smith', email: 'jane@example.com' }
-  ];
+  import { bindProps, getEl } from '@diniz/webcomponents';
+
+  const table = getEl('ui-table#users');
+
+  bindProps(table, {
+    columns: [
+      { key: 'name', label: 'Name', sortable: true },
+      { key: 'email', label: 'Email' },
+      { key: 'actions', label: 'Actions', actions: { edit: true, delete: true } }
+    ],
+    rows: [
+      { name: 'John Doe', email: 'john@example.com' },
+      { name: 'Jane Smith', email: 'jane@example.com' }
+    ]
+  });
 </script>
 ```
 
@@ -107,8 +119,7 @@ Create `index.html`:
 Create `src/main.ts`:
 
 ```typescript
-import '@diniz/webcomponents';
-import { createRouter, applyTheme } from '@diniz/webcomponents';
+import { initUI } from '@diniz/webcomponents';
 
 // Define routes with lazy-loaded components
 const routes = [
@@ -134,14 +145,11 @@ const routes = [
   }
 ];
 
-// Create router
-const router = createRouter(routes);
-
-// Apply theme
-applyTheme('shadcn');
-
-// Initialize router on page load
-document.addEventListener('DOMContentLoaded', () => router());
+initUI({
+  theme: 'shadcn',
+  routes,
+  outlet: '#app'
+});
 ```
 
 #### 3. Create Page Components
@@ -389,7 +397,7 @@ await applyTheme('my-app');
 | **Routing** | ✅ Universal | ❌ Salesforce-only |
 | **State management** | ✅ Universal | ❌ Salesforce-only |
 | **Bundle size** | ~41KB | ~100KB+ |
-| **Platform** | Any framework | Salesforce only |
+| **Platform** | All frameworks | Salesforce only |
 | **Open source** | ✅ MIT | ❌ Proprietary |
 
 ### vs Building from Scratch

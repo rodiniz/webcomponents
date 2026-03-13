@@ -79,8 +79,15 @@ interface TreeNode {
   children?: TreeNode[];         // Child nodes (static)
   isLeaf?: boolean;              // Mark as leaf node (no children)
   lazy?: boolean;                // Enable lazy loading for this node
-  data?: any;                    // Custom data attached to node
-  [key: string]: any;            // Additional custom properties
+  data?: Record<string, string | number | boolean | null | undefined>; // Custom data attached to node
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | null
+    | undefined
+    | TreeNode[]
+    | Record<string, string | number | boolean | null | undefined>;    // Additional custom properties
 }
 ```
 

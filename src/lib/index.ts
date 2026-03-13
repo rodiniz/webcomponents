@@ -127,8 +127,32 @@ export { http, HTTPClient } from '../core/http';
 export type { RequestConfig, ResponseConfig, RequestInterceptor, ResponseInterceptor, ErrorInterceptor } from '../core/http';
 
 // DOM Helpers
-export { queryElement, queryElements, queryTable, queryPagination, queryModal, addEventListenerById, getElementById, getFormValues, validateForm } from '../core/dom-helpers';
-export type { UITableElement, UIPaginationElement, UIModalElement, FormValue, GetFormValuesOptions, ValidationResult } from '../core/dom-helpers';
+export {
+  queryElement,
+  queryElements,
+  queryTable,
+  queryPagination,
+  queryModal,
+  addEventListenerById,
+  getElementById,
+  getFormValues,
+  validateForm,
+  initUI,
+  getEl,
+  bindProps,
+  onCE,
+  createFormBridge
+} from '../core/dom-helpers';
+export type {
+  UITableElement,
+  UIPaginationElement,
+  UIModalElement,
+  FormValue,
+  GetFormValuesOptions,
+  ValidationResult,
+  InitUIOptions,
+  FormBridge
+} from '../core/dom-helpers';
 
 // Router
 export { createRouter, getPathParams, buildPath, getRoutePath } from '../core/router-lib';

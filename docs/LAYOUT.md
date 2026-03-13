@@ -58,7 +58,7 @@ This keeps login minimal and reserves the app shell for the private area.
 ### Route Setup Example
 
 ```typescript
-import { createRouter } from '@/core/router-lib';
+import { createRouter } from '@diniz/webcomponents';
 
 const isAuthenticated = () => Boolean(localStorage.getItem('auth_token'));
 

@@ -92,12 +92,12 @@ modal.addEventListener('modal-close', () => {
 
 ### Default Slot
 
-Content displayed in the modal body. Use for your main message, form, or any content.
+Content displayed in the modal body. Use for your main message, form, or custom content.
 
 ```html
 <ui-modal title="Confirm">
   <p>This is the main content</p>
-  <div>Any HTML goes here</div>
+  <div>Custom HTML goes here</div>
 </ui-modal>
 ```
 
@@ -220,10 +220,16 @@ if (modal) {
 ### Confirmation Dialog
 
 ```typescript
+import { queryModal } from '@diniz/webcomponents';
+
 function askForConfirmation(message: string): Promise<boolean> {
   return new Promise((resolve) => {
-    const modal = document.getElementById('confirm-modal') as any;
-    
+    const modal = queryModal(document, 'ui-modal#confirm-modal');
+    if (!modal) {
+      resolve(false);
+      return;
+    }
+
     modal.textContent = message;
     
     const handleConfirm = () => {
@@ -245,7 +251,12 @@ function askForConfirmation(message: string): Promise<boolean> {
     
     const confirmBtn = modal.querySelector('[data-action="confirm"]');
     const cancelBtn = modal.querySelector('[data-action="cancel"]');
-    
+
+    if (!confirmBtn || !cancelBtn) {
+      resolve(false);
+      return;
+    }
+
     confirmBtn.addEventListener('click', handleConfirm);
     cancelBtn.addEventListener('click', handleCancel);
     
