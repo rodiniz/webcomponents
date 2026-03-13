@@ -9,6 +9,7 @@ Accessible button component with variants, sizes, optional icons, and native cli
 - Optional icon support
 - Icon position control (`left` or `right`)
 - Disabled state support
+- Processing state support (`is-processing`)
 - Supports button types: `button`, `submit`, `reset`
 
 ## Basic Usage
@@ -29,6 +30,7 @@ Accessible button component with variants, sizes, optional icons, and native cli
 | `icon` | `string` | `''` | Icon name |
 | `icon-position` | `'left' \| 'right'` | `'left'` | Icon placement when label exists |
 | `disabled` | `boolean` | `false` | Disables interaction |
+| `is-processing` | `boolean` | `false` | Disables interaction and shows a spinner |
 
 ## Handle Click Event
 
@@ -94,6 +96,14 @@ export class ButtonDemo extends LitElement {
 ```
 
 When `disabled` is set, clicks are blocked.
+
+## Processing State
+
+```html
+<ui-button is-processing>Saving...</ui-button>
+```
+
+When `is-processing` is set, the button is disabled and shows an inline spinner.
 
 ## Form Submit Behavior
 

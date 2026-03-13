@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import '../../../src/shared/components/button';
+import '../../../src/shared/components/input';
 
 describe('UIButton', () => {
   let button: HTMLElement;
@@ -49,12 +50,46 @@ describe('UIButton', () => {
     expect(btn?.disabled).toBe(true);
   });
 
+  it('should be disabled when is-processing attribute is present', async () => {
+    button.setAttribute('is-processing', '');
+    await (button as any).updateComplete;
+    const shadowRoot = button.shadowRoot;
+    const btn = shadowRoot?.querySelector('button') as HTMLButtonElement;
+    expect(btn?.disabled).toBe(true);
+    expect(btn?.getAttribute('aria-busy')).toBe('true');
+  });
+
   it('should have correct type', async () => {
     button.setAttribute('type', 'submit');
     await (button as any).updateComplete;
     const shadowRoot = button.shadowRoot;
     const btn = shadowRoot?.querySelector('button') as HTMLButtonElement;
     expect(btn?.type).toBe('submit');
+  });
+
+  it('should submit form when Enter is pressed in ui-input and has submit button', async () => {
+    const form = document.createElement('form');
+    const uiInput = document.createElement('ui-input') as HTMLElement;
+    const submitButton = document.createElement('ui-button') as HTMLElement;
+
+    submitButton.setAttribute('type', 'submit');
+
+    form.appendChild(uiInput);
+    form.appendChild(submitButton);
+    document.body.appendChild(form);
+
+    const onSubmit = vi.fn((event: Event) => event.preventDefault());
+    form.addEventListener('submit', onSubmit);
+
+    await (uiInput as any).updateComplete;
+    await (submitButton as any).updateComplete;
+
+    const inputEl = uiInput.shadowRoot?.querySelector('input') as HTMLInputElement;
+    inputEl.value = 'hello';
+    inputEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true, cancelable: true }));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    form.remove();
   });
 
   it('should default to type button', () => {
@@ -120,6 +155,18 @@ describe('UIButton', () => {
     expect(slottedText).toContain('Save');
     expect(buttonEl?.classList.contains('icon-only')).toBe(false);
     btn.remove();
+  });
+
+  it('should render spinner while processing', async () => {
+    button.setAttribute('is-processing', '');
+    await (button as any).updateComplete;
+
+    const shadowRoot = button.shadowRoot;
+    const spinner = shadowRoot?.querySelector('.btn-spinner');
+    const spinnerRing = shadowRoot?.querySelector('.btn-spinner-ring');
+
+    expect(spinner).toBeTruthy();
+    expect(spinnerRing).toBeTruthy();
   });
 
   it('should re-render on attribute change', async () => {

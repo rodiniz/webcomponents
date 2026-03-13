@@ -176,7 +176,7 @@ export type GetFormValuesOptions = {
   includeEmpty?: boolean;
 };
 
-const FORM_FIELD_SELECTOR = 'input, select, textarea, ui-input, ui-select, ui-date-picker, ui-checkbox, ui-upload';
+const FORM_FIELD_SELECTOR = 'input, select, textarea, ui-input, ui-textarea, ui-select, ui-date-picker, ui-checkbox, ui-upload';
 
 function resolveFieldName(element: HTMLElement): string {
   return element.getAttribute('name') || element.getAttribute('id') || '';

@@ -1,5 +1,6 @@
 export { UIButton } from '../shared/components/button';
 export { UIInput } from '../shared/components/input';
+export { UITextarea } from '../shared/components/textarea';
 export { UITable } from '../shared/components/table';
 export { UIDatePicker } from '../shared/components/date-picker';
 export { UIPagination } from '../shared/components/pagination';

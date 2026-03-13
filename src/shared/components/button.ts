@@ -19,11 +19,99 @@ export class UIButton extends UIComponentBase {
   @property({ type: String }) icon: string = '';
   @property({ type: String }) iconPosition: 'left' | 'right' = 'left';
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
+  @property({ type: Boolean, reflect: true, attribute: 'is-processing' }) isProcessing: boolean = false;
 
-  private buttonEl: HTMLButtonElement | null = null;
+  private formEl: HTMLFormElement | null = null;
   @state() private hasLabelContent: boolean = false;
 
-  // connectedCallback handled by UIComponentBase
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.attachFormKeydownListener();
+  }
+
+  disconnectedCallback(): void {
+    this.detachFormKeydownListener();
+    super.disconnectedCallback();
+  }
+
+  updated(changedProperties: Map<string | number | symbol, unknown>): void {
+    super.updated(changedProperties);
+    if (changedProperties.has('type')) {
+      this.detachFormKeydownListener();
+      this.attachFormKeydownListener();
+    }
+  }
+
+  private resolveForm(): HTMLFormElement | null {
+    return this.closest('form');
+  }
+
+  private attachFormKeydownListener(): void {
+    if (this.type !== 'submit') return;
+
+    const form = this.resolveForm();
+    if (!form) return;
+
+    this.formEl = form;
+    this.formEl.addEventListener('keydown', this.handleFormKeydown);
+  }
+
+  private detachFormKeydownListener(): void {
+    if (!this.formEl) return;
+    this.formEl.removeEventListener('keydown', this.handleFormKeydown);
+    this.formEl = null;
+  }
+
+  private submitForm(form: HTMLFormElement): void {
+    if (typeof form.requestSubmit === 'function') {
+      form.requestSubmit();
+      return;
+    }
+
+    const submitEvent = new Event('submit', {
+      bubbles: true,
+      cancelable: true
+    });
+    form.dispatchEvent(submitEvent);
+  }
+
+  private getPrimarySubmitButton(form: HTMLFormElement): Element | null {
+    return form.querySelector('ui-button[type="submit"]:not([disabled]):not([is-processing])');
+  }
+
+  private shouldHandleEnterSubmit(event: KeyboardEvent): boolean {
+    if (event.key !== 'Enter' || event.defaultPrevented) return false;
+    if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return false;
+
+    const eventTarget = event.composedPath().find(target => target instanceof HTMLElement) as HTMLElement | undefined;
+    if (!eventTarget) return false;
+
+    const tagName = eventTarget.tagName.toLowerCase();
+
+    if (tagName === 'textarea' || tagName === 'ui-textarea') return false;
+    if (eventTarget.isContentEditable) return false;
+
+    if (eventTarget instanceof HTMLInputElement) {
+      const blockedTypes = ['button', 'submit', 'reset', 'checkbox', 'radio', 'file', 'range', 'color', 'image'];
+      if (blockedTypes.includes(eventTarget.type)) return false;
+    }
+
+    return true;
+  }
+
+  private handleFormKeydown = (event: KeyboardEvent): void => {
+    if (this.disabled || this.isProcessing || this.type !== 'submit') return;
+    if (!this.shouldHandleEnterSubmit(event)) return;
+
+    const form = this.resolveForm();
+    if (!form) return;
+
+    const primarySubmitButton = this.getPrimarySubmitButton(form);
+    if (primarySubmitButton !== this) return;
+
+    event.preventDefault();
+    this.submitForm(form);
+  };
 
   private handleSlotChange = (e: Event): void => {
     const slot = e.target as HTMLSlotElement;
@@ -39,7 +127,7 @@ export class UIButton extends UIComponentBase {
   // Icon rendering now handled by renderIcon utility
 
   private handleClick = (e: Event): void => {
-    if (this.disabled) {
+    if (this.disabled || this.isProcessing) {
       e.preventDefault();
       e.stopPropagation();
       return;
@@ -48,32 +136,19 @@ export class UIButton extends UIComponentBase {
     if (this.type === 'submit') {
       e.preventDefault();
       e.stopPropagation();
-      
-      let form = this.closest('form');
-      
-      if (!form) {
-        let parent = this.parentElement;
-        while (parent) {
-          if (parent.tagName === 'FORM') {
-            form = parent as HTMLFormElement;
-            break;
-          }
-          parent = parent.parentElement;
-        }
-      }
-      
+
+      const form = this.resolveForm();
+
       if (form) {
-        const submitEvent = new Event('submit', {
-          bubbles: true,
-          cancelable: true
-        });
-        form.dispatchEvent(submitEvent);
+        this.submitForm(form);
       }
     }
   };
 
   render() {
+    const isDisabled = this.disabled || this.isProcessing;
     const hasIcon = !!this.icon;
+    const hasLeadingVisual = hasIcon || this.isProcessing;
 
     // Using class builder utilities for cleaner class management
     const classes = classMap(
@@ -81,13 +156,29 @@ export class UIButton extends UIComponentBase {
         { 'btn': true },
         buildVariantClasses(this.variant),
         buildSizeClasses(this.size, ''),
-        buildIconClasses(hasIcon, this.iconPosition, this.hasLabelContent)
+        buildIconClasses(hasLeadingVisual, this.iconPosition, this.hasLabelContent)
       )
     );
 
     const slotEl = html`<slot @slotchange=${this.handleSlotChange}></slot>`;
 
     const renderContent = () => {
+      if (this.isProcessing) {
+        const spinnerEl = html`
+          <span class="btn-spinner" aria-hidden="true">
+            <span class="btn-spinner-ring"></span>
+          </span>
+        `;
+
+        if (this.hasLabelContent) {
+          return this.iconPosition === 'left'
+            ? html`${spinnerEl}${slotEl}`
+            : html`${slotEl}${spinnerEl}`;
+        }
+
+        return spinnerEl;
+      }
+
       if (hasIcon) {
         const iconEl = html`<span class="btn-icon">${renderIcon(this.icon)}</span>`;
         return this.iconPosition === 'left' 
@@ -102,7 +193,8 @@ export class UIButton extends UIComponentBase {
         part="button"
         class=${classes}
         type=${this.type}
-        ?disabled=${this.disabled}
+        ?disabled=${isDisabled}
+        aria-busy=${this.isProcessing ? 'true' : 'false'}
         @click=${this.handleClick}
       >
         ${renderContent()}
