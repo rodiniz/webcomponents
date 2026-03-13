@@ -99,6 +99,29 @@ describe('UIButton', () => {
     expect(btn?.classList.contains('icon-only')).toBe(true);
   });
 
+  it('should render label when icon and slotted text are both provided', async () => {
+    const btn = document.createElement('ui-button') as HTMLElement;
+    btn.setAttribute('icon', 'check');
+    btn.innerHTML = 'Save';
+    document.body.appendChild(btn);
+
+    await (btn as any).updateComplete;
+    await (btn as any).updateComplete;
+
+    const shadowRoot = btn.shadowRoot;
+    const buttonEl = shadowRoot?.querySelector('button');
+    const slot = shadowRoot?.querySelector('slot') as HTMLSlotElement;
+    const slottedText = slot
+      ?.assignedNodes({ flatten: true })
+      .map(node => node.textContent ?? '')
+      .join(' ')
+      .trim();
+
+    expect(slottedText).toContain('Save');
+    expect(buttonEl?.classList.contains('icon-only')).toBe(false);
+    btn.remove();
+  });
+
   it('should re-render on attribute change', async () => {
     button.setAttribute('variant', 'danger');
     await (button as any).updateComplete;

@@ -74,7 +74,6 @@ export class UIButton extends UIComponentBase {
 
   render() {
     const hasIcon = !!this.icon;
-    const isIconOnly = hasIcon && !this.hasLabelContent;
 
     // Using class builder utilities for cleaner class management
     const classes = classMap(
@@ -89,13 +88,11 @@ export class UIButton extends UIComponentBase {
     const slotEl = html`<slot @slotchange=${this.handleSlotChange}></slot>`;
 
     const renderContent = () => {
-      if (hasIcon && this.hasLabelContent) {
+      if (hasIcon) {
         const iconEl = html`<span class="btn-icon">${renderIcon(this.icon)}</span>`;
         return this.iconPosition === 'left' 
           ? html`${iconEl}${slotEl}`
           : html`${slotEl}${iconEl}`;
-      } else if (hasIcon) {
-        return html`<span class="btn-icon">${renderIcon(this.icon)}</span>`;
       }
       return slotEl;
     };

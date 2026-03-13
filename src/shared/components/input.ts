@@ -138,7 +138,6 @@ export class UIInput extends UIComponentBase {
   reportValidity(): boolean {
     this.touched = true;
     const valid = this.doValidate();
-    this.updateErrorDisplay();
     if (!valid && this.inputEl) {
       this.inputEl.focus();
     }
@@ -192,39 +191,12 @@ export class UIInput extends UIComponentBase {
     this.value = target.value;
     this.touched = true;
     this.doValidate();
-    this.updateErrorDisplay();
   };
 
   private handleBlur = (): void => {
     this.touched = true;
     this.doValidate();
-    this.updateErrorDisplay();
   };
-
-  private updateErrorDisplay(): void {
-    const wrapper = this.shadowRoot?.querySelector('.input-wrapper');
-    const errorEl = this.shadowRoot?.querySelector('.input-error');
-
-    if (wrapper) {
-      wrapper.classList.toggle('invalid', !this.valid && this.touched);
-    }
-
-    if (errorEl) {
-      if (!this.valid && this.touched && this.error) {
-        (errorEl as HTMLElement).textContent = this.error;
-        errorEl.classList.remove('hidden');
-      } else {
-        errorEl.classList.add('hidden');
-      }
-    }
-
-    if (this.inputEl) {
-      this.inputEl.setAttribute('aria-invalid', String(!this.valid && this.touched));
-      if (this.name) {
-        this.inputEl.setAttribute('aria-describedby', `${this.name}-error`);
-      }
-    }
-  }
 
   private parseValidationRule(rule: string): ValidationRule | null {
     try {

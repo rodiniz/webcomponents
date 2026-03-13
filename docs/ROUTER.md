@@ -363,7 +363,7 @@ import { getPathParams } from '@/core/router-lib';
 
 export class PageRecording extends BaseComponent {
   connectedCallback() {
-    const params = getPathParams('/recording/:id', location.pathname);
+    const params = getPathParams('/dashboard/recording/:id', location.pathname);
     const recordingId = params?.id;
   }
 }
