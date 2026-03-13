@@ -202,11 +202,7 @@ export class UISelect extends UIComponentBase {
   connectedCallback(): void {
     super.connectedCallback();
     this.clickOutsideHandler.attach();
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.clickOutsideHandler.detach();
+    this.registerCleanup(() => this.clickOutsideHandler.detach());
   }
 
   private getSelectedLabel(): string {

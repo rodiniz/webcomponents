@@ -13,6 +13,8 @@ import { LitElement } from 'lit';
  * 
  */
 export class UIComponentBase extends LitElement {
+  private cleanupCallbacks: Set<() => void> = new Set();
+
   /**
    * Called when the component is added to the DOM.
    * Automatically sets the data-ui attribute based on tag name.
@@ -26,6 +28,50 @@ export class UIComponentBase extends LitElement {
     
     this.setAttribute('data-ui', componentName);
     super.connectedCallback();
+  }
+
+  disconnectedCallback(): void {
+    this.runCleanupCallbacks();
+    super.disconnectedCallback();
+  }
+
+  protected registerCleanup(cleanup: () => void): () => void {
+    this.cleanupCallbacks.add(cleanup);
+    return () => this.cleanupCallbacks.delete(cleanup);
+  }
+
+  protected addManagedEventListener<K extends keyof GlobalEventHandlersEventMap>(
+    target: EventTarget,
+    type: K,
+    listener: (event: GlobalEventHandlersEventMap[K]) => void,
+    options?: boolean | AddEventListenerOptions
+  ): () => void;
+  protected addManagedEventListener(
+    target: EventTarget,
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ): () => void;
+  protected addManagedEventListener(
+    target: EventTarget,
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions
+  ): () => void {
+    target.addEventListener(type, listener, options);
+    const cleanup = () => target.removeEventListener(type, listener, options);
+    const unregister = this.registerCleanup(cleanup);
+    return () => {
+      cleanup();
+      unregister();
+    };
+  }
+
+  protected runCleanupCallbacks(): void {
+    for (const cleanup of this.cleanupCallbacks) {
+      cleanup();
+    }
+    this.cleanupCallbacks.clear();
   }
 
   /**

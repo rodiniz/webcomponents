@@ -37,11 +37,7 @@ export class UIDropdown extends UIComponentBase {
   connectedCallback(): void {
     super.connectedCallback();
     this.clickOutsideHandler.attach();
-  }
-
-  disconnectedCallback(): void {
-    this.clickOutsideHandler.detach();
-    super.disconnectedCallback();
+    this.registerCleanup(() => this.clickOutsideHandler.detach());
   }
 
   private toggleDropdown = (): void => {

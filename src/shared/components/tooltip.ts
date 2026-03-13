@@ -38,6 +38,7 @@ export class UITooltip extends UIComponentBase {
   @state() private isVisible: boolean = false;
 
   private triggerElement: HTMLElement | null = null;
+  private triggerListenerCleanups: Array<() => void> = [];
   private onMouseEnter = (): void => this.show();
   private onMouseLeave = (): void => this.hide();
   private onTriggerClick = (e: Event): void => {
@@ -60,22 +61,22 @@ export class UITooltip extends UIComponentBase {
     if (!this.triggerElement || this.disabled) return;
 
     if (this.trigger === 'hover') {
-      this.triggerElement.addEventListener('mouseenter', this.onMouseEnter);
-      this.triggerElement.addEventListener('mouseleave', this.onMouseLeave);
+      this.triggerListenerCleanups.push(
+        this.addManagedEventListener(this.triggerElement, 'mouseenter', this.onMouseEnter),
+        this.addManagedEventListener(this.triggerElement, 'mouseleave', this.onMouseLeave)
+      );
       return;
     }
 
-    this.triggerElement.addEventListener('click', this.onTriggerClick);
-    document.addEventListener('click', this.onDocumentClick);
+    this.triggerListenerCleanups.push(
+      this.addManagedEventListener(this.triggerElement, 'click', this.onTriggerClick),
+      this.addManagedEventListener(document, 'click', this.onDocumentClick)
+    );
   }
 
   private detachTriggerListeners(): void {
-    if (!this.triggerElement) return;
-
-    this.triggerElement.removeEventListener('mouseenter', this.onMouseEnter);
-    this.triggerElement.removeEventListener('mouseleave', this.onMouseLeave);
-    this.triggerElement.removeEventListener('click', this.onTriggerClick);
-    document.removeEventListener('click', this.onDocumentClick);
+    this.triggerListenerCleanups.forEach(cleanup => cleanup());
+    this.triggerListenerCleanups = [];
   }
 
   private show(): void {

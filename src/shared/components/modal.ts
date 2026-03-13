@@ -33,8 +33,6 @@ export class UIModal extends UIComponentBase {
   @property({ type: Boolean, attribute: 'no-close-on-escape' }) noCloseOnEscape: boolean = false;
   @property({ type: Boolean, attribute: 'no-close-on-backdrop' }) noCloseOnBackdrop: boolean = false;
 
-  private escapeCleanup?: () => void;
-
   connectedCallback(): void {
     super.connectedCallback();
     const handler = onEscape(() => {
@@ -42,13 +40,7 @@ export class UIModal extends UIComponentBase {
         this.close();
       }
     });
-    document.addEventListener('keydown', handler);
-    this.escapeCleanup = () => document.removeEventListener('keydown', handler);
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.escapeCleanup?.();
+    this.addManagedEventListener(document, 'keydown', handler);
   }
 
   willUpdate(changedProperties: Map<string, unknown>): void {

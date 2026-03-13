@@ -23,16 +23,12 @@ export class UIButton extends UIComponentBase {
   @property({ type: Boolean, reflect: true, attribute: 'is-processing' }) isProcessing: boolean = false;
 
   private formEl: HTMLFormElement | null = null;
+  private formKeydownCleanup: (() => void) | null = null;
   @state() private hasLabelContent: boolean = false;
 
   connectedCallback(): void {
     super.connectedCallback();
     this.attachFormKeydownListener();
-  }
-
-  disconnectedCallback(): void {
-    this.detachFormKeydownListener();
-    super.disconnectedCallback();
   }
 
   updated(changedProperties: Map<string | number | symbol, unknown>): void {
@@ -54,12 +50,12 @@ export class UIButton extends UIComponentBase {
     if (!form) return;
 
     this.formEl = form;
-    this.formEl.addEventListener('keydown', this.handleFormKeydown);
+    this.formKeydownCleanup = this.addManagedEventListener(this.formEl, 'keydown', this.handleFormKeydown);
   }
 
   private detachFormKeydownListener(): void {
-    if (!this.formEl) return;
-    this.formEl.removeEventListener('keydown', this.handleFormKeydown);
+    this.formKeydownCleanup?.();
+    this.formKeydownCleanup = null;
     this.formEl = null;
   }
 

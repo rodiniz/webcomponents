@@ -101,7 +101,7 @@ export class UIInput extends UIComponentBase {
   @property({ type: String }) name: string = '';
   @property({ type: String }) validationRule: string = '';
   @property({ type: String }) icon: IconName | '' = '';
-  @property({ type: String }) iconPosition: 'left' | 'right' = 'left';
+  @property({ type: String, attribute: 'icon-position' }) iconPosition: 'left' | 'right' = 'left';
 
   @state() private value: string = '';
   @state() private valid: boolean = true;

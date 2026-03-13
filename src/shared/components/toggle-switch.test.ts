@@ -34,20 +34,23 @@ describe('UIToggleSwitch', () => {
     expect(toggleSwitch.checked).toBe(true);
   });
 
-  it('should render with label when provided', () => {
+  it('should render with label when provided', async () => {
     toggleSwitch.setAttribute('label', 'Enable notifications');
+    await toggleSwitch.updateComplete;
     const label = toggleSwitch.shadowRoot?.querySelector('.toggle-label');
     expect(label?.textContent).toBe('Enable notifications');
   });
 
-  it('should apply size class', () => {
+  it('should apply size class', async () => {
     toggleSwitch.setAttribute('size', 'lg');
+    await toggleSwitch.updateComplete;
     const container = toggleSwitch.shadowRoot?.querySelector('.toggle-container');
     expect(container?.classList.contains('size-lg')).toBe(true);
   });
 
-  it('should be disabled when disabled attribute is set', () => {
+  it('should be disabled when disabled attribute is set', async () => {
     toggleSwitch.setAttribute('disabled', '');
+    await toggleSwitch.updateComplete;
     const container = toggleSwitch.shadowRoot?.querySelector('.toggle-container');
     expect(container?.classList.contains('disabled')).toBe(true);
   });

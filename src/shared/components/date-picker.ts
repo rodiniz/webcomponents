@@ -38,6 +38,7 @@ export class UIDatePicker extends UIComponentBase {
       this.currentMonth = new Date(this.value);
     }
     this.clickOutsideHandler.attach();
+    this.registerCleanup(() => this.clickOutsideHandler.detach());
   }
 
   willUpdate(changedProperties: Map<string, unknown>): void {
@@ -47,11 +48,6 @@ export class UIDatePicker extends UIComponentBase {
         this.currentMonth = new Date(this.value);
       }
     }
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this.clickOutsideHandler.detach();
   }
 
   private toggleDropdown = (): void => {

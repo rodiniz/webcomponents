@@ -28,7 +28,7 @@ export class UIAccordion extends UIComponentBase {
     }
   }
 
-  updated(changedProperties: Map<string, any>): void {
+  willUpdate(changedProperties: Map<string, any>): void {
     if (changedProperties.has('openItemId') && this.openItemId) {
       if (!this.allowMultiple) {
         this.openItems.clear();
