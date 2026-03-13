@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import { nothing } from 'lit';
 import { UIComponentBase } from '../../core/ui-component-base';
+import { renderOptionalLabel } from '../../core/form-helpers';
 import { useClickOutside } from '../../core/click-outside';
 import themeStyles from '../../styles/theme.css?inline';
 
@@ -171,7 +172,7 @@ export class UIDatePicker extends UIComponentBase {
   render() {
     return html`
       <div class=${classMap({ 'date-picker-container': true, 'is-open': this.isOpen })}>
-        ${this.label ? html`<label class="date-picker-label">${this.label}</label>` : ''}
+        ${renderOptionalLabel(this.label, { className: 'date-picker-label' })}
         <div class="date-input-wrapper" @click=${this.toggleDropdown}>
           <input
             type="text"

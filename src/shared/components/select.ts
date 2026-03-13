@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import { nothing } from 'lit';
 import { UIComponentBase } from '../../core/ui-component-base';
+import { renderOptionalLabel } from '../../core/form-helpers';
 import { useClickOutside } from '../../core/click-outside';
 import themeStyles from '../../styles/theme.css?inline';
 
@@ -244,7 +245,7 @@ export class UISelect extends UIComponentBase {
     );
 
     return html`
-      ${this.label ? html`<label class="select-label">${this.label}</label>` : nothing}
+      ${renderOptionalLabel(this.label, { className: 'select-label' })}
       
       <div class=${containerClass}>
         <div class="select-display" @click=${this.toggleOpen}>

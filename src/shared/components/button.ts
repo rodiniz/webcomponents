@@ -5,6 +5,7 @@ import styles from '../../styles/theme.css?inline';
 import { UIComponentBase } from '../../core/ui-component-base';
 import { renderIcon } from '../../core/icon-helpers';
 import { buildSizeClasses, buildVariantClasses, buildIconClasses, combineClasses } from '../../core/class-builders';
+import { slotHasContentFromEvent } from '../../core/slot-helpers';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -114,10 +115,7 @@ export class UIButton extends UIComponentBase {
   };
 
   private handleSlotChange = (e: Event): void => {
-    const slot = e.target as HTMLSlotElement;
-    const hasContent = slot
-      .assignedNodes({ flatten: true })
-      .some(node => node.textContent?.trim().length);
+    const hasContent = slotHasContentFromEvent(e, { textOnly: true });
 
     if (hasContent !== this.hasLabelContent) {
       this.hasLabelContent = hasContent;

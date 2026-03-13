@@ -1,6 +1,7 @@
 import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { UIComponentBase } from '../../core/ui-component-base';
+import { getAssignedElementsFromSlot } from '../../core/slot-helpers';
 import themeStyles from '../../styles/theme.css?inline';
 import tabsStyles from './tabs.css?inline';
 
@@ -49,13 +50,11 @@ export class UITabs extends UIComponentBase {
   }
 
   private getTabs(): HTMLElement[] {
-    const slot = this.shadowRoot?.querySelector('slot[name="tab"]') as HTMLSlotElement | null;
-    return slot ? (slot.assignedElements({ flatten: true }) as HTMLElement[]) : [];
+    return getAssignedElementsFromSlot(this.shadowRoot, 'tab');
   }
 
   private getPanels(): HTMLElement[] {
-    const slot = this.shadowRoot?.querySelector('slot[name="panel"]') as HTMLSlotElement | null;
-    return slot ? (slot.assignedElements({ flatten: true }) as HTMLElement[]) : [];
+    return getAssignedElementsFromSlot(this.shadowRoot, 'panel');
   }
 
   private getActiveId(tabs: HTMLElement[]): string | null {

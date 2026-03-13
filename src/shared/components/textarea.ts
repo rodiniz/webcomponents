@@ -1,6 +1,7 @@
 import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { UIComponentBase } from '../../core/ui-component-base';
+import { renderOptionalLabel } from '../../core/form-helpers';
 import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-textarea')
@@ -84,11 +85,9 @@ export class UITextarea extends UIComponentBase {
   };
 
   render() {
-    const hasLabel = this.label !== '';
-
     return html`
       <div class="input-wrapper${this.disabled ? ' disabled' : ''}">
-        ${hasLabel ? html`<label class="input-label">${this.label}${this.required ? ' *' : ''}</label>` : ''}
+        ${renderOptionalLabel(this.label, { required: this.required })}
         <textarea
           part="textarea"
           class="textarea-field"

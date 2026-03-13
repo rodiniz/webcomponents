@@ -1,7 +1,8 @@
-import { html, css, unsafeCSS, nothing } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { UIComponentBase } from '../../core/ui-component-base';
 import { renderIcon } from '../../core/icon-helpers';
+import { renderOptionalLabel } from '../../core/form-helpers';
 import themeStyles from '../../styles/theme.css?inline';
 import { IconName } from '../../lib/icons';
 
@@ -244,13 +245,12 @@ export class UIInput extends UIComponentBase {
 
   render() {
     const isInvalid = !this.valid && this.touched;
-    const hasLabel = this.label !== '';
     const hasIcon = !!this.icon;
     const iconClass = hasIcon ? `has-icon-${this.iconPosition}` : '';
 
     return html`
       <div class="input-wrapper${isInvalid ? ' invalid' : ''}${this.disabled ? ' disabled' : ''}">
-        ${hasLabel ? html`<label class="input-label">${this.label}${this.required ? ' *' : ''}</label>` : ''}
+        ${renderOptionalLabel(this.label, { required: this.required })}
         <div class="input-container">
           ${hasIcon && this.iconPosition === 'left' ? html`<span class="input-icon left">${renderIcon(this.icon, { width: 16, height: 16 })}</span>` : ''}
           <input

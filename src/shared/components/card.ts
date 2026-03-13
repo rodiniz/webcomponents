@@ -2,6 +2,7 @@ import { html, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap, styleMap } from '../../core/template';
 import { UIComponentBase } from '../../core/ui-component-base';
+import { slotHasContentFromEvent } from '../../core/slot-helpers';
 import themeStyles from '../../styles/theme.css?inline';
 
 @customElement('ui-card')
@@ -38,13 +39,11 @@ export class UICard extends UIComponentBase {
   }
 
   private handleHeaderSlotChange = (event: Event): void => {
-    const slot = event.target as HTMLSlotElement;
-    this.hasHeader = slot.assignedNodes({ flatten: true }).length > 0;
+    this.hasHeader = slotHasContentFromEvent(event);
   };
 
   private handleFooterSlotChange = (event: Event): void => {
-    const slot = event.target as HTMLSlotElement;
-    this.hasFooter = slot.assignedNodes({ flatten: true }).length > 0;
+    this.hasFooter = slotHasContentFromEvent(event);
   };
 
   render() {
