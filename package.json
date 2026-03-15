@@ -24,6 +24,7 @@
     "build": "vite build",
     "build:prod": "vite build --mode production",
     "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json && node scripts/copy-lib-assets.mjs",
+    "analyze": "vite build --config vite.lib.config.ts --mode analyze",
     "preview": "vite preview",
     "preview:prod": "vite preview --port 4173",
     "test": "vitest",
@@ -31,6 +32,7 @@
     "test:run": "vitest run"
   },
   "devDependencies": {
+    "@storybook/addon-docs": "^10.2.15",
     "@storybook/addon-links": "^10.2.15",
     "@storybook/web-components-vite": "^10.2.15",
     "@types/feather-icons": "^4.29.4",
@@ -38,11 +40,11 @@
     "@vitest/ui": "^4.0.18",
     "jsdom": "^28.1.0",
     "lit-html": "^3.3.2",
+    "rollup-plugin-visualizer": "^7.0.1",
     "storybook": "^10.2.15",
     "typescript": "^5.9.3",
     "vite": "^5.4.21",
-    "vitest": "^4.0.18",
-    "@storybook/addon-docs": "^10.2.15"
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "feather-icons": "^4.29.2",

@@ -1,0 +1,27 @@
+{
+  "name": "@diniz/webcomponents-snippets",
+  "version": "1.0.0",
+  "description": "VS Code snippets for @diniz/webcomponents library",
+  "main": "webcomponents.code-snippets",
+  "scripts": {
+    "test": "echo \"No tests yet\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodiniz/webcomponents.git"
+  },
+  "keywords": [
+    "web-components",
+    "snippets",
+    "vscode"
+  ],
+  "license": "MIT",
+  "publisher": "diniz",
+  "engines": {
+    "vscode": "^1.0.0"
+  },
+  "homepage": "https://github.com/rodiniz/webcomponents#readme",
+  "bugs": {
+    "url": "https://github.com/rodiniz/webcomponents/issues"
+  }
+}

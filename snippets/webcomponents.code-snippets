@@ -1,0 +1,505 @@
+{
+  "ui-button": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-button",
+    "body": [
+      "<ui-button variant=\"${1|primary,secondary,ghost,danger|}\" size=\"${2|sm,md,lg|}\"${3: icon=\"${4:}\"}${5: icon-position=\"${6:left|}\"}${7: disabled}>",
+      "\t$0",
+      "</ui-button>"
+    ],
+    "description": "ui-button with variant, size, icon and disabled"
+  },
+  "ui-button-primary": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "uibtn",
+    "body": [
+      "<ui-button variant=\"primary\" size=\"md\">$0</ui-button>"
+    ],
+    "description": "Primary ui-button"
+  },
+  "ui-button-submit": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "uibtn-submit",
+    "body": [
+      "<ui-button type=\"submit\" variant=\"primary\">$0</ui-button>"
+    ],
+    "description": "Submit ui-button for forms"
+  },
+  "ui-input": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-input",
+    "body": [
+      "<ui-input",
+      "\tlabel=\"${1:Label}\"",
+      "\ttype=\"${2|text,email,password,number,tel,url,date|}\"",
+      "${3:placeholder=\"${4:}\"}${5: required}${6: disabled}",
+      "></ui-input>"
+    ],
+    "description": "ui-input with common props"
+  },
+  "ui-input-validate": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-input-validate",
+    "body": [
+      "<ui-input",
+      "\tlabel=\"${1:Label}\"",
+      "\ttype=\"${2|text,email,password|}\"",
+      "\tvalidate=\"${3|email,email:domain.com,min:N,max:N,regex:pattern|}\"",
+      "\tcustom-error=\"${4:Error message}\"",
+      "></ui-input>"
+    ],
+    "description": "ui-input with validation"
+  },
+  "ui-input-icon": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-input-icon",
+    "body": [
+      "<ui-input",
+      "\tlabel=\"${1:Label}\"",
+      "\ticon=\"${2|search,dollar-sign,mail,lock,user|}\"",
+      "\ticon-position=\"${3:left,right|}\"",
+      "\tplaceholder=\"${4:}\"",
+      "></ui-input>"
+    ],
+    "description": "ui-input with icon"
+  },
+  "ui-textarea": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-textarea",
+    "body": [
+      "<ui-textarea",
+      "\tlabel=\"${1:Label}\"",
+      "\tplaceholder=\"${2:}\"",
+      "\trows=\"${3:4}\"",
+      "${4: required}${5: disabled}",
+      "></ui-textarea>"
+    ],
+    "description": "ui-textarea element"
+  },
+  "ui-checkbox": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-checkbox",
+    "body": [
+      "<ui-checkbox label=\"${1:Label}\"${2: checked}${3: disabled}${4: indeterminate}></ui-checkbox>"
+    ],
+    "description": "ui-checkbox element"
+  },
+  "ui-radio": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-radio",
+    "body": [
+      "<ui-radio name=\"${1:group}\" value=\"${2:value}\" label=\"${3:Label}\"${4: checked}${5: disabled}></ui-radio>"
+    ],
+    "description": "ui-radio element"
+  },
+  "ui-radio-group": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-radio-group",
+    "body": [
+      "<ui-radio-group name=\"${1:group}\"${2: variant=\"card}\">",
+      "\t<ui-radio value=\"${2:1}\" label=\"${3:Option 1}\"></ui-radio>",
+      "\t<ui-radio value=\"${3:2}\" label=\"${4:Option 2}\"></ui-radio>",
+      "\t<ui-radio value=\"${4:3}\" label=\"${5:Option 3}\"></ui-radio>",
+      "</ui-radio-group>"
+    ],
+    "description": "ui-radio-group with options"
+  },
+  "ui-toggle-switch": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-toggle-switch",
+    "body": [
+      "<ui-toggle-switch label=\"${1:Label}\"${2: checked}${3: disabled}></ui-toggle-switch>"
+    ],
+    "description": "ui-toggle-switch element"
+  },
+  "ui-select": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-select",
+    "body": [
+      "<ui-select",
+      "\tlabel=\"${1:Label}\"",
+      "\t.options=${2:${3:['Option 1', 'Option 2', 'Option 3']}}",
+      "${4: placeholder=\"${5:Select...}\"}${6: required}${7: disabled}",
+      "></ui-select>"
+    ],
+    "description": "ui-select dropdown"
+  },
+  "ui-select-multi": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-select-multi",
+    "body": [
+      "<ui-select",
+      "\tlabel=\"${1:Label}\"",
+      "\tmultiple",
+      "\t.options=${2:${3:['Option 1', 'Option 2', 'Option 3']}}",
+      "${4: required}",
+      "></ui-select>"
+    ],
+    "description": "ui-select with multi-select"
+  },
+  "ui-card": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-card",
+    "body": [
+      "<ui-card variant=\"${1|default,elevated,bordered,ghost|}\" elevation=\"${2|none,sm,md,lg,xl|}\"${3: shadow}${4: rounded=\"false\"}${5: bg=\"${6:}\"}>",
+      "\t$0",
+      "</ui-card>"
+    ],
+    "description": "ui-card component"
+  },
+  "ui-accordion": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-accordion",
+    "body": [
+      "<ui-accordion label=\"${1:Section Title}\"${2: expanded}${3: disabled}>",
+      "\t$0",
+      "</ui-accordion>"
+    ],
+    "description": "ui-accordion component"
+  },
+  "ui-tabs": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-tabs",
+    "body": [
+      "<ui-tabs .labels=${1:${2:['Tab 1', 'Tab 2', 'Tab 3']}} active=\"${3:0}\">",
+      "\t<div>$4</div>",
+      "\t<div>$5</div>",
+      "\t<div>$6</div>",
+      "</ui-tabs>"
+    ],
+    "description": "ui-tabs component"
+  },
+  "ui-modal": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-modal",
+    "body": [
+      "<ui-modal id=\"${1:modal}\" title=\"${2:Title}\" size=\"${3|sm,md,lg,xl|}\" open>",
+      "\t$0",
+      "</ui-modal>"
+    ],
+    "description": "ui-modal dialog"
+  },
+  "ui-sidebar": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-sidebar",
+    "body": [
+      "<ui-sidebar",
+      "\tbrand=\"${1:App Name}\"",
+      "\tversion=\"${2:v1.0}\"",
+      "\t.items=${3:${4:[\n\t\t{ icon: 'home', label: 'Home', href: '/' },\n\t\t{ icon: 'settings', label: 'Settings', href: '/settings' }\n\t]}}",
+      "${5:.footerItems=${6:${7:[\n\t\t{ icon: 'github', label: 'GitHub', href: 'https://github.com' }\n\t]}}}",
+      "></ui-sidebar>"
+    ],
+    "description": "ui-sidebar navigation"
+  },
+  "ui-top-bar": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-top-bar",
+    "body": [
+      "<ui-top-bar title=\"${1:Title}\"${2: logo=\"${3:}\"}></ui-top-bar>"
+    ],
+    "description": "ui-top-bar header"
+  },
+  "ui-table": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-table",
+    "body": [
+      "<ui-table",
+      "\t.columns=${1:${2:[\n\t\t{ key: 'name', label: 'Name', sortable: true },\n\t\t{ key: 'email', label: 'Email' },\n\t\t{ key: 'actions', label: 'Actions', actions: { edit: true, delete: true } }\n\t]}}",
+      "\t.rows=${3:${4:[\n\t\t{ name: 'John Doe', email: 'john@example.com' },\n\t\t{ name: 'Jane Smith', email: 'jane@example.com' }\n\t]}}",
+      "${5: bordered}${6: zebra}",
+      "></ui-table>"
+    ],
+    "description": "ui-table with columns and rows"
+  },
+  "ui-table-events": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-table-events",
+    "body": [
+      "const table = document.querySelector('ui-table');",
+      "",
+      "table.addEventListener('action', (e) => {",
+      "\tconst { action, row, rowIndex } = e.detail;",
+      "\tconsole.log('Action:', action, 'Row:', row);",
+      "});",
+      "",
+      "table.addEventListener('sort-change', (e) => {",
+      "\tconst { key, direction } = e.detail;",
+      "\tconsole.log('Sort:', key, direction);",
+      "});",
+      "$0"
+    ],
+    "description": "ui-table event handlers"
+  },
+  "ui-pagination": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-pagination",
+    "body": [
+      "<ui-pagination",
+      "\ttotal=\"${1:100}\"",
+      "\tpage=\"${2:1}\"",
+      "\tper-page=\"${3:10}\"",
+      "></ui-pagination>"
+    ],
+    "description": "ui-pagination component"
+  },
+  "ui-treeview": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-treeview",
+    "body": [
+      "<ui-treeview",
+      "\t.items=${1:${2:[\n\t\t{ id: '1', label: 'Parent 1' },\n\t\t{ id: '2', label: 'Parent 2', lazy: true }\n\t]}}",
+      "${3: multiSelect}",
+      "></ui-treeview>"
+    ],
+    "description": "ui-treeview component"
+  },
+  "ui-toast": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-toast",
+    "body": [
+      "<ui-toast id=\"${1:toaster}\" position=\"${2|top-right,top-left,bottom-right,bottom-left,top-center,bottom-center|}\"></ui-toast>"
+    ],
+    "description": "ui-toast container"
+  },
+  "ui-toast-show": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-toast-show",
+    "body": [
+      "const toaster = document.querySelector('ui-toast');",
+      "",
+      "toaster.${1|success,error,warning,info|}('${2:Title}', '${3:Message}');",
+      "$0"
+    ],
+    "description": "Show toast notification"
+  },
+  "ui-spinner": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-spinner",
+    "body": [
+      "<ui-spinner size=\"${1|sm,md,lg|}\"${2: color=\"${3:primary}\"}></ui-spinner>"
+    ],
+    "description": "ui-spinner loading indicator"
+  },
+  "ui-tooltip": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-tooltip",
+    "body": [
+      "<ui-tooltip content=\"${1:Tooltip text}\" position=\"${2|top,bottom,left,right|}\" trigger=\"${3|hover,click|}\">",
+      "\t$0",
+      "</ui-tooltip>"
+    ],
+    "description": "ui-tooltip wrapper"
+  },
+  "ui-stepper": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-stepper",
+    "body": [
+      "<ui-stepper",
+      "\t.steps=${1:${2:['Step 1', 'Step 2', 'Step 3']}}",
+      "\tactive=\"${3:0}\"",
+      "${4: orientation=\"${5|horizontal,vertical|}\"}",
+      ">",
+      "\t$0",
+      "</ui-stepper>"
+    ],
+    "description": "ui-stepper component"
+  },
+  "ui-date-picker": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-date-picker",
+    "body": [
+      "<ui-date-picker",
+      "\tlabel=\"${1:Date}\"",
+      "\tformat=\"${2|YYYY-MM-DD,MM/DD/YYYY,DD/MM/YYYY|}\"",
+      "${3: value=\"${4:}\"}${5: min=\"${6:}\"}${7: max=\"${8:}\"}${9: disabled}",
+      "></ui-date-picker>"
+    ],
+    "description": "ui-date-picker component"
+  },
+  "ui-upload": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-upload",
+    "body": [
+      "<ui-upload",
+      "\taccept=\"${1:.pdf,.doc,.jpg}\"",
+      "${2: multiple}${3: disabled}",
+      "></ui-upload>"
+    ],
+    "description": "ui-upload component"
+  },
+  "ui-link": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-link",
+    "body": [
+      "<ui-link href=\"${1:/path}\"${2: external}>${3:Link text}</ui-link>"
+    ],
+    "description": "ui-link anchor"
+  },
+  "ui-dropdown": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-dropdown",
+    "body": [
+      "<ui-dropdown .items=${1:${2:[\n\t{ label: 'Edit', icon: 'edit' },\n\t{ label: 'Delete', icon: 'trash' }\n\t]}}>",
+      "\t<ui-button>${3:Actions}</ui-button>",
+      "</ui-dropdown>"
+    ],
+    "description": "ui-dropdown menu"
+  },
+  "ui-picklist": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-picklist",
+    "body": [
+      "<ui-picklist",
+      "\t.available=${1:${2:['Item 1', 'Item 2', 'Item 3']}}",
+      "\t.selected=${3:${4:[]}}",
+      "></ui-picklist>"
+    ],
+    "description": "ui-picklist dual list"
+  },
+  "ui-layout": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "ui-layout",
+    "body": [
+      "<ui-layout>",
+      "\t<ui-layout-header>",
+      "\t\t$1",
+      "\t</ui-layout-header>",
+      "\t<ui-layout-content>",
+      "\t\t$2",
+      "\t</ui-layout-content>",
+      "\t<ui-layout-footer>",
+      "\t\t$3",
+      "\t</ui-layout-footer>",
+      "</ui-layout>"
+    ],
+    "description": "ui-layout structure"
+  },
+  "wc-import": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "wc-import",
+    "body": [
+      "import '@diniz/webcomponents';"
+    ],
+    "description": "Import all web components"
+  },
+  "wc-import-named": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "wc-import-named",
+    "body": [
+      "import { ${1:UIButton}, ${2:UIInput} } from '@diniz/webcomponents';"
+    ],
+    "description": "Import named components"
+  },
+  "wc-theming": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "wc-apply-theme",
+    "body": [
+      "import { applyTheme } from '@diniz/webcomponents';",
+      "",
+      "await applyTheme('${1|shadcn,zinc,rose,blue,green,orange,violet|}');$0"
+    ],
+    "description": "Apply theme to components"
+  },
+  "wc-http": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "wc-http-get",
+    "body": [
+      "import { http } from '@diniz/webcomponents';",
+      "",
+      "const data = await http.get('${1:/api/endpoint}');",
+      "$0"
+    ],
+    "description": "HTTP GET request"
+  },
+  "wc-http-post": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "wc-http-post",
+    "body": [
+      "import { http } from '@diniz/webcomponents';",
+      "",
+      "const result = await http.post('${1:/api/endpoint}', ${2:{}});",
+      "$0"
+    ],
+    "description": "HTTP POST request"
+  },
+  "wc-router": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "wc-router",
+    "body": [
+      "import { createRouter } from '@diniz/webcomponents';",
+      "",
+      "const router = createRouter([",
+      "\t{ path: '/', component: 'home-page', load: () => import('./pages/home') },",
+      "\t{ path: '/${1:about}', component: '${2:about-page}', load: () => import('./pages/${3:about}') }",
+      "]);",
+      "$0"
+    ],
+    "description": "Create router"
+  },
+  "wc-store": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "wc-store",
+    "body": [
+      "import { createStore } from '@diniz/webcomponents';",
+      "",
+      "const store = createStore({",
+      "\t${1:key}: ${2:value}",
+      "});",
+      "",
+      "const { state, setState } = store;",
+      "$0"
+    ],
+    "description": "Create state store"
+  },
+  "wc-bind-props": {
+    "scope": "typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "wc-bind-props",
+    "body": [
+      "import { bindProps, getEl } from '@diniz/webcomponents';",
+      "",
+      "const el = getEl('${1:ui-table#${2:id}}');",
+      "",
+      "bindProps(el, {",
+      "\t${3:columns}: ${4:[]},",
+      "\t${5:rows}: ${6:[]}",
+      "});",
+      "$0"
+    ],
+    "description": "Bind props to element"
+  },
+  "wc-lit-component": {
+    "scope": "typescript,typescriptreact",
+    "prefix": "wc-lit-component",
+    "body": [
+      "import { LitComponent, html } from '@diniz/webcomponents';",
+      "",
+      "export class ${1:MyComponent} extends LitComponent {",
+      "\trender() {",
+      "\t\treturn html`",
+      "\t\t\t$0",
+      "\t\t`;",
+      "\t}",
+      "}",
+      "",
+      "customElements.define('${2:my-component}', ${1:MyComponent});"
+    ],
+    "description": "Create LitComponent"
+  },
+  "wc-form": {
+    "scope": "html,typescript,typescriptreact,javascript,javascriptreact",
+    "prefix": "wc-form",
+    "body": [
+      "<form id=\"${1:form-id}\">",
+      "\t<ui-input name=\"${2:username}\" label=\"${3:Username}\" required></ui-input>",
+      "\t<ui-input name=\"${4:email}\" label=\"${5:Email}\" type=\"email\" required></ui-input>",
+      "\t<ui-input name=\"${6:password}\" label=\"${7:Password}\" type=\"password\" required></ui-input>",
+      "\t<div class=\"actions\">",
+      "\t\t<ui-button variant=\"secondary\" type=\"reset\">Cancel</ui-button>",
+      "\t\t<ui-button variant=\"primary\" type=\"submit\">Submit</ui-button>",
+      "\t</div>",
+      "</form>"
+    ],
+    "description": "Complete form with validation"
+  }
+}

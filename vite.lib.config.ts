@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/lib/index.ts'),
@@ -22,5 +23,13 @@ export default defineConfig({
     },
     minify: 'esbuild',
     cssCodeSplit: false
-  }
-});
+  },
+  plugins: [
+    mode === 'analyze' ? visualizer({
+      filename: 'dist/stats.html',
+      open: true,
+      gzipSize: true,
+      brotliSize: true
+    }) : null
+  ].filter(Boolean)
+}));
