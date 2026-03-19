@@ -154,7 +154,7 @@ export type {
 
 // Router
 export { createRouter, getPathParams, buildPath, getRoutePath } from '../core/router-lib';
-export type { Route } from '../core/router-lib';
+export type { Route, RouterInstance } from '../core/router-lib';
 
 // Theme Service
 export { applyTheme, getCurrentTheme, THEME_LIST, getThemeList, registerCustomTheme, unregisterCustomTheme, getCustomTheme, getCustomThemes } from '../core/theme-service';

@@ -362,7 +362,30 @@ router(); // Manually trigger router
 
 ## Path Parameters in Components
 
-Extract path parameters using the `getPathParams` function:
+Extract path parameters using either `router.getParam(name)` or `getPathParams`.
+
+### Using router.getParam(name)
+
+```typescript
+import { createRouter } from '@diniz/webcomponents';
+
+const router = createRouter([
+  {
+    path: '/users/:userId/posts/:postId',
+    component: 'page-user-post',
+    load: () => import('./pages/user-post')
+  }
+]);
+
+// When current URL is /users/42/posts/123
+router.getParam('userId'); // '42'
+router.getParam('postId'); // '123'
+router.getParam('unknown'); // null
+```
+
+### Using getPathParams(routePath, path)
+
+Extract path parameters directly from two path strings:
 
 ```typescript
 import { getPathParams } from '@diniz/webcomponents';
@@ -591,7 +614,16 @@ Creates and initializes the router.
 - `routes: Route[]` — Array of route definitions
 - `appSelectorOrOptions?: string | RouterOptions` — Outlet selector string **or** a `RouterOptions` object (default: `'#app'`)
 
-**Returns:** `() => Promise<void>` — The router function (handles navigation)
+**Returns:** `RouterInstance` — A callable router function plus helpers (`router()`, `router.getParam(name)`).
+
+### RouterInstance
+
+```typescript
+type RouterInstance = {
+  (): Promise<void>;
+  getParam: (name: string) => string | null;
+};
+```
 
 ### RouterOptions
 

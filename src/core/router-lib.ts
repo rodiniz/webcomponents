@@ -22,6 +22,11 @@ export type RouterOptions = {
   basePath?: string;
 };
 
+export type RouterInstance = {
+  (): Promise<void>;
+  getParam: (name: string) => string | null;
+};
+
 function matchRoute(routePath: string, path: string): boolean | Record<string, string> {
   // Wildcard suffix: '/section/*' matches '/section' and '/section/anything/deep'
   if (routePath.endsWith('/*')) {
@@ -55,7 +60,7 @@ function matchRoute(routePath: string, path: string): boolean | Record<string, s
   return params;
 }
 
-export function createRouter(routes: Route[], appSelectorOrOptions: string | RouterOptions = '#app') {
+export function createRouter(routes: Route[], appSelectorOrOptions: string | RouterOptions = '#app'): RouterInstance {
   const options: RouterOptions = typeof appSelectorOrOptions === 'string'
     ? { outlet: appSelectorOrOptions }
     : appSelectorOrOptions;
@@ -64,8 +69,9 @@ export function createRouter(routes: Route[], appSelectorOrOptions: string | Rou
   const rawBase = options.basePath ?? '';
   // Normalize: remove trailing slash
   const basePath = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
+  let currentParams: Record<string, string> = {};
 
-  async function router(): Promise<void> {
+  const router = (async (): Promise<void> => {
     const fullPath = location.pathname;
     const path = getRoutePath(fullPath);
 
@@ -78,6 +84,7 @@ export function createRouter(routes: Route[], appSelectorOrOptions: string | Rou
     const match = routes.find(route => matchRoute(route.path, relativePath));
 
     if (!match) {
+      currentParams = {};
       if (relativePath !== '/') {
         const fullHomePath = buildPath(basePath + '/');
         history.replaceState(null, '', fullHomePath);
@@ -85,6 +92,9 @@ export function createRouter(routes: Route[], appSelectorOrOptions: string | Rou
       }
       return;
     }
+
+    const matchedParams = matchRoute(match.path, relativePath);
+    currentParams = typeof matchedParams === 'object' ? matchedParams : {};
 
     await match.load();
 
@@ -105,7 +115,9 @@ export function createRouter(routes: Route[], appSelectorOrOptions: string | Rou
 
     outlet.innerHTML = '';
     outlet.appendChild(page);
-  }
+  }) as RouterInstance;
+
+  router.getParam = (name: string): string | null => currentParams[name] ?? null;
 
   window.addEventListener('popstate', router);
 
