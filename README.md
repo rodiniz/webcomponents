@@ -528,6 +528,37 @@ The skills are available for use with VS Code's GitHub Copilot:
 # ✅ TypeScript types
 ```
 
+## VS Code Snippets
+
+Install [VS Code snippets](./snippets/) for faster development:
+
+```bash
+# Install from npm
+npm install -D @diniz/webcomponents-snippets
+
+# Or copy snippets to VS Code extensions folder
+cp -r snippets ~/.vscode/extensions/webcomponents-snippets
+
+# Or symlink for development
+ln -s "$(pwd)/snippets" ~/.vscode/extensions/webcomponents-snippets
+```
+
+### Available Snippets
+
+| Prefix | Component |
+|--------|-----------|
+| `ui-button`, `uibtn` | Button |
+| `ui-input` | Input |
+| `ui-select` | Select dropdown |
+| `ui-table` | Data table |
+| `ui-modal` | Modal |
+| `ui-toast` | Toast notifications |
+| `wc-router` | Router setup |
+| `wc-store` | State management |
+| `wc-lit-component` | Create custom component |
+
+See [snippets/README.md](./snippets/README.md) for full list.
+
 ---
 
 ## License
