@@ -22,9 +22,7 @@ export { UIDropdown } from '../shared/components/dropdown';
 export { UITreeView } from '../shared/components/treeview';
 export { UILayout, UILayoutHeader, UILayoutFooter, UILayoutContent, UILayoutSidebar } from '../shared/components/layout';
 
-// Base Component
-export { BaseComponent } from '../core/base-component';
-export type { Signal } from '../core/base-component';
+
 
 // UI Component Base (new utilities)
 export { UIComponentBase, UIThemedComponent } from '../core/ui-component-base';

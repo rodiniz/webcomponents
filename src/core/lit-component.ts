@@ -1,7 +1,7 @@
 import { LitElement, html as litHtml, TemplateResult, SVGTemplateResult, nothing, render, css, PropertyValues } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { Signal, createSignal } from './base-component';
+import { Signal, createSignal } from './signal-functions';
 
 export { nothing, render, css } from 'lit';
 export { unsafeHTML, customElement, property, state, query };

@@ -1,7 +1,7 @@
 import { html, css, unsafeCSS } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
-import { nothing } from 'lit';
+import { nothing, render } from '../../core/lit-component';
 import { UIComponentBase } from '../../core/ui-component-base';
 import { renderOptionalLabel } from '../../core/form-helpers';
 import { useClickOutside } from '../../core/click-outside';
@@ -165,6 +165,52 @@ export class UIDatePicker extends UIComponentBase {
     `;
   }
 
+  private portalContainer: HTMLDivElement | null = null;
+  private inputRef: HTMLInputElement | null = null;
+
+  firstUpdated() {
+    this.inputRef = this.renderRoot.querySelector('.formatted-input');
+  }
+
+  updated(changedProps: Map<string, unknown>) {
+    super.updated(changedProps);
+    if (this.isOpen) {
+      this.renderPortalDropdown();
+    } else {
+      this.removePortalDropdown();
+    }
+  }
+
+  private renderPortalDropdown() {
+    if (!this.inputRef) return;
+    if (!this.portalContainer) {
+      this.portalContainer = document.createElement('div');
+      this.portalContainer.style.position = 'absolute';
+      this.portalContainer.style.zIndex = '9999';
+      document.body.appendChild(this.portalContainer);
+    }
+    // Position below input
+    const rect = this.inputRef.getBoundingClientRect();
+    this.portalContainer.style.left = `${rect.left + window.scrollX}px`;
+    this.portalContainer.style.top = `${rect.bottom + window.scrollY}px`;
+    this.portalContainer.style.minWidth = `${rect.width}px`;
+    // Render calendar dropdown
+    render(this.renderCalendar(), this.portalContainer);
+  }
+
+  private removePortalDropdown() {
+    if (this.portalContainer) {
+      render(nothing, this.portalContainer);
+      document.body.removeChild(this.portalContainer);
+      this.portalContainer = null;
+    }
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removePortalDropdown();
+  }
+
   render() {
     return html`
       <div class=${classMap({ 'date-picker-container': true, 'is-open': this.isOpen })}>
@@ -187,7 +233,6 @@ export class UIDatePicker extends UIComponentBase {
             </svg>
           </button>
         </div>
-        ${this.isOpen ? this.renderCalendar() : ''}
       </div>
     `;
   }

@@ -1,6 +1,7 @@
 import { html as litHtml, type TemplateResult, type SVGTemplateResult, nothing, render } from 'lit';
 import { unsafeHTML } from 'lit/directives/unsafe-html.js';
-import { Signal, createSignal } from './base-component';
+import { Signal } from './lit-component';
+
 
 export { nothing, render } from 'lit';
 export { unsafeHTML };
@@ -59,18 +60,6 @@ export function styleMap(styles: Record<string, string | Signal<string>>): strin
     .join('; ');
 }
 
-export function repeat<T>(
-  items: T[] | Signal<T[]>,
-  keyFn: (item: T, index: number) => string,
-  template: (item: T, index: number) => TemplateResultType
-): TemplateResultType[] {
-  const unwrapped = unwrapSignal(items);
-  return unwrapped.map((item, index) => template(item, index));
-}
-
 export function live<T>(value: T | Signal<T>): T {
   return unwrapSignal(value);
 }
-
-export type { Signal };
-export { createSignal };
