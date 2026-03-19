@@ -444,9 +444,11 @@ Most web component libraries are just **component collections**. They give you b
 
 - **[Storybook](https://rodiniz.github.io/webcomponents/)** — Interactive component playground with live demos and theme switching
 - **[Component Documentation](./docs/)** — Detailed guides:
+  - [DROPDOWN.md](./docs/DROPDOWN.md) — Menu dropdowns with item selection events
   - [TABLE.md](./docs/TABLE.md) — Data table with sorting, pagination, and child rows
   - [SIDEBAR.md](./docs/SIDEBAR.md) — Navigation sidebar with theming
   - [DATE_PICKER.md](./docs/DATE_PICKER.md) — Calendar date selection
+  - [FORM.md](./docs/FORM.md) — Form documentation
   - [TOAST.md](./docs/TOAST.md) — Toast notifications
   - [TREEVIEW.md](./docs/TREEVIEW.md) — Hierarchical tree with lazy loading
   - [HTTP_CLIENT.md](./docs/HTTP_CLIENT.md) — Lightweight fetch wrapper

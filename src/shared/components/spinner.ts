@@ -1,4 +1,4 @@
-import { html, unsafeCSS } from 'lit';
+import { html, nothing, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import { UIComponentBase } from '../../core/ui-component-base';
@@ -35,8 +35,13 @@ export class UISpinner extends UIComponentBase {
 
   @property({ type: String }) label: string = 'Loading...';
   @property({ type: Boolean, reflect: true }) showLabel: boolean = true;
+  @property({ type: Boolean, reflect: true, attribute: 'is-visible' }) isVisible: boolean = true;
 
   render() {
+    if (!this.isVisible) {
+      return nothing;
+    }
+
     const classes = classMap({
       'spinner': true,
       [this.size]: true,

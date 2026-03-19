@@ -61,12 +61,10 @@ describe('UISpinner', () => {
   });
 
   it('should hide label when showLabel is false', async () => {
-    spinner.setAttribute('show-label', 'false');
+    (spinner as any).showLabel = false;
     await (spinner as any).updateComplete;
-    const container = spinner.shadowRoot?.querySelector('.spinner');
     const label = spinner.shadowRoot?.querySelector('.spinner-label');
-    const hasLabelClass = container?.querySelector('.spinner-label');
-    expect(hasLabelClass).toBeFalsy();
+    expect(label).toBeFalsy();
   });
 
   it('should apply custom label', async () => {
@@ -79,5 +77,19 @@ describe('UISpinner', () => {
   it('should have three spinner rings', () => {
     const rings = spinner.shadowRoot?.querySelectorAll('.spinner-ring');
     expect(rings?.length).toBe(3);
+  });
+
+  it('should be visible by default', () => {
+    const spinnerEl = spinner.shadowRoot?.querySelector('.spinner');
+    expect(spinnerEl).toBeTruthy();
+  });
+
+  it('should hide spinner when isVisible is false', async () => {
+    (spinner as any).isVisible = false;
+    await (spinner as any).updateComplete;
+    const spinnerEl = spinner.shadowRoot?.querySelector('.spinner');
+    const label = spinner.shadowRoot?.querySelector('.spinner-label');
+    expect(spinnerEl).toBeFalsy();
+    expect(label).toBeFalsy();
   });
 });

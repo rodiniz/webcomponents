@@ -7,6 +7,7 @@ type SpinnerArgs = {
   variant: 'primary' | 'secondary' | 'success' | 'danger';
   label: string;
   showLabel: boolean;
+  isVisible: boolean;
 };
 
 const meta: Meta<SpinnerArgs> = {
@@ -30,13 +31,18 @@ const meta: Meta<SpinnerArgs> = {
     showLabel: {
       control: 'boolean',
       description: 'Show label below spinner'
+    },
+    isVisible: {
+      control: 'boolean',
+      description: 'Control spinner visibility'
     }
   },
   args: {
     size: 'md',
     variant: 'primary',
     label: 'Loading...',
-    showLabel: true
+    showLabel: true,
+    isVisible: true
   }
 };
 
@@ -44,12 +50,13 @@ export default meta;
 type Story = StoryObj<SpinnerArgs>;
 
 export const Playground: Story = {
-  render: ({ size, variant, label, showLabel }) => html`
+  render: ({ size, variant, label, showLabel, isVisible }) => html`
     <ui-spinner
       size=${size}
       variant=${variant}
       label=${label}
       ?showLabel=${showLabel}
+      .isVisible=${isVisible}
     ></ui-spinner>
   `
 };
