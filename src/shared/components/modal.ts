@@ -1,26 +1,14 @@
-import { html, css, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import { UIComponentBase } from '../../core/ui-component-base';
 import { onEscape } from '../../core/keyboard-helpers';
 import themeStyles from '../../styles/theme.css?inline';
+import modalStyles from './modal.css?inline';
 
 @customElement('ui-modal')
 export class UIModal extends UIComponentBase {
-  static styles = [
-    unsafeCSS(themeStyles),
-    css`
-      :host {
-        display: contents;
-      }
-      :host([open]) {
-        display: block;
-        position: fixed;
-        inset: 0;
-        z-index: 10000;
-      }
-    `
-  ];
+  static styles = [unsafeCSS(themeStyles), unsafeCSS(modalStyles)];
 
   // fields to remember where this element originally lived so we can
   // restore it after closing (we portal to body while open)

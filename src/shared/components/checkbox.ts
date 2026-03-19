@@ -1,99 +1,15 @@
-import { html, css } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import { UIComponentBase } from '../../core/ui-component-base';
 import { buildSizeClasses, buildStateClasses, combineClasses } from '../../core/class-builders';
 import { createSizeValidator } from '../../core/validators';
 import { ariaChecked } from '../../core/aria-helpers';
+import checkboxStyles from './checkbox.css?inline';
 
 @customElement('ui-checkbox')
 export class UICheckbox extends UIComponentBase {
-  static styles = css`
-    :host {
-      display: inline-block;
-    }
-    .checkbox-container {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .checkbox-container input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
-    .checkbox-box {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      /* default size ensures a visible container even if size class is missing */
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--color-border, hsl(var(--border)));
-      border-radius: 4px;
-      background: var(--color-page-bg, hsl(var(--background)));
-      transition: all 0.2s;
-      flex-shrink: 0;
-      box-sizing: border-box;
-    }
-    .checkbox-box.size-sm {
-      width: 16px;
-      height: 16px;
-    }
-    .checkbox-box.size-md {
-      width: 18px;
-      height: 18px;
-    }
-    .checkbox-box.size-lg {
-      width: 20px;
-      height: 20px;
-    }
-    .checkbox-box:hover:not(.disabled) {
-      border-color: var(--color-primary, hsl(var(--primary)));
-    }
-    .checkbox-box.checked,
-    .checkbox-box.indeterminate {
-      background: var(--color-primary, hsl(var(--primary)));
-      border-color: var(--color-primary, hsl(var(--primary)));
-    }
-    .checkbox-box.disabled {
-      background: var(--color-muted, hsl(var(--muted)));
-      cursor: not-allowed;
-    }
-    .checkbox-icon {
-      display: none;
-      color: var(--color-primary-contrast, hsl(var(--primary-foreground)));
-      position: absolute;
-    }
-    .checkbox-box.checked .checkbox-icon.check,
-    .checkbox-box.indeterminate .checkbox-icon.minus {
-      display: block;
-    }
-    .checkbox-icon.check {
-      width: 10px;
-      height: 10px;
-    }
-    .checkbox-icon.minus {
-      width: 8px;
-      height: 8px;
-    }
-    .checkbox-label {
-      font-size: 0.95rem;
-      color: var(--color-ink, hsl(var(--foreground)));
-      line-height: 1.5;
-    }
-    .checkbox-container.size-sm .checkbox-label {
-      font-size: 0.875rem;
-    }
-    .checkbox-container.size-lg .checkbox-label {
-      font-size: 1rem;
-    }
-  `;
+  static styles = [unsafeCSS(checkboxStyles)];
 
   @property({ type: Boolean, reflect: true }) checked: boolean = false;
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;

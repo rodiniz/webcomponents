@@ -1,9 +1,10 @@
-import { html, css, nothing } from 'lit';
+import { html, nothing, unsafeCSS } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from '../../core/template';
 import { UIComponentBase } from '../../core/ui-component-base';
 import { createEnumValidator, createSizeValidator } from '../../core/validators';
 import './radio';
+import radioGroupStyles from './radio-group.css?inline';
 
 export interface RadioOption {
     value: string;
@@ -14,58 +15,7 @@ export interface RadioOption {
 
 @customElement('ui-radio-group')
 export class UIRadioGroup extends UIComponentBase {
-    static styles = css`
-    :host {
-      display: block;
-    }
-
-    .group-label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      color: var(--color-ink, hsl(var(--foreground)));
-      margin-bottom: 0.75rem;
-    }
-
-    .group-options {
-      display: flex;
-      flex-direction: column;
-      gap: 0.625rem;
-    }
-
-    .group-options.horizontal {
-      flex-direction: row;
-      flex-wrap: wrap;
-      gap: 1.25rem;
-    }
-
-    /* Card variant — each radio renders as a selectable card */
-    .group-options.card {
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .group-options.card ui-radio {
-      display: block;
-      padding: 0.875rem 1rem;
-      border: 1.5px solid var(--color-border, hsl(var(--border)));
-      border-radius: var(--radius, 0.5rem);
-      transition: border-color 0.2s ease, box-shadow 0.15s ease;
-      background: var(--color-page-bg, hsl(var(--background)));
-      cursor: pointer;
-    }
-
-    .group-options.card ui-radio:hover:not([disabled]) {
-      border-color: var(--color-primary, hsl(var(--primary)));
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #24ec71) 12%, transparent);
-    }
-
-    .group-options.card ui-radio[checked] {
-      border-color: var(--color-primary, hsl(var(--primary)));
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary, #24ec71) 15%, transparent);
-      background: color-mix(in srgb, var(--color-primary, #24ec71) 5%, white);
-    }
-  `;
+    static styles = [unsafeCSS(radioGroupStyles)];
 
     @property({ type: String }) label: string = '';
     @property({ type: String }) name: string = 'radio-group';

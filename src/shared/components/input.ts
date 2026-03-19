@@ -1,9 +1,10 @@
-import { html, css, unsafeCSS } from 'lit';
+import { html, unsafeCSS } from 'lit';
 import { customElement, property, state, query } from 'lit/decorators.js';
 import { UIComponentBase } from '../../core/ui-component-base';
 import { renderIcon } from '../../core/icon-helpers';
 import { renderOptionalLabel } from '../../core/form-helpers';
 import themeStyles from '../../styles/theme.css?inline';
+import inputStyles from './input.css?inline';
 import { IconName } from '../../lib/icons';
 
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
@@ -24,67 +25,7 @@ export type ValidationRule =
 
 @customElement('ui-input')
 export class UIInput extends UIComponentBase {
-  static styles = [
-    unsafeCSS(themeStyles),
-    css`
-      :host {
-        display: block;
-        margin-bottom: 1rem;
-      }
-
-      .input-container {
-        position: relative;
-        display: flex;
-        align-items: center;
-      }
-
-      .input-icon {
-        position: absolute;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-        color: hsl(var(--muted-foreground));
-        transition: color 0.15s ease;
-      }
-
-      .input-icon svg {
-        width: 16px;
-        height: 16px;
-      }
-
-      .input-icon.left {
-        left: 0.75rem;
-      }
-
-      .input-icon.right {
-        right: 0.75rem;
-      }
-
-      .input-field.has-icon-left {
-        padding-left: 2.5rem;
-      }
-
-      .input-field.has-icon-right {
-        padding-right: 2.5rem;
-      }
-
-      .input-wrapper:focus-within .input-icon {
-        color: hsl(var(--ring));
-      }
-
-      .input-error {
-        color: hsl(0, 84.2%, 60.2%);
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-        display: block;
-      }
-
-      .input-error.hidden {
-        display: none;
-      }
-    `
-  ];
+  static styles = [unsafeCSS(themeStyles), unsafeCSS(inputStyles)];
 
   @property({ type: String }) type: InputType = 'text';
   @property({ type: String }) label: string = '';

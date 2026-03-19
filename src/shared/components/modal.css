@@ -1,0 +1,10 @@
+:host {
+  display: contents;
+}
+
+:host([open]) {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+}
