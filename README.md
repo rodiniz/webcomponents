@@ -1,5 +1,5 @@
 # @diniz/webcomponents
-
+- **[DEMO](https://github.com/rodiniz/webcomponentsdemo)** — A real life application showing how to use the components without any framework.
 <p align="center">
   <img src="https://img.shields.io/npm/v/@diniz/webcomponents?style=flat&color=24ec71" alt="npm version">
 </p>
