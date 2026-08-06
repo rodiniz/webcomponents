@@ -46,7 +46,7 @@ Create `index.html`:
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My App</title>
   <!-- 🎨 Import theme CSS -->
-  <link rel="stylesheet" href="/src/styles/theme.css">
+  <link rel="stylesheet" href="/node_modules/@diniz/webcomponents/dist/style.css">
 </head>
 <body>
   <app-root></app-root>
@@ -126,17 +126,14 @@ Import one of the included themes:
 
 **HTML Method:**
 ```html
-<!-- Modern shadcn design -->
-<link rel="stylesheet" href="/src/styles/theme-shadcn.css">
-
-<!-- Or use the base theme -->
-<link rel="stylesheet" href="/src/styles/theme.css">
+<!-- Base component styles from the package -->
+<link rel="stylesheet" href="/node_modules/@diniz/webcomponents/dist/style.css">
 ```
 
 **JavaScript Method:**
 ```typescript
 import '@diniz/webcomponents/style.css'; // Default theme
-// or import a specific theme build
+// then optionally switch at runtime
 ```
 
 Switch themes at runtime:
@@ -298,6 +295,22 @@ import '@diniz/webcomponents';
 document.querySelector('ui-button')?.addEventListener('click', () => {
   console.log('clicked');
 });
+```
+
+## Copy-Paste Starters
+
+Use one of these ready-to-run starter folders:
+
+- **Vanilla Vite**: [starters/vanilla-vite](starters/vanilla-vite)
+- **React Vite**: [starters/react-vite](starters/react-vite)
+- **Vue Vite**: [starters/vue-vite](starters/vue-vite)
+- **Next.js (client component)**: [starters/next-client](starters/next-client)
+
+Each starter follows the same flow:
+
+```bash
+npm install
+npm run dev
 ```
 
 ## License

@@ -1,2 +1,6 @@
 ﻿dist
 node_modules
+
+# Starter template build outputs
+starters/*/dist/
+starters/*/.next/
