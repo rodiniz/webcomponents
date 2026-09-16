@@ -23,6 +23,9 @@ export class UIDropdown extends UIComponentBase {
   @property({ type: Array }) items: DropdownItem[] = [];
   @property({ type: String, reflect: true }) size: DropdownSize = 'md';
   @property({ type: Boolean, reflect: true }) disabled: boolean = false;
+  @property({ type: String}) dataSource:string='';
+  @property({ type: String }) idField: string = 'id';
+  @property({ type: String }) labelField: string = 'label';
   @state() private isOpen: boolean = false;
 
   private triggerButton: HTMLElement | null = null;
@@ -38,6 +41,20 @@ export class UIDropdown extends UIComponentBase {
     super.connectedCallback();
     this.clickOutsideHandler.attach();
     this.registerCleanup(() => this.clickOutsideHandler.detach());
+    if (this.dataSource) {
+      fetch(this.dataSource)
+        .then(response => response.json())
+        .then(data => {
+          this.items = data.map((item: any) => ({
+            id: item[this.idField],
+            label: item[this.labelField],
+            disabled: item.disabled ?? false
+          }));
+        })
+        .catch(error => {
+          console.error('Failed to fetch dropdown items:', error);
+        });
+    }
   }
 
   private toggleDropdown = (): void => {
