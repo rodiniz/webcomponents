@@ -12,7 +12,7 @@ export default function WebComponentsDemo() {
   return (
     <main className="container">
       <h1>Next.js + @diniz/webcomponents</h1>
-      <p>Starter is ready. Edit components/WebComponentsDemo.jsx to build your app.</p>
+      <p>Starter is ready. Edit components/WebComponentsDemo.tsx to build your app.</p>
 
       <section className="stack">
         <ui-button variant="primary" size="lg">Get started</ui-button>
